@@ -6,6 +6,15 @@ import { store } from './app/store';
 import { Provider } from 'react-redux';
 import * as serviceWorker from './serviceWorker';
 
+
+
+// dotenv.config({path: path.resolve(__dirname, '../.env')})
+
+// console.log('env api_url', process.env);
+// console.log('env api_url', process.env.API_URL);
+
+
+
 ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>

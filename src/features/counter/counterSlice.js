@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, createAction } from '@reduxjs/toolkit';
 import { fetchCount } from './counterAPI';
 
 const initialState = {
@@ -56,6 +56,17 @@ export const counterSlice = createSlice({
 
 export const { increment, decrement, incrementByAmount } = counterSlice.actions;
 
+window.counterSlice = counterSlice;
+
+console.log(`counterSlice`, counterSlice);
+
+console.log(`incrementAsync(12)`, incrementAsync(12) );
+
+console.log(`counterSlice.actions`, counterSlice.actions);
+
+console.log(`createAction('justAction')`, (createAction('justAction'))('string payload'));
+
+console.log(`incrementByAmount`, incrementByAmount);
 // The function below is called a selector and allows us to select a value from
 // the state. Selectors can also be defined inline where they're used instead of
 // in the slice file. For example: `useSelector((state: RootState) => state.counter.value)`

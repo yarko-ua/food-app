@@ -1,57 +1,61 @@
-import React from 'react';
-import logo from './logo.svg';
-import { Counter } from './features/counter/Counter';
+import React, {useEffect, useState} from 'react';
 import './App.css';
+import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';
+import { Box, Container, Paper } from "@material-ui/core"
+import { makeStyles } from '@material-ui/core/styles';
+import { Provider } from 'react-redux';
+import { store } from './app/store';
+import { AppWrapper } from './features/app/AppWrapper';
+
+const useStyles = makeStyles({
+  root: {
+    width: '100vw',
+    height: '100vh',
+    padding: 50,
+    boxSizing: 'border-box',
+    backgroundColor: 'rgba(200, 200, 200, .7)',
+  
+    '& *': {
+      boxSizing: 'border-box',
+    },
+
+    '& > div': {
+      width: '100%',
+      height: '100%',
+      padding: 25
+    }
+  },
+  container: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '100%'
+  }
+});
+
 
 function App() {
+  const classes = useStyles();
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <Counter />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <span>
-          <span>Learn </span>
-          <a
-            className="App-link"
-            href="https://reactjs.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux-toolkit.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux Toolkit
-          </a>
-          ,<span> and </span>
-          <a
-            className="App-link"
-            href="https://react-redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React Redux
-          </a>
-        </span>
-      </header>
-    </div>
+    <BrowserRouter>
+      <Provider store={store}>
+        <Box component="main" className={classes.root}>
+          <Paper elevation={5}>
+            <Container maxWidth={false} disableGutters className={classes.container} >
+              <AppWrapper />
+              {/* <Switch>
+                { !isAuth && <Route exact path="/auth" component={Authorization} /> }
+                <Route path="/app" component={Test} />
+                { !isAuth && <Redirect to="/auth" /> }
+                <Route path="*" render={props => (<h1>Not Found</h1>)} />
+              </Switch> */}
+            </Container>
+          </Paper>
+        </Box>
+      </Provider>
+    </BrowserRouter>
+    
   );
 }
 
