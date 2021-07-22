@@ -3,9 +3,13 @@ import './App.css';
 import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';
 import { Box, Container, Paper } from "@material-ui/core"
 import { makeStyles } from '@material-ui/core/styles';
-import { Provider } from 'react-redux';
+import { Provider, useDispatch } from 'react-redux';
 import { store } from './app/store';
 import { AppWrapper } from './features/app/AppWrapper';
+import { fbApp } from './features/app/fileUploader/fileUploaderAPI';
+import firebase from 'firebase/app';
+import 'firebase/auth';
+import { initUser } from './features/auth/AuthSlice';
 
 const useStyles = makeStyles({
   root: {
@@ -36,6 +40,13 @@ const useStyles = makeStyles({
 
 function App() {
   const classes = useStyles();
+  const dispatch = useDispatch();
+
+  const user  = firebase.auth(fbApp).currentUser;
+
+  if (!user) {
+    dispatch(initUser({email: 'ssilvias13@gmail.com', password: 'Ukrcrimea_2019'}))
+  }
 
   return (
     <BrowserRouter>
