@@ -3,7 +3,7 @@ import counterReducer from '../features/counter/counterSlice';
 import uploaderReducer from '../features/app/fileUploader/fileUploaderSlice';
 import listReducer from '../features/app/listHandler/listHandlerSlice';
 import { listApi } from './api';
-import authReducer from '../features/auth/AuthSlice';
+import authReducer from '../features/auth/authSlice';
 
 export const store = configureStore({
   reducer: {
