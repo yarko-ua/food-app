@@ -33,7 +33,7 @@ const useStyles = makeStyles({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    height: '100%'
+    // height: '100%'
   }
 });
 
@@ -50,8 +50,9 @@ function App() {
             <Container maxWidth={false} disableGutters className={classes.container} >
               <Switch>
                 <Route path="/auth" component={AuthWrapper} />
-                <PrivateRoute exact path="/app" component={AppWrapper} />
-                <PrivateRoute exact path="/app/product/:productId" component={Product} />
+                <PrivateRoute exact path="/app/product/:productID" component={Product} />
+                <PrivateRoute exact path="/app/settings" render={props => <> App settings </>} />
+                <PrivateRoute path="/app" component={AppWrapper} />
           
                 <Redirect to="/auth" />
               </Switch>

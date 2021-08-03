@@ -23,8 +23,11 @@ const Header = () => {
 
   return (
     <header className={styles.root}>
-      <Grid container justifyContent="flex-end">
-        <Grid item xs={3} container justifyContent="flex-end">
+      <Grid container alignContent="center" justifyContent="flex-end">
+        <Grid item xs={9} >
+          <h1>App v.0.1 </h1>
+        </Grid>
+        <Grid item xs={3} container alignContent="center" justifyContent="flex-end">
           <IconButton onClick={ handleClick }>
             <ExitToAppIcon />
           </IconButton>

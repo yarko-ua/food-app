@@ -3,79 +3,90 @@ import { imagesRef } from './fileUploaderAPI';
 import firebase from 'firebase/app';
 
 const initialState = {
-  files: 0,
+  filesCount: 0,
   filesList: [],
   loading: false,
+  status: null,
 }
 
-export const uploadFile = createAsyncThunk(
-  'uploader/uploadFile',
+export const uploadToStore = createAsyncThunk(
+  'uploader/uploadToStore',
   async (file) => {
+
+    if ( Array.isArray(file) ) {
+      const filesToUpload = [];
+
+      for (let i = 0; i < file.length; i++) {
+        filesToUpload.push(
+          imagesRef
+            .child(file[i].name)
+            .put(file[i], {contentType: file[i].type})
+            .then(snap => snap.ref.getDownloadURL())
+        )
+        
+      }
+
+      const photos = await Promise.all(filesToUpload);
+
+      console.log(`photos`, photos);
+
+      return photos;
+
+    }
+
+
     const result = await imagesRef
       .child(file.name)
-      .put(file, {contentType: file.type})
-      .then(snapshot => {
-        console.log(`snapshot`, snapshot);
-        return snapshot.ref.fullPath;
-      });
+      .put(file, {contentType: file.type});
 
-  //  const result = await imagesRef.on(firebase.storage.TaskEvent.STATE_CHANGED,
-  //   (snapshot) => {
-  //     // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
-  //     var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-  //     console.log('Upload is ' + progress + '% done');
-  //     switch (snapshot.state) {
-  //       case firebase.storage.TaskState.PAUSED: // or 'paused'
-  //         console.log('Upload is paused');
-  //         break;
-  //       case firebase.storage.TaskState.RUNNING: // or 'running'
-  //         console.log('Upload is running');
-  //         break;
-  //       default:
-  //         break;
-  //     }
-  //   }, 
-  //   (error) => {
-  //     // A full list of error codes is available at
-  //     // https://firebase.google.com/docs/storage/web/handle-errors
-  //     const err = {status: 'failed', error};
+    const downloadURL = await result.ref.getDownloadURL();
 
-  //     switch (error.code) {
-  //       case 'storage/unauthorized':
-  //         // User doesn't have permission to access the object
-  //         break;
-  //       case 'storage/canceled':
-  //         // User canceled the upload
-  //         break;
-  
-  //       // ...
-  
-  //       case 'storage/unknown':
-  //         // Unknown error occurred, inspect error.serverResponse
-  //         break;
-  //       default:
-  //         break;
-  //     }
+    console.log(`result`, result);
+    console.log(`downloadURL`, downloadURL);
 
-  //     return err;
-  //   }, 
-  //   () => {
-  //     // Upload completed successfully, now we can get the download URL
-  //     imagesRef.snapshot.ref.getDownloadURL().then((downloadURL) => {
-  //       console.log('File available at', downloadURL);
+    return downloadURL;
+  }
+)
 
-  //       return {
-  //         status: 'success',
-  //         fileURL: downloadURL
-  //       }
-  //     });
+const readAsDataURL = (file) => {
+  return new Promise(function(resolve,reject){
+    let fr = new FileReader();
 
-      
-  //   }
-  // );
+    fr.onload = function(){
+      resolve({url: fr.result, name: file.name, type: file.type});
+    };
 
-   console.log(`upload result`, result);
-   return result;
+    fr.onerror = function(){
+        reject(fr);
+    };
+
+    fr.readAsDataURL(file);
+  });
+}
+
+export const uploadFiles = createAsyncThunk(
+  'uploader/uploadFiles',
+  async (files) => {
+    console.log(`files`, files);
+
+      if (files.length) {
+        const readers = [];
+
+        for (let i = 0; i < files.length; i++) {
+          readers.push(readAsDataURL(files[i]))
+        }
+
+        try {
+          const uploadedFiles = await Promise.all(readers)
+
+          return uploadedFiles
+
+        } catch (e) {
+          console.log(`e`, e)
+
+          return null
+        }
+      }
   }
 )
 
@@ -83,30 +94,57 @@ export const uploaderSlice = createSlice({
   name: 'uploader',
   initialState,
   reducers: {
-    uploadFile: state => {
-
-    }
+    removeFile: (state, action) => {
+      state.filesList = state.filesList.filter(file => file.name !== action.payload)
+      state.filesCount = state.filesList.length
+    },
+    clearFiles: state => initialState
   },
   extraReducers: builder => {
     builder
-      .addCase(uploadFile.pending, state => {
+      .addCase(uploadToStore.pending, state => {
         state.loading = true
       })
-      .addCase(uploadFile.fulfilled, (state, action) => {
+      .addCase(uploadToStore.fulfilled, (state, action) => {
         state.loading = false;
 
         if (action.payload) {
-          state.filesList.push(action.payload);
+
+          if (Array.isArray(action.payload) ) {
+            state.filesList = [...state.filesList, ...action.payload];
+          } else {
+            state.filesList.push(action.payload);
+          }
+
           state.files = state.filesList.length;
+          
         }
         
         console.log(`action`, action);
       }) 
-      .addCase(uploadFile.rejected, (state, action) => {
+      .addCase(uploadToStore.rejected, (state, action) => {
         state.loading = false;
         console.log(`action`, action);
       }) 
+      .addCase(uploadFiles.pending, state => {state.loading = true})
+      .addCase(uploadFiles.rejected, (state, action) => {
+        console.log(`uploading failed`, action)
+        state.loading = false
+        state.status = 400
+      })
+      .addCase(uploadFiles.fulfilled, (state, action) => {
+        state.loading = false
+        state.status = 200
+        console.log(`action`, action)
+        if (action.payload)
+          state.filesList = [...state.filesList, ...action.payload]
+        state.filesCount = state.filesList.length
+      });
   }
 })
+
+export const { removeFile, clearFiles } = uploaderSlice.actions
+
+console.log(`uploaderSlice`, uploaderSlice)
 
 export default uploaderSlice.reducer;
