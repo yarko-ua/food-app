@@ -5,15 +5,18 @@ import { PhotoCamera } from '@material-ui/icons';
 import { CircularProgress, Grid, IconButton, makeStyles } from '@material-ui/core';
 
 const useFileUploaderStyles = makeStyles({
+  root: {
+    maxWidth: props => props.fullWidth ? '100%' : 360,
+    width: props => props.fullWidth ? '100%' : 'initial',
+  },
   gridContainer: {
-    maxWidth: 360,
+    width: '100%',
     margin: '15px 0',
     backgroundColor: 'rgba(231, 231, 231, 0.75)',
     borderRadius: 12
   },
   label: {
     display: 'inline-block',
-    margin: '0 0 0 15px'
   },
   imgContainer: {
     position: 'relative',
@@ -69,8 +72,8 @@ const useFileUploaderStyles = makeStyles({
   }
 })
 
-export const FileUploader = ({onUpload, className}) => {
-  const styles = useFileUploaderStyles();
+export const FileUploader = ({onUpload, className, fullWidth}) => {
+  const styles = useFileUploaderStyles({fullWidth});
 
   const dispatch = useDispatch()
   const files = useSelector(state => state.files.filesList)
@@ -97,7 +100,7 @@ export const FileUploader = ({onUpload, className}) => {
   }, [dispatch]);
 
   return (
-    <span className={className}>
+    <Grid className={`${className}${styles.root}`}>
 
       <span className={styles.label}>Want to add photo?</span>
 
@@ -107,22 +110,18 @@ export const FileUploader = ({onUpload, className}) => {
         </IconButton>
       </label>
 
-      <br/>
-
       {loading && <CircularProgress /> }
 
       {uploadingStatus === 400 && <span>Oops, something goes wrong</span>}
 
-      {uploadingStatus === 200 && files.length && <span>Photos loaded ({files.length}) </span>}
-
       { 
-        uploadingStatus === 200 && files.length && 
+        uploadingStatus === 200 && files.length > 0 && 
 
-        <Grid container spacing={2} className={styles.gridContainer} >
+        <Grid container spacing={1} className={styles.gridContainer} >
           { 
             files.map((file, i) => {
               return (
-                <Grid item xs={3} key={file.name}>
+                <Grid item xs={2} key={file.name}>
                   <div className={styles.imgContainer}  >
                     <button type="button" className={styles.removeImgBtn} onClick={handleRemovePhoto}>X</button>
                     <img src={file.url} alt={file.name} className={styles.img} />
@@ -146,6 +145,6 @@ export const FileUploader = ({onUpload, className}) => {
         onChange={handleUpload} 
       />
 
-    </span>
+    </Grid>
   )
 }

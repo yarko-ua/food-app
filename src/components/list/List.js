@@ -2,6 +2,7 @@ import { useSelector } from 'react-redux'
 import { 
   Avatar, 
   CircularProgress, 
+  Grid, 
   IconButton, 
   List, 
   ListItem, 
@@ -13,13 +14,18 @@ import {
 import InfoIcon from '@material-ui/icons/Info';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { Link } from 'react-router-dom';
+import { Rating } from '@material-ui/lab';
 
 const useStyles = makeStyles({
   list: {
     borderTop: '2px dashed grey'
   },
   li: {
-    borderBottom: '1px solid black'
+    borderBottom: '1px solid black',
+
+    '& h3': {
+      margin: 0,
+    },
   },
   img: {
     position: 'absolute',
@@ -72,7 +78,16 @@ const MyList = ({ list, linked, location, onRemove }) => {
               </ListItemAvatar>
 
               <ListItemText>
-                {listItem.product}
+                <Grid container>
+                  <Grid item xs={5}>
+                    <h3>{listItem.product}</h3>
+                    <Rating value={listItem.productRating} readOnly size="small" />
+                  </Grid>
+                  <Grid item xs={7} alignItems="center" container>
+                    <p>{listItem.productDescription}</p>
+                  </Grid>
+                </Grid>
+                
               </ListItemText>
 
               <ListItemSecondaryAction>

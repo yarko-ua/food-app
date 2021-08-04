@@ -5,7 +5,8 @@ const initialState = {
   myList: [
   ],
   compareList: [],
-  loading: false
+  loading: false,
+  submitting: false
 }
 
 export const addUserRecord = createAsyncThunk(
@@ -34,7 +35,9 @@ export const addUserRecord = createAsyncThunk(
           
         }
   
-        photos = await Promise.all(filesToUpload);
+        photos = await Promise.allSettled(filesToUpload)
+
+        photos = photos.filter(promise => promise.status === 'fulfilled').map(promise => promise.value)
   
       }
     } catch (error) {
@@ -44,13 +47,13 @@ export const addUserRecord = createAsyncThunk(
     console.log(`photos`, photos);
 
     const { data, user } = payload
-    const { product, productPhotos } = data
+    const { product, productPhotos, productRating, productDescription } = data
 
 
     try {
       const productRef = await fbdb
         .collection('products')
-        .add({product, photos, reviewer: user})
+        .add({...data, photos, reviewer: user})
 
       const { id: productID } = productRef
 
@@ -59,7 +62,9 @@ export const addUserRecord = createAsyncThunk(
         product,
         thumb: photos ? photos[0] : null,
         user,
-        productID
+        productID,
+        productRating,
+        productDescription
       }
       
       const listItemRef = await fbdb
@@ -74,7 +79,7 @@ export const addUserRecord = createAsyncThunk(
       console.log(`id, path`, id, path)
 
 
-      return { status: 'success', record: { id, path, ...productShort } }
+      return { status: 'success', record: { id, ...productShort } }
 
     } catch (error) {
       console.log(`error`, error)
@@ -149,7 +154,7 @@ const list = createSlice({
   extraReducers: builder => {
     builder
       .addCase(addUserRecord.fulfilled, (state, action) => {
-        state.loading = false
+        state.submitting = false
         console.log(`action`, action)
 
         if (action.payload.status === 'success') {
@@ -157,8 +162,8 @@ const list = createSlice({
         }
 
       })
-      .addCase(addUserRecord.pending, state => {state.loading = true})
-      .addCase(addUserRecord.rejected, state => {state.loading = false})
+      .addCase(addUserRecord.pending, state => {state.submitting = true})
+      .addCase(addUserRecord.rejected, state => {state.submitting = false})
       .addCase(getUserRecords.pending , state => {state.loading = true})
       .addCase(getUserRecords.fulfilled, (state, action) => {
         state.loading = false

@@ -1,4 +1,4 @@
-import { CircularProgress } from "@material-ui/core";
+import { CircularProgress, Grid } from "@material-ui/core";
 import { useCallback } from "react"
 import { useDispatch, useSelector } from "react-redux";
 import MyList from "../../../components/list/List";
@@ -31,16 +31,19 @@ export const UserList = props => {
   )
 
   return (
-    <>
-      {/* <FileUploader handleUpload={handleUpload} /> */}
-      <ListHandler onSubmit={handleListSubmit} handleUpload={handleUpload} />
-      { filesLoading && <CircularProgress /> }
-      <MyList 
-        list={testData} 
-        linked 
-        location={props.location}
-        onRemove={onRemove}   
-      />
-    </>
+    <Grid container spacing={1} justifyContent="space-between" >
+      <Grid item xs={4}>
+        <ListHandler onSubmit={handleListSubmit} handleUpload={handleUpload} />
+      </Grid>
+      <Grid item xs={7}>
+        <MyList 
+          list={testData} 
+          linked 
+          location={props.location}
+          onRemove={onRemove}   
+        />
+      </Grid>
+      
+    </Grid>
   )
 }
