@@ -1,4 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import firebase from 'firebase/app';
 import { fbdb, imagesRef } from "../fileUploader/fileUploaderAPI";
 
 const initialState = {
@@ -47,13 +48,32 @@ export const addUserRecord = createAsyncThunk(
     console.log(`photos`, photos);
 
     const { data, user } = payload
+
+    console.log(`data`, data)
+
+    delete data.productPhotos
+
+    console.log(`data`, data)
+
     const { product, productPhotos, productRating, productDescription } = data
 
+
+    // if no variable productRating what to do:
+    console.log(`productRating`, productRating)
+
+    const createdAt = firebase.firestore.FieldValue.serverTimestamp()
+
+    console.log(`createdAt`, createdAt)
 
     try {
       const productRef = await fbdb
         .collection('products')
-        .add({...data, photos, reviewer: user})
+        .add({
+          ...data, 
+          photos, 
+          reviewer: user,
+          createdAt
+        })
 
       const { id: productID } = productRef
 
@@ -64,7 +84,8 @@ export const addUserRecord = createAsyncThunk(
         user,
         productID,
         productRating,
-        productDescription
+        productDescription,
+        createdAt
       }
       
       const listItemRef = await fbdb
@@ -73,7 +94,17 @@ export const addUserRecord = createAsyncThunk(
 
 
       console.log('listItemRef', listItemRef)
-      console.dir('listItemRef', listItemRef)
+
+      const listDoc = await fbdb.collection('lists').doc(listItemRef.id).get()
+
+      if (listDoc.exists) {
+        const listData = listDoc.data();
+
+        productShort.createdAt = listData.createdAt.toMillis()
+      }
+
+      // const d = listData.data()
+      
       const { id, path } = listItemRef
 
       console.log(`id, path`, id, path)
@@ -127,12 +158,13 @@ export const getUserRecords = createAsyncThunk(
 
           const { id, path } = doc.ref
           const data = doc.data()
-          console.log(`data`, data);
-          response.push({id, path, ...data})
+          console.log(`data`, data)
+          const { createdAt } = data
+          response.push({id, path, ...data, createdAt: createdAt.toMillis() })
 
         })
 
-        return response;
+        return response.reverse();
         // console.log(`records.data()`, records.data())
       } catch (error) {
         console.log(`error`, error)

@@ -66,8 +66,14 @@ const readAsDataURL = (file) => {
 
 export const uploadFiles = createAsyncThunk(
   'uploader/uploadFiles',
-  async (files) => {
-    console.log(`files`, files);
+  async (files, state) => {
+    console.log(`files`, files)
+
+    const { filesList } = state.getState().files
+
+    console.log(`filesList`, filesList)
+
+
 
       if (files.length) {
         const readers = [];
@@ -77,9 +83,9 @@ export const uploadFiles = createAsyncThunk(
         }
 
         try {
-          const uploadedFiles = await Promise.all(readers)
+          const uploadedFiles = await Promise.allSettled(readers)
 
-          return uploadedFiles
+          return uploadedFiles.filter(file => file.status === 'fulfilled').map(file => file.value)
 
         } catch (e) {
           console.log(`e`, e)
@@ -136,8 +142,20 @@ export const uploaderSlice = createSlice({
         state.loading = false
         state.status = 200
         console.log(`action`, action)
-        if (action.payload)
-          state.filesList = [...state.filesList, ...action.payload]
+        if (action.payload){
+
+          for (let i = 0; i < action.payload.length; i++) {
+            const element = action.payload[i];
+            
+
+            if (!state.filesList.find(file => file.name === element.name)) {
+              state.filesList.push(element);
+            }
+          }
+
+          // state.filesList = [...state.filesList, ...action.payload]
+
+        }
         state.filesCount = state.filesList.length
       });
   }

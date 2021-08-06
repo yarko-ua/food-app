@@ -79,12 +79,15 @@ const MyList = ({ list, linked, location, onRemove }) => {
 
               <ListItemText>
                 <Grid container>
-                  <Grid item xs={5}>
+                  <Grid item xs={4}>
                     <h3>{listItem.product}</h3>
-                    <Rating value={listItem.productRating} readOnly size="small" />
+                    <Rating value={+listItem.productRating} readOnly size="small" />
                   </Grid>
-                  <Grid item xs={7} alignItems="center" container>
+                  <Grid item xs={5} alignItems="center" container>
                     <p>{listItem.productDescription}</p>
+                  </Grid>
+                  <Grid item xs={3}>
+                    Added: <br/> {listItem.createdAt && new Date(listItem.createdAt).toDateString()}
                   </Grid>
                 </Grid>
                 

@@ -92,9 +92,9 @@ export const FileUploader = ({onUpload, className, fullWidth}) => {
 
 
   const handleRemovePhoto = useCallback( (e) => {
-    console.log(`traget`, e.target);
-    console.log(`traget next`, e.target.nextElementSibling);
-    console.log(`traget next alt`, e.target.nextElementSibling.alt);
+    // console.log(`traget`, e.target);
+    // console.log(`traget next`, e.target.nextElementSibling);
+    // console.log(`traget next alt`, e.target.nextElementSibling.alt);
 
     dispatch(removeFile(e.target.nextElementSibling.alt));
   }, [dispatch]);

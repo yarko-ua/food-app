@@ -59,7 +59,13 @@ export const ListHandler = ({onSubmit, handleUpload}) => {
       }
     }
 
-    console.log(`send`, data);
+    console.log(`send`, data)
+
+    if (!data.hasOwnProperty('productRating')) {
+      data.productRating = 0
+    }
+
+    console.log(`send`, data)
 
     dispatch(addUserRecord( {user: uid, data: {...data, productPhotos: null}} ))
 
