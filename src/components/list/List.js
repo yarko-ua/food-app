@@ -1,4 +1,5 @@
 import { useSelector } from 'react-redux'
+import PropTypes from 'prop-types'
 import { 
   Avatar, 
   CircularProgress, 
@@ -37,7 +38,7 @@ const useStyles = makeStyles({
   }
 })
 
-const MyList = ({ list, linked, location, onRemove }) => {
+const MyList = ({ list, type, linked, location, onRemove, path }) => {
   const styles = useStyles()
   const loading = useSelector(state => state.fbList.loading)
 
@@ -47,7 +48,7 @@ const MyList = ({ list, linked, location, onRemove }) => {
   return (
     <List className={styles.list}>
       {
-        list.map( (listItem, i) => 
+        list.length > 0 && list.map( (listItem, i) => 
           <ListItem key={listItem.id || i} className={styles.li}>
               <ListItemAvatar>
                 <Avatar>
@@ -56,15 +57,15 @@ const MyList = ({ list, linked, location, onRemove }) => {
                   linked && 
                   <Link 
                     to={ {
-                      pathname: `/app/product/${listItem.productID}`,
+                      pathname: `${path}/${listItem.id}`,
                       state: location.pathname
                     } }
                   >   
                     {
                       listItem.thumb ? 
                         <img src={listItem.thumb} className={styles.img}  alt="" />
-                        :
-                        <InfoIcon />
+                        : i
+                        // <InfoIcon />
                     }
           
                   </Link>
@@ -80,11 +81,14 @@ const MyList = ({ list, linked, location, onRemove }) => {
               <ListItemText>
                 <Grid container>
                   <Grid item xs={4}>
-                    <h3>{listItem.product}</h3>
-                    <Rating value={+listItem.productRating} readOnly size="small" />
+                    <h3>{listItem.name}</h3>
+                    { type === 'product' && <Rating value={+listItem.productRating} readOnly size="small" /> }
                   </Grid>
                   <Grid item xs={5} alignItems="center" container>
-                    <p>{listItem.productDescription}</p>
+                    {
+                      listItem.description && 
+                      <p>{listItem.description}</p>
+                    }
                   </Grid>
                   <Grid item xs={3}>
                     Added: <br/> {listItem.createdAt && new Date(listItem.createdAt).toDateString()}
@@ -103,6 +107,20 @@ const MyList = ({ list, linked, location, onRemove }) => {
         }
     </List>
   )
+}
+
+MyList.propTypes = {
+  list: PropTypes.array.isRequired,
+  linked: PropTypes.bool,
+  path: PropTypes.string.isRequired,
+  location: PropTypes.object.isRequired,
+  onRemove: PropTypes.func.isRequired,
+  type: PropTypes.string
+}
+
+MyList.defaultProps = {
+  type: 'list',
+  onRemove: () => {}
 }
 
 export default MyList

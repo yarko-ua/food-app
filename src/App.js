@@ -50,8 +50,8 @@ function App() {
             <Container maxWidth={false} disableGutters className={classes.container} >
               <Switch>
                 <Route path="/auth" component={AuthWrapper} />
-                <PrivateRoute exact path="/app/product/:productID" component={Product} />
-                <PrivateRoute exact path="/app/settings" render={props => <> App settings </>} />
+                <Route exact path="/product/:productID" component={Product} />
+                {/* <PrivateRoute exact path="/app/settings" render={props => <> App settings </>} /> */}
                 <PrivateRoute path="/app" component={AppWrapper} />
           
                 <Redirect to="/auth" />

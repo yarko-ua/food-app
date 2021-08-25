@@ -1,16 +1,25 @@
 import { IconButton, makeStyles, MenuItem, MenuList } from "@material-ui/core"
 import { AccountCircle, Dashboard, PeopleAltRounded, Settings, ViewList } from "@material-ui/icons"
+import { useSelector } from "react-redux"
 import { Link, NavLink } from 'react-router-dom'
 
 
 const Menu = ({uid}) => {
+
+  const photoURL = useSelector(state => state.user.userData.photoURL)
+
   return ( <MenuList>
     <NavLink to={`/app/${uid}/profile`}>
 
       <MenuItem>
 
         <IconButton>
-          <AccountCircle/>
+          {
+            photoURL ?
+              <img src={photoURL} alt="avatar" />
+              :
+              <AccountCircle/>
+          }
         </IconButton>
 
         Profile
@@ -18,18 +27,18 @@ const Menu = ({uid}) => {
       </MenuItem>
     </NavLink>
 
-      <NavLink to={`/app/${uid}/list`}>
+      <NavLink to={`/app/lists`}>
     <MenuItem>
 
         <IconButton>
           <ViewList/>
         </IconButton>
 
-        My List
+        My Lists
 
     </MenuItem>
       </NavLink>
-      <NavLink to={`/app/${uid}/friends`}>
+      <NavLink to={`/app/friends`}>
     <MenuItem>
 
         <IconButton>
@@ -40,7 +49,7 @@ const Menu = ({uid}) => {
 
     </MenuItem>
       </NavLink>
-      <NavLink to={`/app/${uid}/recommendations`}>
+      <NavLink to={`/app/recommendations`}>
     <MenuItem>
 
         <IconButton>

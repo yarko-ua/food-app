@@ -96,6 +96,7 @@ export const ListHandler = ({onSubmit, handleUpload}) => {
 
   useEffect(() => {
     dispatch(getUserRecords(uid))
+    // dispatch(getUserLists(uid))
 
     return () => {
       dispatch(clearFiles())

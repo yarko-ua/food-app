@@ -12,6 +12,7 @@ import 'swiper/components/navigation/navigation.scss';
 import 'swiper/components/pagination/pagination.scss';
 import { Image } from '../../components/image/Image';
 import { Rating } from '@material-ui/lab';
+import { BackToPrevious } from '../../components/backTo/BackTo';
 
 SwiperCore.use([Navigation, Pagination ]);
 
@@ -50,14 +51,12 @@ export const Product = ({match, ...props}) => {
 
   return (
     <div className={styles.root}>
-      <Link to={props.history.location.state || '/app' } >
-          <ArrowBackIcon/>
-      </Link>
+      <BackToPrevious />
         { product ? 
             <Grid container spacing={2} >
               <Grid item xs={5} >
                   {
-                    product.photos && 
+                    product.photos.length > 0 && 
                       <Swiper
                         slidesPerView='auto'
                         navigation
@@ -79,9 +78,9 @@ export const Product = ({match, ...props}) => {
                   }
               </Grid>
               <Grid item xs={7} >
-                  <h1>{product.product}</h1>
-                  <Rating value={product.productRating} readOnly size="large"/>
-                  <TextField multiline value={product.productDescription} />
+                  <h1>{product.name}</h1>
+                  <Rating value={product.rating} readOnly size="large"/>
+                  <TextField multiline value={product.description} />
                   Reviewer: {product.reviewer}
               </Grid>
             </Grid>

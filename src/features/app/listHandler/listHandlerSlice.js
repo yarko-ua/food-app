@@ -147,7 +147,7 @@ export const getUserRecords = createAsyncThunk(
   'list/getAllRecords',
   async payload => {
       try {
-        const records = await fbdb.collection('lists').where('user', '==', payload).get()
+        const records = await fbdb.collection(`users/${payload}/lists`).get()
         const { docs } = records;
         console.log(`records`, records)
         console.log(`records docs`, records.docs)
@@ -201,7 +201,7 @@ const list = createSlice({
         state.loading = false
         console.log(`action`, action)
 
-        state.myList = action.payload
+        state.myList = action.payload ? action.payload : state.myList;
 
       })
       .addCase(deleteUserRecord.pending, state => {state.loading = true})

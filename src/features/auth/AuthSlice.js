@@ -17,6 +17,7 @@ console.log(`userData`, userData);
 
 const initialState = {
   auth: false,
+  loading: false,
   initializing: false,
   ...userData
 };
@@ -35,8 +36,8 @@ export const signInUser = createAsyncThunk(
 
 export const signUpUser = createAsyncThunk(
   'auth/signUp',
-  async ({email, password}) => {
-    const user = await signUp(email, password)
+  async ({email, password, name, photo }) => {
+    const user = signUp(email, password, name, photo)
 
     console.log('signup response', user)
 
@@ -50,6 +51,16 @@ export const signOutUser = createAsyncThunk(
     const response = await signOut()
 
     console.log(`signout response`, response);
+  }
+)
+
+export const getUserFullInfo = createAsyncThunk(
+  'user/getFullInfo',
+  async uid => {
+    const user = firebase.auth().currentUser
+    console.log(`user`, user)
+
+    return user
   }
 )
 
@@ -104,6 +115,16 @@ export const authReducer = createSlice({
       })
       .addCase(signOutUser.rejected, (state, action) => {
         state.initializing = false;
+      })
+      .addCase(getUserFullInfo.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(getUserFullInfo.rejected, (state) => {
+        state.loading = false;
+      })
+      .addCase(getUserFullInfo.fulfilled, (state, action) => {
+        state.loading = false;
+        console.log(`action`, action)
       })
   }
 })
