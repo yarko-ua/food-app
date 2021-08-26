@@ -3,13 +3,21 @@ import { AccountCircle, Dashboard, PeopleAltRounded, Settings, ViewList } from "
 import { useSelector } from "react-redux"
 import { Link, NavLink } from 'react-router-dom'
 
+const useStyles = makeStyles({
+  root: {
+    '& a.active svg' : {
+      fill: 'red'
+    }
+  }
+})
+
 
 const Menu = ({uid}) => {
+  const styles = useStyles()
+  const photoURL = useSelector(state => state.user.data.photoURL)
 
-  const photoURL = useSelector(state => state.user.userData.photoURL)
-
-  return ( <MenuList>
-    <NavLink to={`/app/${uid}/profile`}>
+  return ( <MenuList className={styles.root}>
+    <NavLink to={`/app/profile`}>
 
       <MenuItem>
 
@@ -60,7 +68,7 @@ const Menu = ({uid}) => {
 
     </MenuItem>
       </NavLink>
-      <Link to={`/app/settings`}>
+      <NavLink to={`/app/settings`}>
     <MenuItem>
 
         <IconButton>
@@ -70,7 +78,7 @@ const Menu = ({uid}) => {
         Settings
 
     </MenuItem>
-      </Link>
+      </NavLink>
   </MenuList>)
 }
 

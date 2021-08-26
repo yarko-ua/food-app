@@ -1,6 +1,7 @@
+import { useState, useCallback, useEffect } from "react";
+import PropTypes from "prop-types"
 import { Button, CircularProgress, makeStyles, TextareaAutosize, TextField } from "@material-ui/core";
 import { Rating } from "@material-ui/lab";
-import { useState, useCallback, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { FileUploader } from "../fileUploader/FileUploader";
 import { clearFiles, uploadToStore } from "../fileUploader/fileUploaderSlice";
@@ -24,13 +25,13 @@ const useFormStyles = makeStyles({
   },
 })
 
-export const ListHandler = ({onSubmit, handleUpload}) => {
+export const ListHandler = ({label, onSubmit, handleUpload}) => {
 
   const [productName, setProductName]  = useState('')
   const [rating, setRating] = useState(0)
   const [productDescription, setProductDescription]  = useState('')
   const dispatch = useDispatch()
-  const uid = useSelector(state => state.user.userData.uid)
+  const uid = useSelector(state => state.user.data.uid)
   const submitting = useSelector(state => state.fbList.submitting)
   const formStyles = useFormStyles()
 
@@ -61,13 +62,15 @@ export const ListHandler = ({onSubmit, handleUpload}) => {
 
     console.log(`send`, data)
 
-    if (!data.hasOwnProperty('productRating')) {
+    if (!data.hasOwnProperty('rating')) {
       data.productRating = 0
     }
 
     console.log(`send`, data)
 
-    dispatch(addUserRecord( {user: uid, data: {...data, productPhotos: null}} ))
+    // dispatch(addUserRecord( {...data, photos: null} ))
+
+    onSubmit(data)
 
     // dispatch(uploadToStore(data['productPhotos']));
 
@@ -95,7 +98,7 @@ export const ListHandler = ({onSubmit, handleUpload}) => {
   )
 
   useEffect(() => {
-    dispatch(getUserRecords(uid))
+    // dispatch(getUserRecords(uid))
     // dispatch(getUserLists(uid))
 
     return () => {
@@ -107,13 +110,13 @@ export const ListHandler = ({onSubmit, handleUpload}) => {
 
   return (
     <>
-      <h2>Want to add a product?</h2>
+      <h2>{label}</h2>
 
       <form onSubmit={handleSubmit} className={formStyles.form}>
         <TextField 
           size="medium"
-          id="product"
-          name="product"
+          id="productName"
+          name="name"
           label="Product" 
           fullWidth
           variant="outlined"
@@ -126,7 +129,7 @@ export const ListHandler = ({onSubmit, handleUpload}) => {
         <TextField 
           size="medium"
           id="productDescription"
-          name="productDescription"
+          name="description"
           label="Describe product" 
           // margin="dense"
           required
@@ -140,7 +143,7 @@ export const ListHandler = ({onSubmit, handleUpload}) => {
           className={formStyles.input}
         />
         <Rating 
-          name="productRating"
+          name="rating"
           value={rating}
           onChange={handleRating}
           size="large"
@@ -155,4 +158,14 @@ export const ListHandler = ({onSubmit, handleUpload}) => {
       </form>
     </>
   )
+}
+
+ListHandler.propTypes = {
+  handleUpload: PropTypes.func,
+  onSubmit: PropTypes.func.isRequired,
+  label: PropTypes.string.isRequired
+}
+
+ListHandler.defaultProps = {
+  onSubmit: () => {}
 }

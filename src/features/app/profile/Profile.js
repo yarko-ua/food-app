@@ -7,7 +7,7 @@ import { getUserFullInfo } from '../../auth/authSlice'
 export const Profile = props => {
 
   const dispatch = useDispatch()
-  const userData = useSelector(state => state.user.userData)
+  const userData = useSelector(state => state.user.data)
   console.log(`userData`, userData)
 
   useEffect(() => {

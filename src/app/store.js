@@ -6,10 +6,11 @@ import listsReducer from '../features/app/userLists/userListsSlice';
 import { listApi } from './api';
 import authReducer from '../features/auth/authSlice';
 import productReducer from '../features/product/productSlice'
+import notification from '../features/notification/notificationSlice'
 
 export const store = configureStore({
   reducer: {
-    counter: counterReducer,
+    notification,
     files: uploaderReducer,
     fbList: listReducer,
     lists: listsReducer,

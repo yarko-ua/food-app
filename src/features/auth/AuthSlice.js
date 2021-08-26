@@ -11,15 +11,16 @@ import { signIn, signOut, signUp } from './authAPI';
 // console.log(`currentUser`, defaultFbAuth.currentUser);
 
 
-const userData = loadState('user');
+const data = loadState('user');
 
-console.log(`userData`, userData);
+console.log(`userData`, data);
 
 const initialState = {
   auth: false,
   loading: false,
   initializing: false,
-  ...userData
+  data: {},
+  ...data
 };
 
 
@@ -75,7 +76,7 @@ export const authReducer = createSlice({
       })
       .addCase(signInUser.fulfilled, (state, action) => {
         state.initializing = false;
-        state.userData = action.payload;
+        state.data = action.payload;
         state.auth = true;
 
         saveState('user', state);
@@ -83,7 +84,7 @@ export const authReducer = createSlice({
       })
       .addCase(signInUser.rejected, (state, action) => {
         state.initializing = false;
-        state.userData = action.payload;
+        state.data = {};
       })
 
       .addCase(signUpUser.pending, state => {
@@ -91,7 +92,7 @@ export const authReducer = createSlice({
       })
       .addCase(signUpUser.fulfilled, (state, action) => {
         state.initializing = false;
-        state.userData = action.payload;
+        state.data = action.payload;
         state.auth = true;
 
         saveState('user', state);
@@ -99,7 +100,7 @@ export const authReducer = createSlice({
       })
       .addCase(signUpUser.rejected, (state, action) => {
         state.initializing = false;
-        state.userData = action.payload;
+        state.data = action.payload;
       })
 
       .addCase(signOutUser.pending, state => {
@@ -107,7 +108,7 @@ export const authReducer = createSlice({
       })
       .addCase(signOutUser.fulfilled, (state, action) => {
         state.initializing = false;
-        state.userData = {};
+        state.data = {};
         state.auth = false;
 
         saveState('user', state);

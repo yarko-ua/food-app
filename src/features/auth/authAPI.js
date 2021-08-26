@@ -2,19 +2,27 @@ import firebase from 'firebase/app';
 import 'firebase/auth';
 import { fbApp, fbdb } from '../app/fileUploader/fileUploaderAPI';
 
-export const signIn = (email, password) => 
-  firebase.auth(fbApp)
-    .signInWithEmailAndPassword(email, password)
-    .then( ({ user }) => {
-      console.log('user', user)
+export const signIn = async (uemail, password) => {
+  try {
+    const userCredentials = await firebase.auth(fbApp)
+    .signInWithEmailAndPassword(uemail, password)
 
-      // console.log(`user.getToken()`, user.getToken())
+    const { user } = userCredentials
 
-      const { uid, displayName, email, photoURL } = user
+    console.log('user', user)
+    // console.log(`user.getToken()`, user.getToken())
+    const { uid, displayName, email, photoURL } = user
 
-      return { uid, displayName, email, photoURL }
-    })
+    return { uid, displayName, email, photoURL }
+  } catch (error) {
+      console.log(`SignIn error`, error)
 
+      console.log(`error.code`, error.code)
+
+      throw new Error(error.message)
+  }
+  
+}
 
 export const signUp = async (email, password, displayName, photoURL = null) => {
   const userCredential = await firebase.auth(fbApp)
@@ -51,17 +59,21 @@ export const signUp = async (email, password, displayName, photoURL = null) => {
     .add({
       name: 'My First List',
       createdAt,
-      products: [
-        {
-          id: 'defaultProduct',
-          description: 'Lorem ipsum..',
-          name: 'My first product',
-          thumb : null,
-        }
-      ]
     })
 
   console.log(`userFirstList`, userFirstList)
+
+  const productsRef = userFirstList.collection('products')
+  const firstProductInList = await productsRef.doc('defaultProduct').set({
+  
+    id: 'defaultProduct',
+    description: 'Lorem ipsum..',
+    name: 'My first product',
+    thumb : null,
+  
+  })
+
+  console.log(`firstProductInList`, firstProductInList)
 
   return { uid, displayName, photoURL }
 }

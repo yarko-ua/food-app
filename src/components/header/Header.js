@@ -14,7 +14,7 @@ const Header = () => {
   const styles = useHeaderStyles();
   const dispatch = useDispatch();
   const auth = useSelector(state => state.user.auth);
-  const userName = useSelector(state => state.user.userData.displayName);
+  const userName = useSelector(state => state.user.data.displayName);
 
   if (!auth) return <></>
 

@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import firebase from 'firebase/app';
+import 'firebase/firestore';
 import { fbdb, imagesRef } from "../fileUploader/fileUploaderAPI";
 
 const initialState = {
@@ -12,11 +13,15 @@ const initialState = {
 
 export const addUserRecord = createAsyncThunk(
   'list/addRecord',
-  async (payload, state) => {
+  async (payload, thunkAPI) => {
 
     console.log( `payload`, payload)
 
-    const files = state.getState().files.filesList;
+    const state = thunkAPI.getState()
+
+    const files = state.files.filesList;
+    const currentList = state.lists.currentList
+    const user = state.user.data
 
     console.log(`st`, files);
 
@@ -45,76 +50,105 @@ export const addUserRecord = createAsyncThunk(
       console.log(`error 1`, error)
     }
 
-    console.log(`photos`, photos);
+    console.log(`photos`, photos); //nophotos ? not added to storage?
 
-    const { data, user } = payload
+    // const { data } = payload
 
-    console.log(`data`, data)
+    // console.log(`data`, data)
 
-    delete data.productPhotos
+    // delete data.productPhotos
 
-    console.log(`data`, data)
+    // console.log(`data`, data)
 
-    const { product, productPhotos, productRating, productDescription } = data
+    const { name, photos: productPhotos, rating, description } = payload
 
 
     // if no variable productRating what to do:
-    console.log(`productRating`, productRating)
+    console.log(`productRating`, rating)
 
     const createdAt = firebase.firestore.FieldValue.serverTimestamp()
 
     console.log(`createdAt`, createdAt)
 
+    const productData = {
+      ...payload, 
+      photos, 
+      reviewer: user.uid,
+      createdAt
+    }
+
+    delete productData.productPhotos
+
+    console.log(`productData`, productData)
+
     try {
       const productRef = await fbdb
         .collection('products')
-        .add({
-          ...data, 
-          photos, 
-          reviewer: user,
-          createdAt
-        })
+        .add(productData)
+
+      const productDoc = await productRef.get()
+
+        console.log(`productRef`, productRef)
+        console.log(`productDoc`, productDoc)
+        console.log(`productDoc.data()`, productDoc.data())
+      
+      const productDocData = productDoc.data()
 
       const { id: productID } = productRef
 
 
       const productShort = {
-        product,
-        thumb: photos ? photos[0] : null,
-        user,
-        productID,
-        productRating,
-        productDescription,
+        name,
+        thumb: photos && photos.length ? photos[0] : null,
+        id: productID,
+        rating,
+        description,
         createdAt
       }
+
+      console.log(`productShort`, productShort)
       
-      const listItemRef = await fbdb
-      .collection(`lists`)
-      .add(productShort)
+      const listDoc = fbdb
+      .doc(`users/${user.uid}/lists/${currentList.id}/products/${productID}`)
+      const listDocAdd = await listDoc.set(productShort)
+      let test = await listDoc.get()
+
+      console.log(`listDoc`, listDoc)
+      console.log(`listDoc.get()`, test)
+      console.log(`listDoc.get().data()`, test.data())
+      console.log(`listDocAdd`, listDocAdd)
+
+      // console.log(`listDoc`, listDoc)
+      // console.log(`listDoc.get()`, await listDoc.get())
+
+      // const listUpdate = await listDoc.update({
+      //   products: firebase.firestore.FieldValue.arrayUnion(...productShort) //with string works ok
+      // })
+
+      // console.log(`listUpdate`, listUpdate)
 
 
-      console.log('listItemRef', listItemRef)
+      // console.log('listItemRef', listItemRef)
 
-      const listDoc = await fbdb.collection('lists').doc(listItemRef.id).get()
+      // const listDoc = await fbdb.collection('lists').doc(listItemRef.id).get()
 
-      if (listDoc.exists) {
-        const listData = listDoc.data();
+      // if (listItemRef.exists) {
+        // const listData = listItemRef.data();
 
-        productShort.createdAt = listData.createdAt.toMillis()
-      }
+      // }
 
       // const d = listData.data()
       
-      const { id, path } = listItemRef
+      // const { id, path } = listItemRef
 
-      console.log(`id, path`, id, path)
+      // console.log(`id, path`, id, path)
+      productShort.createdAt = productDocData.createdAt.toMillis()
 
-
-      return { status: 'success', record: { id, ...productShort } }
+      return productShort
 
     } catch (error) {
       console.log(`error`, error)
-      return {status: 'failed', error}
+      throw new Error(error.message || error)
     }
 
   }
@@ -189,9 +223,9 @@ const list = createSlice({
         state.submitting = false
         console.log(`action`, action)
 
-        if (action.payload.status === 'success') {
-          state.myList.push(action.payload.record)
-        }
+        // if (action.payload.status === 'success') {
+        //   state.myList.push(action.payload.record)
+        // }
 
       })
       .addCase(addUserRecord.pending, state => {state.submitting = true})

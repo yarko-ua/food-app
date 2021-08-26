@@ -43,7 +43,11 @@ const MyList = ({ list, type, linked, location, onRemove, path }) => {
   const loading = useSelector(state => state.fbList.loading)
 
   if (loading)
-    return <CircularProgress /> 
+    return <CircularProgress />
+
+  if (!list || list.length < 1) {
+    return <span></span>
+  }
 
   return (
     <List className={styles.list}>
@@ -64,7 +68,7 @@ const MyList = ({ list, type, linked, location, onRemove, path }) => {
                     {
                       listItem.thumb ? 
                         <img src={listItem.thumb} className={styles.img}  alt="" />
-                        : i
+                        : listItem.name[0].toUpperCase()
                         // <InfoIcon />
                     }
           
@@ -82,7 +86,7 @@ const MyList = ({ list, type, linked, location, onRemove, path }) => {
                 <Grid container>
                   <Grid item xs={4}>
                     <h3>{listItem.name}</h3>
-                    { type === 'product' && <Rating value={+listItem.productRating} readOnly size="small" /> }
+                    { type === 'product' && <Rating value={+listItem.rating} readOnly size="small" /> }
                   </Grid>
                   <Grid item xs={5} alignItems="center" container>
                     {

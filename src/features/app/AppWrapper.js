@@ -22,7 +22,7 @@ const useAppStyles =  makeStyles({
 export const AppWrapper = ({match, ...props}) => {
   const appStyles = useAppStyles();
 
-  const uid = useSelector(state => state.user.userData.uid);
+  const uid = useSelector(state => state.user.data.uid);
 
   return (
     <Grid container className={appStyles.root} color="inherit" spacing={4}>
@@ -52,9 +52,9 @@ export const AppWrapper = ({match, ...props}) => {
               exact path={`${match.url}/recommendations`}
               render={props => <> recommendations </>}
             />
-            {/* <Route exact path={`${match.url}/settings`}
+            <Route exact path={`${match.url}/settings`}
               render={props => <> settings </>}
-            /> */}
+            />
 
             <Redirect to={`${match.path}/lists`}/>
         </Switch>

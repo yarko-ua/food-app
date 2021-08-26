@@ -10,6 +10,7 @@ import { AuthWrapper } from './features/auth/AuthWrapper';
 import PrivateRoute from './routes/PrivateRoute';
 import Header from './components/header/Header';
 import { Product } from './features/product/Product';
+import { Notification } from './features/notification/Notification';
 
 const useStyles = makeStyles({
   root: {
@@ -23,7 +24,7 @@ const useStyles = makeStyles({
       boxSizing: 'border-box',
     },
 
-    '& > div': {
+    '& > div:not(.Toastify)': {
       width: '100%',
       height: '100%',
       padding: 25
@@ -64,6 +65,7 @@ function App() {
               </Switch> */}
             </Container>
           </Paper>
+          <Notification />
         </Box>
       </Provider>
     </BrowserRouter>
