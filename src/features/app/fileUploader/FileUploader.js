@@ -1,5 +1,5 @@
 import { useCallback, useRef, useState, useEffect } from 'react';
-import { uploadFiles, removeFile } from './fileUploaderSlice';
+import { uploadFiles, removeFile, clearFiles } from './fileUploaderSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { PhotoCamera } from '@material-ui/icons';
 import { CircularProgress, Grid, IconButton, makeStyles } from '@material-ui/core';
@@ -81,23 +81,22 @@ export const FileUploader = ({onUpload, className, fullWidth}) => {
   const uploadingStatus = useSelector(state => state.files.status)
 
   const handleUpload = useCallback((e) => {
-    console.dir(e);
-    console.log(`e.target.files`, e.target.files);
 
     const filesArray = e.target.files;
-
     dispatch(uploadFiles(filesArray));
 
   }, [dispatch]);
 
 
   const handleRemovePhoto = useCallback( (e) => {
-    // console.log(`traget`, e.target);
-    // console.log(`traget next`, e.target.nextElementSibling);
-    // console.log(`traget next alt`, e.target.nextElementSibling.alt);
-
     dispatch(removeFile(e.target.nextElementSibling.alt));
   }, [dispatch]);
+
+  useEffect(() => {
+    return () => {
+      dispatch(clearFiles())
+    }
+  }, [dispatch])
 
   return (
     <Grid className={`${className}${styles.root}`}>
@@ -138,8 +137,8 @@ export const FileUploader = ({onUpload, className, fullWidth}) => {
       <input 
         hidden 
         type="file" 
-        id="productPhotos"
-        name="productPhotos"
+        id="filesUploader"
+        name="files"
         multiple 
         accept="image/*"
         onChange={handleUpload} 

@@ -1,4 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import firebase from 'firebase/app'
 import { fbdb } from "../fileUploader/fileUploaderAPI";
 import { addUserRecord } from "../listHandler/listHandlerSlice";
 
@@ -111,6 +112,39 @@ export const getUserList = createAsyncThunk(
   }
 )
 
+export const addNewList = createAsyncThunk(
+  'userLists/addNew',
+  async (data, thunkAPI) => {
+    const uid = thunkAPI.getState().user.data.uid
+
+    try {
+      const listRef = await fbdb.collection(`users/${uid}/lists`).add({
+        name: data.name,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      })
+  
+      console.log(`listRef`, listRef)
+
+      const listDoc = await listRef.get()
+
+      console.log(`listDoc`, listDoc)
+
+
+
+      return {
+        name: data.name,
+        createdAt: listDoc.data().createdAt.toMillis(),
+        id: listRef.id
+      }
+
+
+    } catch (error) {
+      console.log(`error`, error)
+      throw new Error(error)
+    }
+  }
+)
+
 const lists = createSlice({
   name: 'userLists',
   initialState,
@@ -136,6 +170,20 @@ const lists = createSlice({
       .addCase(addUserRecord.fulfilled, (state, action) => {
         console.log(`action`, action)
         state.currentList.data.push(action.payload)
+      })
+      .addCase(addNewList.pending, state => {
+        state.loading = true
+      })
+      .addCase(addNewList.rejected, state => {
+        state.loading = false
+      })
+      .addCase(addNewList.fulfilled, (state, action) => {
+        state.loading = false
+        if (state.data && state.data.length) {
+          state.data.push(action.payload)
+        } else {
+          state.data = [action.payload]
+        }
       })
   }
 })

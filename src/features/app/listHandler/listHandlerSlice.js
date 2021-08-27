@@ -60,7 +60,7 @@ export const addUserRecord = createAsyncThunk(
 
     // console.log(`data`, data)
 
-    const { name, photos: productPhotos, rating, description } = payload
+    const { name, photos: productPhotos, rating = 0, description } = payload
 
 
     // if no variable productRating what to do:
@@ -77,7 +77,7 @@ export const addUserRecord = createAsyncThunk(
       createdAt
     }
 
-    delete productData.productPhotos
+    delete productData.files
 
     console.log(`productData`, productData)
 

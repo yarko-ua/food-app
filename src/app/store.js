@@ -1,5 +1,4 @@
 import { configureStore } from '@reduxjs/toolkit';
-import counterReducer from '../features/counter/counterSlice';
 import uploaderReducer from '../features/app/fileUploader/fileUploaderSlice';
 import listReducer from '../features/app/listHandler/listHandlerSlice';
 import listsReducer from '../features/app/userLists/userListsSlice';

@@ -9,44 +9,44 @@ const initialState = {
   status: null,
 }
 
-export const uploadToStore = createAsyncThunk(
-  'uploader/uploadToStore',
-  async (file) => {
+// export const uploadToStore = createAsyncThunk(
+//   'uploader/uploadToStore',
+//   async (file) => {
 
-    if ( Array.isArray(file) ) {
-      const filesToUpload = [];
+//     if ( Array.isArray(file) ) {
+//       const filesToUpload = [];
 
-      for (let i = 0; i < file.length; i++) {
-        filesToUpload.push(
-          imagesRef
-            .child(file[i].name)
-            .put(file[i], {contentType: file[i].type})
-            .then(snap => snap.ref.getDownloadURL())
-        )
+//       for (let i = 0; i < file.length; i++) {
+//         filesToUpload.push(
+//           imagesRef
+//             .child(file[i].name)
+//             .put(file[i], {contentType: file[i].type})
+//             .then(snap => snap.ref.getDownloadURL())
+//         )
         
-      }
+//       }
 
-      const photos = await Promise.all(filesToUpload);
+//       const photos = await Promise.all(filesToUpload);
 
-      console.log(`photos`, photos);
+//       console.log(`photos`, photos);
 
-      return photos;
+//       return photos;
 
-    }
+//     }
 
 
-    const result = await imagesRef
-      .child(file.name)
-      .put(file, {contentType: file.type});
+//     const result = await imagesRef
+//       .child(file.name)
+//       .put(file, {contentType: file.type});
 
-    const downloadURL = await result.ref.getDownloadURL();
+//     const downloadURL = await result.ref.getDownloadURL();
 
-    console.log(`result`, result);
-    console.log(`downloadURL`, downloadURL);
+//     console.log(`result`, result);
+//     console.log(`downloadURL`, downloadURL);
 
-    return downloadURL;
-  }
-)
+//     return downloadURL;
+//   }
+// )
 
 const readAsDataURL = (file) => {
   return new Promise(function(resolve,reject){
@@ -73,8 +73,6 @@ export const uploadFiles = createAsyncThunk(
 
     console.log(`filesList`, filesList)
 
-
-
       if (files.length) {
         const readers = [];
 
@@ -90,7 +88,7 @@ export const uploadFiles = createAsyncThunk(
         } catch (e) {
           console.log(`e`, e)
 
-          return null
+          throw new Error('Upload failed')
         }
       }
   }
@@ -108,30 +106,30 @@ export const uploaderSlice = createSlice({
   },
   extraReducers: builder => {
     builder
-      .addCase(uploadToStore.pending, state => {
-        state.loading = true
-      })
-      .addCase(uploadToStore.fulfilled, (state, action) => {
-        state.loading = false;
+      // .addCase(uploadToStore.pending, state => {
+      //   state.loading = true
+      // })
+      // .addCase(uploadToStore.fulfilled, (state, action) => {
+      //   state.loading = false;
 
-        if (action.payload) {
+      //   if (action.payload) {
 
-          if (Array.isArray(action.payload) ) {
-            state.filesList = [...state.filesList, ...action.payload];
-          } else {
-            state.filesList.push(action.payload);
-          }
+      //     if (Array.isArray(action.payload) ) {
+      //       state.filesList = [...state.filesList, ...action.payload];
+      //     } else {
+      //       state.filesList.push(action.payload);
+      //     }
 
-          state.files = state.filesList.length;
+      //     state.files = state.filesList.length;
           
-        }
+      //   }
         
-        console.log(`action`, action);
-      }) 
-      .addCase(uploadToStore.rejected, (state, action) => {
-        state.loading = false;
-        console.log(`action`, action);
-      }) 
+      //   console.log(`action`, action);
+      // }) 
+      // .addCase(uploadToStore.rejected, (state, action) => {
+      //   state.loading = false;
+      //   console.log(`action`, action);
+      // }) 
       .addCase(uploadFiles.pending, state => {state.loading = true})
       .addCase(uploadFiles.rejected, (state, action) => {
         console.log(`uploading failed`, action)
@@ -142,27 +140,20 @@ export const uploaderSlice = createSlice({
         state.loading = false
         state.status = 200
         console.log(`action`, action)
-        if (action.payload){
 
-          for (let i = 0; i < action.payload.length; i++) {
-            const element = action.payload[i];
-            
-
-            if (!state.filesList.find(file => file.name === element.name)) {
-              state.filesList.push(element);
-            }
+        for (let i = 0; i < action.payload.length; i++) {
+          const element = action.payload[i];
+          
+          if (!state.filesList.find(file => file.name === element.name)) {
+            state.filesList.push(element);
           }
-
-          // state.filesList = [...state.filesList, ...action.payload]
-
         }
+
         state.filesCount = state.filesList.length
       });
   }
 })
 
 export const { removeFile, clearFiles } = uploaderSlice.actions
-
-console.log(`uploaderSlice`, uploaderSlice)
 
 export default uploaderSlice.reducer;

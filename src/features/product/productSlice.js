@@ -25,7 +25,7 @@ export const getProduct = createAsyncThunk(
 
       if (!product.exists) return null;
 
-      return { id: productID, ...product.data() }
+      return { id: productID, ...product.data(), createdAt: product.data().createdAt.toMillis() }
     } catch (error) {
       console.log(`error`, error)
       return null;

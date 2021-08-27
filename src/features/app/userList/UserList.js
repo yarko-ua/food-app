@@ -4,10 +4,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { withRouter } from "react-router-dom";
 import MyList from "../../../components/list/List";
 import { FileUploader } from "../fileUploader/FileUploader"
-import { uploadToStore } from "../fileUploader/fileUploaderSlice";
+// import { uploadToStore } from "../fileUploader/fileUploaderSlice";
 import { ListHandler } from "../listHandler/ListHandler";
 import { addUserRecord, deleteUserRecord, removeRecord } from "../listHandler/listHandlerSlice";
 import { clearList, getUserList } from "../userLists/userListsSlice";
+import { AddProductForm } from "../../../components/forms/addProductForm/AddProductForm";
 
 
 export const UserList = props => {
@@ -37,13 +38,14 @@ export const UserList = props => {
 
   console.log(`data`, data)
 
-  const handleUpload = useCallback((file) => {
-    dispatch(uploadToStore(file))
-  }, []);
+  // const handleUpload = useCallback((file) => {
+  //   dispatch(uploadToStore(file))
+  // }, []);
 
   const handleListSubmit = useCallback(data => {
+    console.log(`data 1`, data)
     dispatch(addUserRecord(data))
-  }, []);
+  }, [dispatch]);
 
   // const onRemove = useCallback(
   //   (id) => {
@@ -56,35 +58,15 @@ export const UserList = props => {
   //   return <CircularProgress />
   // }
 
-  const attr = useMemo(() => {
-    return [
-      {
-        id: 'productName',
-        label: 'Product',
-        name: 'name'
-      },
-      {
-        id: 'productDescription',
-        label: 'Describe product',
-        name: 'description',
-        multiline: true 
-      },
-      {
-        type: 'raing',
-        name: 'rating'
-      },
-      {
-        type: 'fileUploader'
-      }
-    ]
-  }, [])
+
 
   return (
     <Grid container spacing={1} justifyContent="space-between" >
       <Grid item xs={4}>
-        <ListHandler 
+        <ListHandler
+          form={AddProductForm} 
           onSubmit={handleListSubmit} 
-          handleUpload={handleUpload}
+          // handleUpload={handleUpload}
           label="Want to add a product?"
         />
       </Grid>

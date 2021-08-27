@@ -1,8 +1,8 @@
-import { useEffect } from 'react'
+import { useCallback, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
-import {Link} from 'react-router-dom'
-import { CircularProgress, Grid, makeStyles, TextField } from '@material-ui/core';
+import {Link, useHistory} from 'react-router-dom'
+import { CircularProgress, Grid, IconButton, makeStyles, TextField } from '@material-ui/core';
 import { getProduct } from './productSlice';
 import { Swiper, SwiperSlide } from 'swiper/react'
 import SwiperCore, { Navigation, Pagination } from 'swiper';
@@ -13,6 +13,7 @@ import 'swiper/components/pagination/pagination.scss';
 import { Image } from '../../components/image/Image';
 import { Rating } from '@material-ui/lab';
 import { BackToPrevious } from '../../components/backTo/BackTo';
+import { Edit } from '@material-ui/icons';
 
 SwiperCore.use([Navigation, Pagination ]);
 
@@ -36,6 +37,27 @@ export const Product = ({match, ...props}) => {
   const product = useSelector(state => state.product.data)
   const dispatch = useDispatch()
 
+  // const history = useHistory()
+
+  // console.log(`history`, history)
+
+  console.log(`props`, props)
+  console.log(`match`, match)
+
+  const search = props.location.search
+
+  console.log(`search`, search)
+  console.log(`search.match(/edit/)`, search.match(/edit/))
+
+  const isEdit = search.match(/edit/)
+
+  const handleEditBtn = useCallback(
+    () => {
+      props.history.replace('?edit')
+    },
+    [props.history],
+  )
+
   useEffect(() => {
 
     dispatch(getProduct(match.params.productID))  
@@ -56,7 +78,7 @@ export const Product = ({match, ...props}) => {
             <Grid container spacing={2} >
               <Grid item xs={5} >
                   {
-                    product.photos.length > 0 && 
+                    product.photos && product.photos.length > 0 && 
                       <Swiper
                         slidesPerView='auto'
                         navigation
@@ -78,8 +100,18 @@ export const Product = ({match, ...props}) => {
                   }
               </Grid>
               <Grid item xs={7} >
-                  <h1>{product.name}</h1>
-                  <Rating value={product.rating} readOnly size="large"/>
+                  <div>
+                    <h1>{product.name}</h1>
+                    {/* <span> */}
+                      <IconButton onClick={handleEditBtn}>
+                        <Edit/>
+                      </IconButton>
+                      {/* Edit */}
+                    {/* </span> */}
+                    
+                  </div>
+                  
+                  <Rating value={+product.rating} readOnly={!isEdit} size="large"/>
                   <TextField multiline value={product.description} />
                   Reviewer: {product.reviewer}
               </Grid>
