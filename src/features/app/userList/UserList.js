@@ -7,22 +7,20 @@ import { FileUploader } from "../fileUploader/FileUploader"
 // import { uploadToStore } from "../fileUploader/fileUploaderSlice";
 import { ListHandler } from "../listHandler/ListHandler";
 import { addUserRecord, deleteUserRecord, removeRecord } from "../listHandler/listHandlerSlice";
-import { clearList, getUserList } from "../userLists/userListsSlice";
+import { addProductToList, clearList, getUserList, removeProductFromList } from "../userLists/userListsSlice";
 import { AddProductForm } from "../../../components/forms/addProductForm/AddProductForm";
+import { retrieveFormData } from "../../../helpers/retrieveFormData";
+import { PATH_TO_PRODUCT } from "../../../constants";
+import { clearFiles, uploadToStore } from "../fileUploader/fileUploaderSlice";
+import { addProduct } from "../../product/productSlice";
 
 
 export const UserList = props => {
   const { listID } = props.match.params
-
-  const filesLoading = useSelector(state => state.files.loading)
-  // const lists = useSelector(state => state.lists.data).filter(list => list.id === )
   const currentList = useSelector(state => state.lists.currentList)
-
   console.log(`currentList`, currentList)
 
   const dispatch = useDispatch()
-
-  // const [lists, setLists] = useState(listsData)
 
   useEffect(() => {
     if (!currentList) {
@@ -32,28 +30,31 @@ export const UserList = props => {
       console.log(`unmount`)
       dispatch(clearList())
     }
-  }, [])
+  }, [dispatch, listID])
 
-  const data = currentList ? currentList.data : []
+  const list = currentList ? currentList.data : []
 
-  console.log(`data`, data)
+  console.log(`list`, list)
 
-  // const handleUpload = useCallback((file) => {
-  //   dispatch(uploadToStore(file))
-  // }, []);
+  const handleListSubmit = useCallback( e => {
+    e.preventDefault();
 
-  const handleListSubmit = useCallback(data => {
-    console.log(`data 1`, data)
-    dispatch(addUserRecord(data))
+    const data = retrieveFormData(e.target)
+
+    console.log(`sended product data`, data)
+
+    dispatch(addProductToList(data))
+    dispatch(clearFiles())
   }, [dispatch]);
 
-  // const onRemove = useCallback(
-  //   (id) => {
-  //     console.log(`id`, id);
-  //     dispatch(deleteUserRecord(id))
-  //   },
-  //   [dispatch],
-  // )
+  const onRemove = useCallback(
+    (id) => {
+      console.log(`id`, id);
+      dispatch(removeProductFromList(id))
+    },
+    [dispatch],
+  )
+
   // if (!currentList) {
   //   return <CircularProgress />
   // }
@@ -63,12 +64,8 @@ export const UserList = props => {
   return (
     <Grid container spacing={1} justifyContent="space-between" >
       <Grid item xs={4}>
-        <ListHandler
-          form={AddProductForm} 
-          onSubmit={handleListSubmit} 
-          // handleUpload={handleUpload}
-          label="Want to add a product?"
-        />
+        <h2>Want to add a product?</h2>
+        <AddProductForm onSubmit={handleListSubmit} />
       </Grid>
       <Grid item xs={7}>
         {
@@ -78,12 +75,12 @@ export const UserList = props => {
             (<>
               <h3>{currentList.name}</h3>
               <MyList 
-                list={data} 
+                list={list} 
                 linked 
                 location={props.location}
+                path={PATH_TO_PRODUCT}
                 type="product"
-                path="/product"
-                // onRemove={onRemove}   
+                onRemove={onRemove}   
               />
             </>)
         }

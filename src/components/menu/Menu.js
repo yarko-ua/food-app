@@ -17,7 +17,7 @@ const Menu = ({uid}) => {
   const photoURL = useSelector(state => state.user.data.photoURL)
 
   return ( <MenuList className={styles.root}>
-    <NavLink to={`/app/profile`}>
+    <NavLink to={`/profile`}>
 
       <MenuItem>
 
@@ -35,7 +35,7 @@ const Menu = ({uid}) => {
       </MenuItem>
     </NavLink>
 
-      <NavLink to={`/app/lists`}>
+      <NavLink to={`/lists`}>
     <MenuItem>
 
         <IconButton>
@@ -46,7 +46,7 @@ const Menu = ({uid}) => {
 
     </MenuItem>
       </NavLink>
-      <NavLink to={`/app/friends`}>
+      <NavLink to={`/friends`}>
     <MenuItem>
 
         <IconButton>
@@ -57,7 +57,7 @@ const Menu = ({uid}) => {
 
     </MenuItem>
       </NavLink>
-      <NavLink to={`/app/recommendations`}>
+      <NavLink to={`/recommendations`}>
     <MenuItem>
 
         <IconButton>
@@ -68,7 +68,7 @@ const Menu = ({uid}) => {
 
     </MenuItem>
       </NavLink>
-      <NavLink to={`/app/settings`}>
+      <NavLink to={`/settings`}>
     <MenuItem>
 
         <IconButton>

@@ -1,56 +1,65 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import firebase from 'firebase/app'
+import { retrieveFormData } from "../../../helpers/retrieveFormData";
+import { addProduct, deleteProduct } from "../../product/productSlice";
 import { fbdb } from "../fileUploader/fileUploaderAPI";
+import { uploadToStore } from "../fileUploader/fileUploaderSlice";
 import { addUserRecord } from "../listHandler/listHandlerSlice";
 
 const initialState = {
   data: null,
   currentList: null,
+  compareList: null,
   loading: false,
 }
 
+
 export const getUserLists = createAsyncThunk(
-  'list/getLists',
-  async (arg, thunkAPI) => {
-    const uid = thunkAPI.getState().user.data.uid
+  'userLists/getLists',
+  async (userID = null, thunkAPI) => {
+    // later userID need to get lists to compare ?
+    const state = thunkAPI.getState()
+    const { uid } = state.user.data
 
-    const lists = await fbdb.collection(`users/${uid}/lists`).get()
+    const userListsRef = await fbdb.collection(`users/${userID || uid}/lists`).get()
 
-    console.log(`lists`, lists)
+    const userLists = 
+      !userListsRef.empty ?
+        userListsRef
+          .docs
+          .map(list => {
+            console.log(`list`, list)
+            const data = list.data()
+            console.log(`data`, data)
 
-    const { docs } = lists
+            if (!list.exists) return null
 
-    console.log(`lists.docs`, lists.docs)
+            return {
+              ...data, 
+              createdAt: data.createdAt.toMillis(),
+              id: list.id
+            }
+          })
+          .filter(list => list)
+        : []
 
-    const response = docs.map(list => ({
-      ...list.data(),
-      createdAt: list.data().createdAt.toMillis(),
-      id: list.ref.id
-    }) )
+    console.log(`userListsRef`, userListsRef)
+    console.log(`userLists`, userLists)
 
-    console.log(`response`, response)
-
-    return response;
+    return userLists
   }
 )
 
 export const getUserList = createAsyncThunk(
-  'list/getList',
+  'userLists/getList',
   async (listID, thunkAPI) => {
-    const uid = thunkAPI.getState().user.data.uid
+    const { uid } = thunkAPI.getState().user.data
     console.log(`uid`, uid)
 
     const lists = thunkAPI.getState().lists.data
 
     console.log(`lists`, lists)
 
-    // if (lists && lists.length) {
-    //   const list = lists.filter(list => list.id === listID)
-    //   console.log(`list`, list)
-    //   if (list.length > 0) return list[0]
-    // }
-
-    // const list = fbdb.collection(`users/${uid}/lists`).doc(listID)
     const listDoc = fbdb.doc(`users/${uid}/lists/${listID}`)
 
     console.log(`listRef`, listDoc)
@@ -96,24 +105,12 @@ export const getUserList = createAsyncThunk(
       data,
     }
 
-    // console.log(`data`, data)
-    // console.log(`data data`, data.data())
-
-
-    // const response = docs.map(list => ({
-    //   ...list.data(),
-    //   createdAt: list.data().createdAt.toMillis(),
-    //   id: list.ref.id
-    // }) )
-
-    // console.log(`response`, response)
-
     return currentList;
   }
 )
 
 export const addNewList = createAsyncThunk(
-  'userLists/addNew',
+  'userLists/addNewList',
   async (data, thunkAPI) => {
     const uid = thunkAPI.getState().user.data.uid
 
@@ -145,6 +142,92 @@ export const addNewList = createAsyncThunk(
   }
 )
 
+export const addProductToList = createAsyncThunk(
+  'list/addProduct',
+  async (data, thunkAPI) => {  
+    const uploadFiles = await thunkAPI.dispatch(uploadToStore())
+    const files = uploadFiles.payload
+
+    console.log(`uploadFiles`, uploadFiles) //get .payload
+    console.log(`files`, files)
+
+    const productAdd = await thunkAPI.dispatch(addProduct(data))
+    console.log(`product`, productAdd)
+    const product = productAdd.payload
+
+    const state = thunkAPI.getState()
+
+    console.log(`st3`, state)
+    const currentList = state.lists.currentList
+    const user = state.user.data
+    // const product = state.product.data
+
+    // const createdAt = firebase.firestore.FieldValue.serverTimestamp()
+
+    console.log(`productShort`, product)
+      
+    if (!product) return null
+
+    try {
+      const listDoc = fbdb
+        .doc(`users/${user.uid}/lists/${currentList.id}/products/${product.id}`)
+
+      const listDocAdd = await listDoc.set(product)
+      let test = await listDoc.get()
+
+      console.log(`listDoc`, listDoc)
+      console.log(`listDoc.get()`, test)
+      console.log(`listDoc.get().data()`, test.data())
+      console.log(`listDocAdd`, listDocAdd)
+
+      return {
+        ...product, 
+        createdAt: product.createdAt.toMillis()
+      }
+
+    } catch (error) {
+      console.log(`error`, error)
+      throw new Error(error.message || error)
+    }
+
+  }
+)
+
+export const removeProductFromList = createAsyncThunk(
+  'userList/removeProduct',
+  async (productID, thunkAPI) => {
+    try {
+      const { currentList } = thunkAPI.getState().lists
+      const { uid } = thunkAPI.getState().user.data
+      const productRef = fbdb.doc(
+        `users/${uid}/lists/${currentList.id}/products/${productID}`
+      )
+
+      console.log(`productRef`, productRef)
+      const { id } = productRef
+
+      await productRef.delete()
+
+      try {
+        const deleteProd = await thunkAPI.dispatch(deleteProduct(productID))
+        console.log(`deleteProd`, deleteProd)
+      } catch (error) {
+        console.log(`error`, error)
+        throw new Error(error.message)
+      }
+
+
+      return id
+
+    } catch (error) {
+      console.log(`error`, error)
+      throw new Error(error.message)
+      
+    }
+  }
+)
+
+
 const lists = createSlice({
   name: 'userLists',
   initialState,
@@ -167,9 +250,24 @@ const lists = createSlice({
         state.currentList = action.payload
         // .map(item => ({...item, createdAt: item.createdAt.toMillis()}))
       })
-      .addCase(addUserRecord.fulfilled, (state, action) => {
+      .addCase(addProductToList.pending, state => {
+        state.loading = true
+      })
+      .addCase(addProductToList.rejected, state => {
+        state.loading = false
+      })
+      .addCase(addProductToList.fulfilled, (state, action) => {
         console.log(`action`, action)
-        state.currentList.data.push(action.payload)
+        if(action.payload) {
+          state.currentList.data.push(action.payload)
+        }
+      })
+      .addCase(removeProductFromList.pending, state => {state.loading = true})
+      .addCase(removeProductFromList.rejected, state => {state.loading = false})
+      .addCase(removeProductFromList.fulfilled, (state, action) => {
+        state.loading = false
+        state.currentList.data = state.currentList.data
+          .filter(product => product.id !== action.payload)
       })
       .addCase(addNewList.pending, state => {
         state.loading = true

@@ -5,7 +5,7 @@ import { FileUploader } from "../../../features/app/fileUploader/FileUploader";
 import { Rating } from "@material-ui/lab";
 
 
-export const AddProductForm = props => {
+export const AddProductForm = ({onSubmit}) => {
   const [productName, setProductName]  = useState('')
   const [productDescription, setProductDescription]  = useState('')
   const [rating, setRating] = useState(0)
@@ -31,9 +31,19 @@ export const AddProductForm = props => {
     []
   )
 
+  const handleSubmit = useCallback(
+    (e) => {
+      onSubmit(e)
+      setProductName('')
+      setProductDescription('')
+      setRating(0)
+    },
+    [onSubmit]
+  )
+
   return (
     <form 
-      onSubmit={props.onSubmit} 
+      onSubmit={handleSubmit} 
       // className={formStyles.form}
     >
       <TextField 
@@ -73,7 +83,6 @@ export const AddProductForm = props => {
       />
       <FileUploader 
         fullWidth 
-        onUpload={props.handleUpload} 
         // className={formStyles.file}
       />
       {/* <input type="file" multiple accept="image/jpg, image/jpeg, image/png" onChange={handleUpload} /> */}

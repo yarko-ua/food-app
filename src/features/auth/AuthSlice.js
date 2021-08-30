@@ -61,7 +61,11 @@ export const getUserFullInfo = createAsyncThunk(
     const user = firebase.auth().currentUser
     console.log(`user`, user)
 
-    return user
+    if (user) {
+      console.log(`user.toJSON()`, user.toJSON())
+    }
+
+    return user.uid
   }
 )
 

@@ -72,11 +72,11 @@ const useFileUploaderStyles = makeStyles({
   }
 })
 
-export const FileUploader = ({onUpload, className, fullWidth}) => {
+export const FileUploader = ({className, fullWidth}) => {
   const styles = useFileUploaderStyles({fullWidth});
 
   const dispatch = useDispatch()
-  const files = useSelector(state => state.files.filesList)
+  const files = useSelector(state => state.files.data)
   const loading = useSelector(state => state.files.loading)
   const uploadingStatus = useSelector(state => state.files.status)
 
@@ -103,7 +103,7 @@ export const FileUploader = ({onUpload, className, fullWidth}) => {
 
       <span className={styles.label}>Want to add photo?</span>
 
-      <label htmlFor="productPhotos">
+      <label htmlFor="filesUploader">
         <IconButton color="primary" aria-label="upload picture" component="span">
           <PhotoCamera />
         </IconButton>
@@ -111,10 +111,10 @@ export const FileUploader = ({onUpload, className, fullWidth}) => {
 
       {loading && <CircularProgress /> }
 
-      {uploadingStatus === 400 && <span>Oops, something goes wrong</span>}
+      {uploadingStatus && uploadingStatus !== 'ok' && <span>Oops, something goes wrong</span>}
 
       { 
-        uploadingStatus === 200 && files.length > 0 && 
+        uploadingStatus === 'ok' && files.length > 0 && 
 
         <Grid container spacing={1} className={styles.gridContainer} >
           { 

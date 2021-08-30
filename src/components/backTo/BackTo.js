@@ -4,7 +4,7 @@ import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 
 const BackTo = (props) => {
   return (
-    <Link to={props.history.location.state || '/app' } >
+    <Link to={props.history.location.state || '/' } >
           <ArrowBackIcon/>
     </Link>
   )

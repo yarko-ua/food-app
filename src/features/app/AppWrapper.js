@@ -24,6 +24,8 @@ export const AppWrapper = ({match, ...props}) => {
 
   const uid = useSelector(state => state.user.data.uid);
 
+  console.log(`match`, match)
+
   return (
     <Grid container className={appStyles.root} color="inherit" spacing={4}>
 
@@ -33,30 +35,34 @@ export const AppWrapper = ({match, ...props}) => {
       <Grid item xs={9}>
         <Switch>
             <Route 
-              exact path={`${match.url}/profile`}
-              render={(props) => <Profile /> }
+              exact 
+              path={`/profile`}
+              component={Profile}
             />
             <Route 
-              exact path={`${match.url}/lists`}
+              exact 
+              path={`/lists`}
               component={UserLists}
             />
             <Route 
-              exact path={`${match.url}/lists/:listID`}
+              exact 
+              path={`/lists/:listID`}
               component={UserList}
             />
             <Route 
-              exact path={`${match.url}/friends`} 
+              exact 
+              path={`/friends`} 
               render={props => <> Friends </>}
             />
             <Route 
-              exact path={`${match.url}/recommendations`}
+              exact path={`/recommendations`}
               render={props => <> recommendations </>}
             />
-            <Route exact path={`${match.url}/settings`}
+            <Route exact path={`/settings`}
               render={props => <> settings </>}
             />
 
-            <Redirect to={`${match.path}/lists`}/>
+            <Redirect to={`/lists`}/>
         </Switch>
         {/* <FileUploader />
         <MyList  /> */}

@@ -4,49 +4,13 @@ import firebase from 'firebase/app';
 
 const initialState = {
   filesCount: 0,
-  filesList: [],
+  data: [],
   loading: false,
   status: null,
+  remoteStorage: {
+    data: null
+  },
 }
-
-// export const uploadToStore = createAsyncThunk(
-//   'uploader/uploadToStore',
-//   async (file) => {
-
-//     if ( Array.isArray(file) ) {
-//       const filesToUpload = [];
-
-//       for (let i = 0; i < file.length; i++) {
-//         filesToUpload.push(
-//           imagesRef
-//             .child(file[i].name)
-//             .put(file[i], {contentType: file[i].type})
-//             .then(snap => snap.ref.getDownloadURL())
-//         )
-        
-//       }
-
-//       const photos = await Promise.all(filesToUpload);
-
-//       console.log(`photos`, photos);
-
-//       return photos;
-
-//     }
-
-
-//     const result = await imagesRef
-//       .child(file.name)
-//       .put(file, {contentType: file.type});
-
-//     const downloadURL = await result.ref.getDownloadURL();
-
-//     console.log(`result`, result);
-//     console.log(`downloadURL`, downloadURL);
-
-//     return downloadURL;
-//   }
-// )
 
 const readAsDataURL = (file) => {
   return new Promise(function(resolve,reject){
@@ -63,6 +27,48 @@ const readAsDataURL = (file) => {
     fr.readAsDataURL(file);
   });
 }
+
+export const uploadToStore = createAsyncThunk(
+  'uploader/uploadToStore',
+  async (payload = null, thunkAPI) => {
+
+    const state = thunkAPI.getState()
+    const files = state.files.data
+
+    if (files && files.length) {
+      const filesToUpload = []
+
+      try {
+        for (let i = 0; i < files.length; i++) {
+          const file = files[i];
+          
+          filesToUpload.push(
+            imagesRef
+              .child(file.name)
+              .putString(file.url, 'data_url', {contentType: file.type})
+              .then(snapshot => snapshot.ref.getDownloadURL())
+          )
+        }
+  
+        const upload = await Promise.allSettled(filesToUpload)
+  
+        console.log(`upload`, upload)
+  
+        const photos = upload
+          .filter(({status}) => status === 'fulfilled')
+          .map(({value}) => value)
+
+        return photos
+
+      } catch (error) {
+        console.log(`error`, error)
+        throw new Error('uploading photos failed')
+      }
+    }
+
+    return null
+  }
+)
 
 export const uploadFiles = createAsyncThunk(
   'uploader/uploadFiles',
@@ -99,57 +105,50 @@ export const uploaderSlice = createSlice({
   initialState,
   reducers: {
     removeFile: (state, action) => {
-      state.filesList = state.filesList.filter(file => file.name !== action.payload)
-      state.filesCount = state.filesList.length
+      state.data = state.data.filter(file => file.name !== action.payload)
+      state.filesCount = state.data.length
     },
     clearFiles: state => initialState
   },
   extraReducers: builder => {
     builder
-      // .addCase(uploadToStore.pending, state => {
-      //   state.loading = true
-      // })
-      // .addCase(uploadToStore.fulfilled, (state, action) => {
-      //   state.loading = false;
+      .addCase(uploadToStore.pending, state => {
+        state.loading = true
+      })
+      .addCase(uploadToStore.fulfilled, (state, action) => {
+        state.loading = false;
+        console.log(`action`, action);
 
-      //   if (action.payload) {
+        if (action.payload && action.payload.length) {
 
-      //     if (Array.isArray(action.payload) ) {
-      //       state.filesList = [...state.filesList, ...action.payload];
-      //     } else {
-      //       state.filesList.push(action.payload);
-      //     }
-
-      //     state.files = state.filesList.length;
-          
-      //   }
+          state.remoteStorage.data = action.payload; 
+        }
         
-      //   console.log(`action`, action);
-      // }) 
-      // .addCase(uploadToStore.rejected, (state, action) => {
-      //   state.loading = false;
-      //   console.log(`action`, action);
-      // }) 
+      }) 
+      .addCase(uploadToStore.rejected, (state, action) => {
+        state.loading = false;
+        console.log(`action`, action);
+      }) 
       .addCase(uploadFiles.pending, state => {state.loading = true})
       .addCase(uploadFiles.rejected, (state, action) => {
         console.log(`uploading failed`, action)
         state.loading = false
-        state.status = 400
+        state.status = action.error.message
       })
       .addCase(uploadFiles.fulfilled, (state, action) => {
         state.loading = false
-        state.status = 200
+        state.status = 'ok'
         console.log(`action`, action)
 
         for (let i = 0; i < action.payload.length; i++) {
           const element = action.payload[i];
           
-          if (!state.filesList.find(file => file.name === element.name)) {
-            state.filesList.push(element);
+          if (!state.data.find(file => file.name === element.name)) {
+            state.data.push(element);
           }
         }
 
-        state.filesCount = state.filesList.length
+        state.filesCount = state.data.length
       });
   }
 })

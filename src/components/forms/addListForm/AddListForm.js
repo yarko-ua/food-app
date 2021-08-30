@@ -13,9 +13,14 @@ export const AddListForm = props => {
     [],
   )
 
+  const handleSubmit = useCallback((e) => {
+    props.onSubmit(e)
+    setProductName('')
+  }, [props])
+
   return (
     <form 
-      onSubmit={props.onSubmit} 
+      onSubmit={handleSubmit} 
       // className={formStyles.form}
     >
       <TextField 

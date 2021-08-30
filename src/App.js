@@ -53,16 +53,9 @@ function App() {
                 <Route path="/auth" component={AuthWrapper} />
                 <Route exact path="/product/:productID" component={Product} />
                 {/* <PrivateRoute exact path="/app/settings" render={props => <> App settings </>} /> */}
-                <PrivateRoute path="/app" component={AppWrapper} />
-          
-                <Redirect to="/auth" />
-              </Switch>
-              {/* <Switch>
-                { !isAuth && <Route exact path="/auth" component={Authorization} /> }
-                <Route path="/app" component={Test} />
-                { !isAuth && <Redirect to="/auth" /> }
+                <PrivateRoute path="/" component={AppWrapper} />
                 <Route path="*" render={props => (<h1>Not Found</h1>)} />
-              </Switch> */}
+              </Switch>
             </Container>
           </Paper>
           <Notification />

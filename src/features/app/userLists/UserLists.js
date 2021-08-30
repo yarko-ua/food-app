@@ -4,8 +4,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { AddListForm } from "../../../components/forms/addListForm/AddListForm";
 import { AddProductForm } from "../../../components/forms/addProductForm/AddProductForm";
 import MyList from "../../../components/list/List";
+import { PATH_TO_LISTS } from "../../../constants";
+import { retrieveFormData } from "../../../helpers/retrieveFormData";
 import { ListHandler } from "../listHandler/ListHandler";
-import { addNewList, getUserLists } from "./userListsSlice";
+import { addNewList, getUserLists} from "./userListsSlice";
 
 export const UserLists = props => {
   const list = useSelector(state => state.lists.data)
@@ -19,26 +21,27 @@ export const UserLists = props => {
     console.log(`list`, list)
   }, [])
 
-  const handleListSubmit = useCallback((data) => {
-    console.log('submit from lists component')
+  const handleListSubmit = useCallback(e => {
+    e.preventDefault();
+
+    const data = retrieveFormData(e.target)
+
+    console.log(`sended list data`, data)
     dispatch(addNewList(data))
   }, [dispatch])
 
   return (
     <Grid container spacing={1} justifyContent="space-between">
       <Grid item xs={4}>
-        <ListHandler
-          form={AddListForm}
-          onSubmit={handleListSubmit} 
-          label="Want to add a new list?" 
-        />
+        <h2>Want to add a new list?</h2>
+        <AddListForm onSubmit={handleListSubmit}/>
       </Grid>
       <Grid item xs={7} >
         <MyList 
           list={list || []} 
           linked
-          path="/app/lists"
           location={props.location}
+          path={PATH_TO_LISTS}
         />
       </Grid>
       
