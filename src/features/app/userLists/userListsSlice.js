@@ -1,8 +1,8 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import firebase from 'firebase/app'
+import { fbdb } from "../../../app/firebase";
 import { retrieveFormData } from "../../../helpers/retrieveFormData";
 import { addProduct, deleteProduct } from "../../product/productSlice";
-import { fbdb } from "../fileUploader/fileUploaderAPI";
 import { uploadToStore } from "../fileUploader/fileUploaderSlice";
 import { addUserRecord } from "../listHandler/listHandlerSlice";
 

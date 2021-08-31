@@ -4,7 +4,7 @@ import { Redirect, Route } from "react-router-dom";
 const PrivateRoute = ({component: Component, ...props}) => {
   const auth = useSelector(state => state.user.auth);
 
-  console.log(`auth`, auth)
+  console.log(`auth in private route`, auth)
 
   if (!auth)
     return <Redirect to="/auth" />

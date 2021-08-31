@@ -1,5 +1,6 @@
-import { Link, Redirect } from "react-router-dom"
-import { Button, TextField, CircularProgress } from "@material-ui/core"
+import { useEffect } from "react"
+import { Link, useHistory } from "react-router-dom"
+import { Button, TextField, CircularProgress, Grid } from "@material-ui/core"
 import { useFormik } from "formik"
 import { useSelector,useDispatch } from "react-redux"
 import { signUpValidationSchema } from "../../../validation/signUp"
@@ -8,8 +9,9 @@ import { signUpUser } from "../authSlice"
 export const SignUp = ({location, history}) => {
 
   const dispatch = useDispatch();
-  const userInitializing = useSelector(state => state.user.initializing);
+  const loading = useSelector(state => state.user.loading);
   const auth = useSelector(state => state.user.auth);
+  const histor = useHistory()
 
   // const [state, setstate] = useState(initialState)
 
@@ -35,12 +37,20 @@ export const SignUp = ({location, history}) => {
     }
   })
 
+  useEffect(() => {
+    if (auth) {
+      histor.push('/lists')
+    }
+  }, [auth, histor])
 
-  if (userInitializing)
-    return <CircularProgress />
 
-  if (auth)
-    return <Redirect to="/app" />
+  if (loading) {
+    return (
+      <Grid container justifyContent="center" alignItems="center" styles={{height: '100%', width: '100%'}} >
+        <CircularProgress />
+      </Grid>
+    )
+  }
 
   return (
     <form onSubmit={formik.handleSubmit} >

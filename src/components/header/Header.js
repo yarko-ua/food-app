@@ -14,7 +14,7 @@ const Header = () => {
   const styles = useHeaderStyles();
   const dispatch = useDispatch();
   const auth = useSelector(state => state.user.auth);
-  const userName = useSelector(state => state.user.data.displayName);
+  const userName = useSelector(state => state.user.data?.displayName);
 
   if (!auth) return <></>
 
@@ -24,11 +24,9 @@ const Header = () => {
 
   return (
     <header className={styles.root}>
-      <Grid container alignContent="center" justifyContent="flex-end">
-        <Grid item xs={9} >
-          <h1>App v.0.1 </h1>
-        </Grid>
-        <Grid item xs={3} container alignContent="center" justifyContent="flex-end">
+      <Grid container alignItems="center" justifyContent="flex-end">
+        <Grid item xs={6}></Grid>
+        <Grid item xs={6} container alignItems="center" justifyContent="flex-end">
           <span>Hi, {userName}</span>
           <IconButton onClick={ handleClick }>
             <ExitToAppIcon />

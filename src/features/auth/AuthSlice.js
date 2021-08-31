@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import firebase from 'firebase/app';
-import 'firebase/auth';
+import 'firebase/auth'
+// import { auth } from '../../app/firebase';
 import { loadState, saveState } from '../../helpers/appState';
 import { fbApp } from '../app/fileUploader/fileUploaderAPI';
 import { signIn, signOut, signUp } from './authAPI';
@@ -11,38 +12,78 @@ import { signIn, signOut, signUp } from './authAPI';
 // console.log(`currentUser`, defaultFbAuth.currentUser);
 
 
-const data = loadState('user');
+// const data = loadState('user');
+// const currentUser = auth.currentUser
+// let data = currentUser ?
+//   {
+//     uid: currentUser.uid,
+//     displayName: currentUser.displayName,
+//     photoURL: currentUser.photoURL,
+//   }
+//   : null
 
-console.log(`userData`, data);
+// console.log(`userData`, data);
+
+// auth.onAuthStateChanged(user => {
+//   console.log(`state changed user`, user)
+
+  // if (user) {
+  //   data = {
+  //     uid: user.uid,
+  //     displayName: user.displayName,
+  //     photoURL: user.photoURL,
+  //   }
+  // }
+// })
 
 const initialState = {
-  auth: false,
+  auth: null,
   loading: false,
-  initializing: false,
-  data: {},
-  ...data
+  data: null
 };
 
 
 export const signInUser = createAsyncThunk(
   'auth/signIn',
   async ({ email , password}) => {
-    const user = await signIn(email, password)
+    try {
+      const user = await signIn(email, password)
 
-    console.log('signin response', user)
-
-    return user;
+      console.log('signin response', user)
+  
+      saveState('user', { uid: user.uid } )
+      await new Promise(res => { 
+        setTimeout(() => {
+          res(1)
+        }, 2500)
+      })
+      console.log(`signin end`)
+      
+      return user;
+    } catch (e) {
+      console.log(`e`, e)
+      throw new Error(e)
+    }
+    
   }
 )
 
 export const signUpUser = createAsyncThunk(
   'auth/signUp',
   async ({email, password, name, photo }) => {
-    const user = signUp(email, password, name, photo)
+    try {
+      const user = signUp(email, password, name, photo)
 
-    console.log('signup response', user)
+      saveState('user', { uid: user.uid } )
 
-    return  user;
+      console.log('signup response', user)
+
+      return  user;
+    } catch (error) {
+      console.log(`error`, error)
+      throw new Error(error)
+    }
+    
   }
 )
 
@@ -51,15 +92,24 @@ export const signOutUser = createAsyncThunk(
   async () => {
     const response = await signOut()
 
+    saveState('user', null)
+
     console.log(`signout response`, response);
   }
 )
 
 export const getUserFullInfo = createAsyncThunk(
   'user/getFullInfo',
-  async uid => {
-    const user = firebase.auth().currentUser
-    console.log(`user`, user)
+  async () => {
+    // console.log(`auth`, auth)
+    const user =  firebase.auth().currentUser
+    console.log(`user !!!!`, user)
+
+    // if (!user) {
+    //   const u = firebase.auth().currentUser
+
+    //   console.log(`u`, u)
+    // }
 
     if (user) {
       console.log(`user.toJSON()`, user.toJSON())
@@ -72,23 +122,26 @@ export const getUserFullInfo = createAsyncThunk(
 export const authReducer = createSlice({
   name: 'auth',
   initialState,
-  reducers: {},
+  reducers: {
+    setUser: (state, action) => {
+      console.log(`action`, action)
+      state.data = action.payload
+      state.auth = Boolean(action.payload)
+    }
+  },
   extraReducers: builder => {
     builder
       .addCase(signInUser.pending, state => {
-        state.initializing = true;
+        state.loading = true;
       })
       .addCase(signInUser.fulfilled, (state, action) => {
-        state.initializing = false;
+        state.loading = false;
         state.data = action.payload;
         state.auth = true;
-
-        saveState('user', state);
-
       })
       .addCase(signInUser.rejected, (state, action) => {
         state.initializing = false;
-        state.data = {};
+        state.data = null;
       })
 
       .addCase(signUpUser.pending, state => {
@@ -99,7 +152,7 @@ export const authReducer = createSlice({
         state.data = action.payload;
         state.auth = true;
 
-        saveState('user', state);
+        // saveState('user', action.payload);
 
       })
       .addCase(signUpUser.rejected, (state, action) => {
@@ -115,7 +168,7 @@ export const authReducer = createSlice({
         state.data = {};
         state.auth = false;
 
-        saveState('user', state);
+        // saveState('user', state);
 
       })
       .addCase(signOutUser.rejected, (state, action) => {
@@ -134,6 +187,6 @@ export const authReducer = createSlice({
   }
 })
 
-// export const { initUser } = authReducer.actions;
+export const { setUser } = authReducer.actions;
 
 export default authReducer.reducer;

@@ -1,14 +1,17 @@
-import { Button, TextField, CircularProgress } from "@material-ui/core"
+import { Button, TextField, CircularProgress, Grid } from "@material-ui/core"
+import { LocalDiningOutlined } from "@material-ui/icons"
 import { useFormik } from "formik"
+import { useEffect } from "react"
 import { useSelector,useDispatch } from "react-redux"
-import { Link, Redirect } from "react-router-dom"
+import { Link, Redirect, useHistory } from "react-router-dom"
 import { signInValidationSchema } from "../../../validation/signIn"
 import { signInUser } from "../authSlice"
 
-export const SignIn = ({location, history}) => {
+export const SignIn = () => {
   const dispatch = useDispatch();
-  const userInitializing = useSelector(state => state.user.initializing);
+  const loading = useSelector(state => state.user.loading);
   const auth = useSelector(state => state.user.auth);
+  const history = useHistory()
 
   // const [state, setstate] = useState(initialState)
 
@@ -28,11 +31,21 @@ export const SignIn = ({location, history}) => {
     }
   })
 
-  if (userInitializing)
-    return <CircularProgress />
+  useEffect(() => {
+    if (auth) {
+      history.push('/lists')
+    }
+  }, [auth, history])
 
-  if (auth)
-    return <Redirect to="/app" />
+
+  if (loading) {
+    return (
+      <Grid container justifyContent="center" alignItems="center" styles={{height: '100%', width: '100%'}} >
+        <CircularProgress />
+      </Grid>
+    )
+  }
+    
 
   return (
     <form onSubmit={formik.handleSubmit} >
@@ -74,7 +87,7 @@ export const SignIn = ({location, history}) => {
       >Sign In</Button>
       <p align="center">
         Have not account yet? <br/>
-        <Link to={ {pathname:`/auth/sign-up`, state: location.pathname}}>Sign Up</Link> 
+        <Link to={ {pathname:`/signup`, state: '/signin' }}>Sign Up</Link> 
       </p>      
       <pre>
         {JSON.stringify(formik, null , 2)}
