@@ -5,13 +5,14 @@ import { useFormik } from "formik"
 import { useSelector,useDispatch } from "react-redux"
 import { signUpValidationSchema } from "../../../validation/signUp"
 import { signUpUser } from "../authSlice"
+import { BackToPrevious } from "../../../components/backTo/BackTo"
 
-export const SignUp = ({location, history}) => {
+export const SignUp = (props) => {
 
   const dispatch = useDispatch();
   const loading = useSelector(state => state.user.loading);
   const auth = useSelector(state => state.user.auth);
-  const histor = useHistory()
+  const history = useHistory()
 
   // const [state, setstate] = useState(initialState)
 
@@ -39,9 +40,9 @@ export const SignUp = ({location, history}) => {
 
   useEffect(() => {
     if (auth) {
-      histor.push('/lists')
+      history.push('/lists')
     }
-  }, [auth, histor])
+  }, [auth, history])
 
 
   if (loading) {
@@ -103,7 +104,8 @@ export const SignUp = ({location, history}) => {
         color="primary" 
         variant="contained" 
       >Sign Up</Button>
-      <Link to={history.location.state}> Go back  </Link>    
+      <BackToPrevious />
+      {/* <Link to={history.location.state}> Go back  </Link>     */}
       <pre>
         {JSON.stringify(formik, null , 2)}
       </pre>

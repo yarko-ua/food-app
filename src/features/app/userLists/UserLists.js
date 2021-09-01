@@ -7,7 +7,7 @@ import MyList from "../../../components/list/List";
 import { PATH_TO_LISTS } from "../../../constants";
 import { retrieveFormData } from "../../../helpers/retrieveFormData";
 import { ListHandler } from "../listHandler/ListHandler";
-import { addNewList, getUserLists} from "./userListsSlice";
+import { addNewList, getUserLists, removeList} from "./userListsSlice";
 
 export const UserLists = props => {
   const list = useSelector(state => state.lists.data)
@@ -30,6 +30,10 @@ export const UserLists = props => {
     dispatch(addNewList(data))
   }, [dispatch])
 
+  const onRemove = useCallback((id) => {
+    dispatch(removeList(id))
+  }, [dispatch])
+
   return (
     <Grid container spacing={1} justifyContent="space-between">
       <Grid item xs={4}>
@@ -42,6 +46,7 @@ export const UserLists = props => {
           linked
           location={props.location}
           path={PATH_TO_LISTS}
+          onRemove={onRemove}
         />
       </Grid>
       

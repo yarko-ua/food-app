@@ -72,7 +72,7 @@ export const signUpUser = createAsyncThunk(
   'auth/signUp',
   async ({email, password, name, photo }) => {
     try {
-      const user = signUp(email, password, name, photo)
+      const user = await signUp(email, password, name, photo)
 
       saveState('user', { uid: user.uid } )
 
@@ -140,39 +140,36 @@ export const authReducer = createSlice({
         state.auth = true;
       })
       .addCase(signInUser.rejected, (state, action) => {
-        state.initializing = false;
+        state.loading = false;
         state.data = null;
       })
 
       .addCase(signUpUser.pending, state => {
-        state.initializing = true;
+        state.loading = true;
       })
       .addCase(signUpUser.fulfilled, (state, action) => {
-        state.initializing = false;
+        state.loading = false;
         state.data = action.payload;
         state.auth = true;
-
-        // saveState('user', action.payload);
-
       })
       .addCase(signUpUser.rejected, (state, action) => {
-        state.initializing = false;
+        state.loading = false;
         state.data = action.payload;
       })
 
       .addCase(signOutUser.pending, state => {
-        state.initializing = true;
+        state.loading = true;
       })
       .addCase(signOutUser.fulfilled, (state, action) => {
-        state.initializing = false;
-        state.data = {};
+        state.loading = false;
+        state.data = null;
         state.auth = false;
 
         // saveState('user', state);
 
       })
       .addCase(signOutUser.rejected, (state, action) => {
-        state.initializing = false;
+        state.loading = false;
       })
       .addCase(getUserFullInfo.pending, (state) => {
         state.loading = true;

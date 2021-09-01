@@ -6,7 +6,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Provider } from 'react-redux';
 import { store } from './app/store';
 import { AppWrapper } from './features/app/AppWrapper';
-import { AuthWrapper, AuthWrapperTest } from './features/auth/AuthWrapper';
+import { AuthWrapper} from './features/auth/AuthWrapper';
 import PrivateRoute from './routes/PrivateRoute';
 import Header from './components/header/Header';
 import { Product } from './features/product/Product';
@@ -70,7 +70,7 @@ function App() {
         <Box component="main" className={classes.root}>
           <h6 className={classes.version}>App v.{process.env.REACT_APP_VERSION} </h6>
           <Paper elevation={5}>
-            <AuthWrapperTest>
+            <AuthWrapper>
               <Header />
               <Container maxWidth={false} disableGutters className={classes.container} >
                 <Switch>
@@ -82,7 +82,7 @@ function App() {
                   <Route path="*" render={props => (<h1>Not Found</h1>)} />
                 </Switch>
               </Container>
-            </AuthWrapperTest>
+            </AuthWrapper>
           </Paper>
           <Notification />
         </Box>

@@ -33,7 +33,12 @@ export const SignIn = () => {
 
   useEffect(() => {
     if (auth) {
-      history.push('/lists')
+      const { state }  = history.location
+
+      console.log(`state`, state)
+
+      history.push( state?.from ? state.from.pathname : '/')
+      // history.push('/lists')
     }
   }, [auth, history])
 
@@ -87,7 +92,7 @@ export const SignIn = () => {
       >Sign In</Button>
       <p align="center">
         Have not account yet? <br/>
-        <Link to={ {pathname:`/signup`, state: '/signin' }}>Sign Up</Link> 
+        <Link to={ {pathname:`/signup`, state: {from:'/signin'} }}>Sign Up</Link> 
       </p>      
       <pre>
         {JSON.stringify(formik, null , 2)}

@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import firebase from 'firebase/app'
-import { fbdb } from "../../../app/firebase";
+import fbApp, { fbdb } from "../../../app/firebase";
 import { retrieveFormData } from "../../../helpers/retrieveFormData";
 import { addProduct, deleteProduct } from "../../product/productSlice";
 import { uploadToStore } from "../fileUploader/fileUploaderSlice";
@@ -36,7 +36,7 @@ export const getUserLists = createAsyncThunk(
 
             return {
               ...data, 
-              createdAt: data.createdAt.toMillis(),
+              createdAt: data.createdAt?.toMillis() || 0, //todo: replace 0 ?
               id: list.id
             }
           })
@@ -100,7 +100,7 @@ export const getUserList = createAsyncThunk(
 
     const currentList = {
       name: listData.name,
-      createdAt: listData.createdAt.toMillis(),
+      createdAt: listData.createdAt?.toMillis() || 0,
       id: listRefData.id,
       data,
     }
@@ -193,8 +193,51 @@ export const addProductToList = createAsyncThunk(
   }
 )
 
+export const removeList = createAsyncThunk(
+  'userLists/removeList',
+  async (id, thunkAPI) => {
+    try {
+      const { uid } = thunkAPI.getState().user.data
+
+      const listRef = fbdb.doc(`users/${uid}/lists/${id}`)
+      const listDoc = await listRef.get()
+
+      if (listDoc.exists) {
+        const listProductsRef = listRef.collection('products')
+        console.log(`listProductsRef`, listProductsRef)
+
+        const listProductsCollection = await listProductsRef.get()
+        console.log(`listProductsCollection`, listProductsCollection)
+
+        const deleteListProducts = []
+
+        listProductsCollection.forEach(product => {
+          console.log(`product`, product)
+          if (product.exists) {
+            const productRef = product.ref
+            deleteListProducts.push(productRef.delete())
+          }
+        })
+
+        const result = await Promise.all(deleteListProducts)
+        console.log(`result`, result)
+
+        const isDelete = await listRef.delete()
+        console.log(`isDelete`, isDelete)
+      }
+      console.log(`listRef`, listRef)
+      console.log(`listDoc`, listDoc)
+      return id;
+    } catch (error) {
+        console.log(`error`, error)
+    }
+  }
+)
+
+// y8jliavlX1p0iLo87gS6
+
 export const removeProductFromList = createAsyncThunk(
-  'userList/removeProduct',
+  'userLists/removeProduct',
   async (productID, thunkAPI) => {
     try {
       const { currentList } = thunkAPI.getState().lists
@@ -261,6 +304,13 @@ const lists = createSlice({
         if(action.payload) {
           state.currentList.data.push(action.payload)
         }
+      })
+      .addCase(removeList.pending, state => {state.loading = true})
+      .addCase(removeList.rejected, state => {state.loading = false})
+      .addCase(removeList.fulfilled, (state, action) => {
+        state.loading = false
+        state.data = state.data
+          .filter(list => list.id !== action.payload)
       })
       .addCase(removeProductFromList.pending, state => {state.loading = true})
       .addCase(removeProductFromList.rejected, state => {state.loading = false})

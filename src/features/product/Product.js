@@ -1,9 +1,9 @@
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import {Link, useHistory} from 'react-router-dom'
 import { CircularProgress, Grid, IconButton, makeStyles, TextField } from '@material-ui/core';
-import { getProduct } from './productSlice';
+import productSlice, { getProduct } from './productSlice';
 import { Swiper, SwiperSlide } from 'swiper/react'
 import SwiperCore, { Navigation, Pagination } from 'swiper';
 
@@ -32,10 +32,12 @@ const useStyles = makeStyles({
 export const Product = ({match, ...props}) => {
 
   const styles = useStyles();
-
+  
   const loading = useSelector(state => state.product.loading)
-  const product = useSelector(state => state.product.data)
+  const product = useSelector(state => state.product.current)
   const dispatch = useDispatch()
+  const [description, setDescription] = useState('')
+
 
   // const history = useHistory()
 
@@ -55,17 +57,26 @@ export const Product = ({match, ...props}) => {
     () => {
       props.history.replace('?edit')
     },
-    [props.history],
+    [props.history]
+  )
+
+  const handleDescription = useCallback(
+    (e) => {
+      setDescription(e.target.value)
+    },
+    []
   )
 
   useEffect(() => {
 
-    dispatch(getProduct(match.params.productID))  
+    !product && dispatch(getProduct(match.params.productID)) 
+
+    product && setDescription(product.description)
 
     // return () => {
     //   cleanup
     // }
-  }, [dispatch, match.params.productID])
+  }, [dispatch, match.params.productID, product])
 
   console.log(`product`, product)
 
@@ -101,7 +112,7 @@ export const Product = ({match, ...props}) => {
               </Grid>
               <Grid item xs={7} >
                   <div>
-                    <h1>{product.name}</h1>
+                    <h1 style={{display: 'inline-block'}}>{product.name}</h1>
                     {/* <span> */}
                       <IconButton onClick={handleEditBtn}>
                         <Edit/>
@@ -110,10 +121,16 @@ export const Product = ({match, ...props}) => {
                     {/* </span> */}
                     
                   </div>
-                  
-                  <Rating value={+product.rating} readOnly={!isEdit} size="large"/>
-                  <TextField multiline value={product.description} />
-                  Reviewer: {product.reviewer}
+                  <div>Reviewer: {product.reviewer}</div>
+                  <div>
+                    <Rating value={+product.rating} readOnly={!Boolean(isEdit)} size="large"/>
+                  </div>
+                  <TextField 
+                    disabled={!Boolean(isEdit)} 
+                    multiline 
+                    value={description}
+                    onChange={handleDescription}
+                  />
               </Grid>
             </Grid>
           :

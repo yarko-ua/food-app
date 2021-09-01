@@ -6,10 +6,23 @@ const PrivateRoute = ({component: Component, ...props}) => {
 
   console.log(`auth in private route`, auth)
 
-  if (!auth)
-    return <Redirect to="/auth" />
+  // if (!auth)
+  //   return <Redirect to="/signin" />
 
-  return <Route {...props} component={Component}/>
+  return (
+    <Route {...props} render={({location}) => {
+      console.log(`location`, location)
+      return auth ?  
+        <Component />
+        :
+        <Redirect to={{
+            pathname: '/signin',
+            state: {
+              from : location
+            }
+        }}/>
+    }} />
+  )
 
   
 } 

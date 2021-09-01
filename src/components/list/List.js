@@ -62,7 +62,7 @@ const MyList = ({ list, type, linked, location, onRemove, path }) => {
                   <Link 
                     to={ {
                       pathname: `${path}/${listItem.id}`,
-                      state: location.pathname
+                      state: {from:location.pathname}
                     } }
                   >   
                     {
