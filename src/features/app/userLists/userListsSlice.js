@@ -60,21 +60,21 @@ export const getUserList = createAsyncThunk(
 
     console.log(`lists`, lists)
 
-    const listDoc = fbdb.doc(`users/${uid}/lists/${listID}`)
+    const listRef = fbdb.doc(`users/${uid}/lists/${listID}`)
 
-    console.log(`listRef`, listDoc)
-    console.log(`listRef.path`, listDoc.path)
+    console.log(`listRef`, listRef)
+    console.log(`listRef.path`, listRef.path)
 
-    const listRefData = await listDoc.get()
+    const listDoc = await listRef.get()
 
-    console.log(`listRefData`, listRefData)
-    console.log(`listRefData.ref`, listRefData.ref)
+    console.log(`listDoc`, listDoc)
+    console.log(`listDoc.ref`, listDoc.ref)
 
-    const listData = listRefData.data()
+    const listData = listDoc.data()
 
-    console.log(`listRefData.data()`, listData)
+    console.log(`listDoc.data()`, listData)
 
-    const list = await fbdb.collection(`${listDoc.path}/products`).get()
+    const list = await fbdb.collection(`${listRef.path}/products`).get()
 
     console.log(`list`, list )
 
@@ -91,7 +91,8 @@ export const getUserList = createAsyncThunk(
     const data = !list.empty ? 
       products.map(prod => {
         const data = prod.data()
-        return {...data, createdAt: (data.createdAt ? data.createdAt.toMillis() : 0) }
+        return data
+        // return {...data, createdAt: (data.createdAt ? data.createdAt.toMillis() : 0) }
       })
       : []
     ;
@@ -101,7 +102,7 @@ export const getUserList = createAsyncThunk(
     const currentList = {
       name: listData.name,
       createdAt: listData.createdAt?.toMillis() || 0,
-      id: listRefData.id,
+      id: listDoc.id,
       data,
     }
 
@@ -151,7 +152,7 @@ export const addProductToList = createAsyncThunk(
     console.log(`uploadFiles`, uploadFiles) //get .payload
     console.log(`files`, files)
 
-    const productAdd = await thunkAPI.dispatch(addProduct(data))
+    const productAdd = await thunkAPI.dispatch(addProduct({data, plain: false}))
     console.log(`product`, productAdd)
     const product = productAdd.payload
 
@@ -173,17 +174,11 @@ export const addProductToList = createAsyncThunk(
         .doc(`users/${user.uid}/lists/${currentList.id}/products/${product.id}`)
 
       const listDocAdd = await listDoc.set(product)
-      let test = await listDoc.get()
 
       console.log(`listDoc`, listDoc)
-      console.log(`listDoc.get()`, test)
-      console.log(`listDoc.get().data()`, test.data())
       console.log(`listDocAdd`, listDocAdd)
 
-      return {
-        ...product, 
-        createdAt: product.createdAt.toMillis()
-      }
+      return product
 
     } catch (error) {
       console.log(`error`, error)

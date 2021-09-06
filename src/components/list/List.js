@@ -83,21 +83,27 @@ const MyList = ({ list, type, linked, location, onRemove, path }) => {
               </ListItemAvatar>
 
               <ListItemText>
-                <Grid container>
-                  <Grid item xs={4}>
-                    <h3>{listItem.name}</h3>
-                    { type === 'product' && <Rating value={+listItem.rating} readOnly size="small" /> }
+                <Grid container >
+                  <Grid container item xs direction="column">
+                    <Grid item xs>
+                      <h3>{listItem.name}</h3>
+                      { type === 'product' && <Rating value={+listItem.rating} readOnly size="small" /> }
+                    </Grid>
+                    <Grid item xs alignItems="center" container>
+                      {
+                        listItem.description && 
+                        <p>{listItem.description}</p>
+                      }
+                    </Grid>
                   </Grid>
-                  <Grid item xs={5} alignItems="center" container>
-                    {
-                      listItem.description && 
-                      <p>{listItem.description}</p>
-                    }
-                  </Grid>
-                  <Grid item xs={3}>
-                    Added: <br/> {listItem.createdAt && new Date(listItem.createdAt).toDateString()}
+                  <Grid item xs={1}></Grid>
+                  <Grid container item xs justifyContent="flex-end" >
+                  {/* <Grid item xs={3}> */}
+                      Added: <br/> {listItem.createdAt && new Date(listItem.createdAt).toDateString()}
+                    {/* </Grid> */}
                   </Grid>
                 </Grid>
+                
                 
               </ListItemText>
 

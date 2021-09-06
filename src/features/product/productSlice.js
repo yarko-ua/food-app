@@ -27,7 +27,7 @@ export const getProduct = createAsyncThunk(
 
       if (!product.exists) return null;
 
-      return { id: productID, ...product.data(), createdAt: product.data().createdAt.toMillis() }
+      return { id: productID, ...product.data(), createdAt: product.data().createdAt?.toMillis() }
     } catch (error) {
       console.log(`error`, error)
       return null;
@@ -38,7 +38,7 @@ export const getProduct = createAsyncThunk(
 
 export const addProduct = createAsyncThunk(
   'product/add',
-  async (data, thunkAPI) => {
+  async ({data, plain = true}, thunkAPI) => {
     const state = thunkAPI.getState()
     const files = state.files.remoteStorage.data
     const user = state.user.data
@@ -47,6 +47,10 @@ export const addProduct = createAsyncThunk(
 
     const { name, rating = 0, description } = data
     console.log(`productRating`, rating)
+
+    if (data && data.hasOwnProperty('files')) {
+      delete data.files
+    }
 
     const createdAt = firebase.firestore.FieldValue.serverTimestamp()
 
@@ -60,7 +64,7 @@ export const addProduct = createAsyncThunk(
       createdAt
     }
 
-    delete productData.files
+    // delete productData.files
 
     console.log(`productData`, productData)
 
@@ -89,8 +93,12 @@ export const addProduct = createAsyncThunk(
         id: productID,
         // rating,
         // description,
-        // createdAt: productDocData.createdAt.toMillis()
+        createdAt: productDocData.createdAt?.toMillis()
       }
+
+      // if (plain) {
+      //   productShort.createdAt = productShort.createdAt?.toMillis()
+      // }
 
       console.log(`productShort`, productShort)
 
@@ -137,7 +145,7 @@ const product = createSlice({
       .addCase(addProduct.rejected, state => {state.loading = false})
       .addCase(addProduct.fulfilled, (state, action) => {
         state.loading = false
-        state.data = {...action.payload, createdAt: action.payload.createdAt.toMillis()}
+        state.data = action.payload
       })
   }
 })

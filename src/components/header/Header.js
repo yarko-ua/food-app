@@ -7,6 +7,8 @@ import { signOutUser } from "../../features/auth/authSlice";
 const useHeaderStyles = makeStyles({
   root: {
     width: '100%',
+    // position: 'absolute',
+    // left: 0
   }
 });
 

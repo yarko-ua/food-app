@@ -13,12 +13,21 @@ import { retrieveFormData } from "../../../helpers/retrieveFormData";
 import { PATH_TO_PRODUCT } from "../../../constants";
 import { clearFiles, uploadToStore } from "../fileUploader/fileUploaderSlice";
 import { addProduct } from "../../product/productSlice";
+import { makeStyles } from "@material-ui/styles";
+
+const useStyles = makeStyles({
+  root: {
+    // marginTop: 48*1.5
+  }
+})
 
 
 export const UserList = props => {
   const { listID } = props.match.params
   const currentList = useSelector(state => state.lists.currentList)
   console.log(`currentList`, currentList)
+
+  const styles = useStyles()
 
   const dispatch = useDispatch()
 
@@ -62,12 +71,13 @@ export const UserList = props => {
 
 
   return (
-    <Grid container spacing={1} justifyContent="space-between" >
-      <Grid item xs={4}>
+    <Grid className={styles.root} container spacing={1} >
+      <Grid item xs={12} md={4}>
         <h2>Want to add a product?</h2>
         <AddProductForm onSubmit={handleListSubmit} />
       </Grid>
-      <Grid item xs={7}>
+      <Grid item xs={12} md={1}></Grid>
+      <Grid item xs>
         {
           !currentList ?
             <CircularProgress />

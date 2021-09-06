@@ -1,4 +1,5 @@
-import {Grid, makeStyles } from "@material-ui/core"
+import { useState, useEffect, useRef } from 'react'
+import {Grid, makeStyles, useMediaQuery } from "@material-ui/core"
 import { useSelector } from "react-redux"
 import Header from "../../components/header/Header"
 import { Link, Switch, Route, Redirect  } from 'react-router-dom'
@@ -13,26 +14,38 @@ const useAppStyles =  makeStyles({
   root: {
     // height: '100%'
   },
-  leftCol: {
-    borderRight: '1px solid gray'
-  }
 })
 
 
 export const AppWrapper = ({match, ...props}) => {
-  const appStyles = useAppStyles();
+  const isMobile = useMediaQuery('(max-width: 960px)')
+  const appStyles = useAppStyles()
+  const menuWrapper = useRef()
 
   const uid = useSelector(state => state.user.data.uid);
+  // const [isMobile, setIsMobile] = useState(window.innerWidth < 960)
+
+  const [widthCover, setWidthCover] = useState(0)
+  const [offsetLeft, setOffsetLeft] = useState(0)
+
+  useEffect(() => {
+    console.log(`11`, 11)
+    if (menuWrapper.current) {
+      setWidthCover(menuWrapper.current.clientWidth);
+      setOffsetLeft(menuWrapper.current.offsetLeft)
+    }
+  }, [isMobile])
 
   console.log(`match`, match)
 
   return (
-    <Grid container className={appStyles.root} color="inherit" spacing={4}>
+    <Grid container className={appStyles.root} color="inherit" spacing={isMobile ? 2 : 3} >
 
-      <Grid item xs={2} className={appStyles.leftCol}>
-        <Menu uid={uid} />
+      <Grid item xs="auto" ref={menuWrapper} >
+        <Menu isMobile={isMobile} widthCover={widthCover} offsetLeft={offsetLeft} />
       </Grid>
-      <Grid item xs={9}>
+      <Grid item xs={9} sm={11} md >
+        <Header />
         <Switch>
             <Route 
               exact 

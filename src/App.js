@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import './App.css';
 import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';
-import { Box, Container, Paper } from "@material-ui/core"
+import { Box, Container, Paper, useMediaQuery } from "@material-ui/core"
 import { makeStyles } from '@material-ui/core/styles';
 import { Provider } from 'react-redux';
 import { store } from './app/store';
@@ -23,7 +23,7 @@ const useStyles = makeStyles({
   root: {
     width: '100vw',
     height: '100vh',
-    padding: 50,
+    padding: (props) => props.isMobile ? 25 : 50,
     boxSizing: 'border-box',
     backgroundColor: 'rgba(200, 200, 200, .7)',
   
@@ -34,7 +34,7 @@ const useStyles = makeStyles({
     '& > div:not(.Toastify)': {
       width: '100%',
       height: '100%',
-      padding: 25
+      padding: (props) => props.isMobile ? 10 : 20,
     }
   },
   container: {
@@ -42,6 +42,9 @@ const useStyles = makeStyles({
     justifyContent: 'center',
     alignItems: 'center',
     // height: '100%'
+  },
+  paper: {
+    position: 'relative'
   },
   version: {
     position: 'fixed',
@@ -53,7 +56,8 @@ const useStyles = makeStyles({
 
 
 function App() {
-  const classes = useStyles();
+  const isMobile = useMediaQuery('(max-width: 960px)')
+  const classes = useStyles({isMobile});
 
   useEffect(() => {
     // auth.onAuthStateChanged(user => {
@@ -69,9 +73,8 @@ function App() {
       <Provider store={store}>
         <Box component="main" className={classes.root}>
           <h6 className={classes.version}>App v.{process.env.REACT_APP_VERSION} </h6>
-          <Paper elevation={5}>
+          <Paper elevation={5} className={classes.paper}>
             <AuthWrapper>
-              <Header />
               <Container maxWidth={false} disableGutters className={classes.container} >
                 <Switch>
                   <Route exact path="/signin" component={SignIn} />
