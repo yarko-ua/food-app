@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
-import { Button, Container, Grid, IconButton } from "@material-ui/core"
+import { Button, Container, Grid, IconButton, Modal } from "@material-ui/core"
 import { useDispatch, useSelector } from "react-redux"
-import { getUserFullInfo } from '../../auth/authSlice'
+import { getUserFullInfo, updateProfilePhoto } from './profileSlice'
 import { ProfileForm } from '../../../components/forms/profileForm/ProfileForm'
 import { useFormik } from 'formik'
 import { profileFormValidation } from '../../../validation/profile'
@@ -9,6 +9,8 @@ import avatarDefault from '../../../images/avatar-default.png'
 import { CoverImg } from '../../../components/coverImg/CoverImg'
 import { Edit } from '@material-ui/icons'
 import { makeStyles } from '@material-ui/styles'
+import { FileUploader } from '../fileUploader/FileUploader'
+import { filesSelector, userSelector } from '../../../selectors'
 
 const useStyles = makeStyles({
   editImgContainer: {
@@ -26,13 +28,17 @@ const useStyles = makeStyles({
 export const Profile = props => {
 
   const dispatch = useDispatch()
-  const userData = useSelector(state => state.user.data)
+  const user = useSelector(userSelector)
+  const { photoURL } = user
+  const files = useSelector(filesSelector)
   const [changeProfileImg, setChangeProfileImg] = useState(false)
+  const [editProfileImg, setEditProfileImg] = useState(false)
+  const [profilePhoto, setProfilePhoto] = useState(photoURL)
   const styles = useStyles()
 
   const formik = useFormik({
     initialValues: {
-      firstName: userData.displayName,
+      firstName: user.firstName,
       lastName: '',
       email: '',
       address: '',
@@ -48,6 +54,10 @@ export const Profile = props => {
     dispatch(getUserFullInfo())
   }, [dispatch])
 
+  useEffect(() => {
+    setProfilePhoto(photoURL)
+  }, [photoURL])
+
   const handleHover = useCallback(
     () => {
       setChangeProfileImg(prev => !prev)
@@ -57,18 +67,25 @@ export const Profile = props => {
 
   const handleEditImg = useCallback(
     () => {
-      alert('ok')
+      setEditProfileImg(true)
+    },
+    [],
+  ) 
+
+  const handleProfilePhotoUpdate = useCallback(
+    () => {
+      dispatch(updateProfilePhoto())
     },
     [],
   ) 
 
   return (
-    <Container disableGutters={true}>
+    // <Container disableGutters={true}>
       <Grid container>
         <Grid item container>
-          <Grid item container xs justifyContent="center" alignItems="center">
+          <Grid item container xs={3} justifyContent="center" alignItems="center">
             {/* <img src={userData.photoURL ||avatarDefault } alt="user profile" /> */}
-            <div 
+            <div
               onMouseEnter={handleHover}
               onMouseLeave={handleHover}
               className={styles.editImgContainer}
@@ -85,7 +102,7 @@ export const Profile = props => {
               }
               <CoverImg
                 cover
-                src={ userData.photoURL } 
+                src={ profilePhoto } 
                 alt="user profile" 
                 rounded={10} 
                 innerGap={15}
@@ -94,11 +111,22 @@ export const Profile = props => {
             </div>
             
           </Grid>
-          <Grid item xs>
+          <Grid item xs></Grid>
+          <Grid item xs={4}>
             <ProfileForm formik={formik} />
           </Grid>
+          <Grid item xs={4}></Grid>
         </Grid>
+        <Modal 
+          open={editProfileImg}
+          onClose={() => setEditProfileImg(false)}
+        >
+          <Grid container justifyContent="center" alignItems="center">
+            <FileUploader />
+            <Button disabled={files.filesCount < 1} onClick={handleProfilePhotoUpdate} variant="contained" color="primary">Update photo</Button>
+          </Grid>
+        </Modal>
       </Grid>
-    </Container>
+    // </Container>
   )
 }

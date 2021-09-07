@@ -41,7 +41,7 @@ export const addProduct = createAsyncThunk(
   async ({data, plain = true}, thunkAPI) => {
     const state = thunkAPI.getState()
     const files = state.files.remoteStorage.data
-    const user = state.user.data
+    const user = state.auth.data
 
     console.log(`files`, files)
 

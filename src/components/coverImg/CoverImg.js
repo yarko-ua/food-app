@@ -39,7 +39,7 @@ export const CoverImg = ({
   const [source, setSource] = useState(false)
 
   useEffect(() => {
-    if (!source) {
+    if (!source || source !== src) {
       const image = new Image()
       image.src = src
       image.addEventListener('load', _ => {

@@ -8,7 +8,6 @@ import { store } from './app/store';
 import { AppWrapper } from './features/app/AppWrapper';
 import { AuthWrapper} from './features/auth/AuthWrapper';
 import PrivateRoute from './routes/PrivateRoute';
-import Header from './components/header/Header';
 import { Product } from './features/product/Product';
 import { Notification } from './features/notification/Notification';
 import { auth } from './app/firebase';

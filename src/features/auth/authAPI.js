@@ -47,9 +47,12 @@ export const signUp = async (email, password, displayName, photoURL = null) => {
   const userRef = fbdb.collection('users').doc(uid)
 
   await userRef.set({
-        name: displayName,
-        avatar: photoURL,
+        firstName: displayName,
+        lastName: null,
+        photoURL,
         email,
+        address: null,
+        friends: []
       })
 
   const createdAt = firebase.firestore.FieldValue.serverTimestamp()
@@ -75,7 +78,7 @@ export const signUp = async (email, password, displayName, photoURL = null) => {
 
   console.log(`firstProductInList`, firstProductInList)
 
-  return { uid, displayName, photoURL }
+  return { uid, displayName, photoURL, email }
 }
 
 

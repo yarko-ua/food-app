@@ -22,7 +22,7 @@ export const AppWrapper = ({match, ...props}) => {
   const appStyles = useAppStyles()
   const menuWrapper = useRef()
 
-  const uid = useSelector(state => state.user.data.uid);
+  const uid = useSelector(state => state.auth.data.uid);
   // const [isMobile, setIsMobile] = useState(window.innerWidth < 960)
 
   const [widthCover, setWidthCover] = useState(0)

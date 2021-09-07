@@ -1,6 +1,8 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { imagesRef } from './fileUploaderAPI';
 import firebase from 'firebase/app';
+import { fbStorageConfig } from '../../../app/firebase';
+import { PATH_TO_IMAGES_STORAGE } from '../../../constants';
 
 const initialState = {
   filesCount: 0,
@@ -30,7 +32,7 @@ const readAsDataURL = (file) => {
 
 export const uploadToStore = createAsyncThunk(
   'uploader/uploadToStore',
-  async (payload = null, thunkAPI) => {
+  async ({ storeReference = PATH_TO_IMAGES_STORAGE, path = null }, thunkAPI) => {
 
     const state = thunkAPI.getState()
     const files = state.files.data
@@ -38,12 +40,14 @@ export const uploadToStore = createAsyncThunk(
     if (files && files.length) {
       const filesToUpload = []
 
+      const fullStoreRef = path ? fbStorageConfig[storeReference].child(path) : fbStorageConfig[storeReference];
+
       try {
         for (let i = 0; i < files.length; i++) {
           const file = files[i];
           
           filesToUpload.push(
-            imagesRef
+            fullStoreRef
               .child(file.name)
               .putString(file.url, 'data_url', {contentType: file.type})
               .then(snapshot => snapshot.ref.getDownloadURL())

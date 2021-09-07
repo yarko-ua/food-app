@@ -6,6 +6,7 @@ import { listApi } from './api';
 import authReducer from '../features/auth/authSlice';
 import productReducer from '../features/product/productSlice'
 import notification from '../features/notification/notificationSlice'
+import userReducer from '../features/app/profile/profileSlice' 
 
 export const store = configureStore({
   reducer: {
@@ -14,7 +15,8 @@ export const store = configureStore({
     fbList: listReducer,
     lists: listsReducer,
     product: productReducer,
-    user: authReducer,
+    auth: authReducer,
+    user: userReducer,
     [listApi.reducerPath]: listApi.reducer,
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(listApi.middleware)

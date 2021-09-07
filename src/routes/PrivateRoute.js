@@ -2,7 +2,7 @@ import { useSelector } from "react-redux"
 import { Redirect, Route } from "react-router-dom";
 
 const PrivateRoute = ({component: Component, ...props}) => {
-  const auth = useSelector(state => state.user.auth);
+  const auth = useSelector(state => state.auth.auth);
 
   console.log(`auth in private route`, auth)
 

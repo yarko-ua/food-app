@@ -22,7 +22,35 @@ export const fbdb = firebase.firestore();
 
 export const fbStorageRef = fbStorage.ref();
 
+console.log(`fbStorageRef`, fbStorageRef)
+
 export const imagesRef = fbStorageRef.child('images');
+
+export const productsStorage = fbStorage.ref('products')
+export const listsStorage = fbStorage.ref('lists')
+
+export const usersStorage = fbStorage.ref('users')
+export const publicUsersStorage = usersStorage.child('public')
+export const privateUsersStorage = usersStorage.child('private')
+
+
+export const fbStorageConfig = {
+  fbStorageRef,
+  imagesRef,
+  usersStorage,
+  publicUsersStorage,
+  privateUsersStorage
+}
+
+console.log(`fbStorageConfig`, fbStorageConfig)
+
+console.log(`imagesRef`, imagesRef)
+console.log(`productsStorage`, productsStorage)
+console.log(`publicUsersStorage`, publicUsersStorage)
+console.log(`privateUsersStorage`, privateUsersStorage)
+console.log(`listsStorage`, listsStorage)
+console.log(`usersStorage`, usersStorage)
+
 
 export default fbApp
 

@@ -3,6 +3,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import { useDispatch, useSelector } from "react-redux";
 import { signOutUser } from "../../features/auth/authSlice";
+import { authSelector } from "../../selectors";
 
 const useHeaderStyles = makeStyles({
   root: {
@@ -15,8 +16,8 @@ const useHeaderStyles = makeStyles({
 const Header = () => {
   const styles = useHeaderStyles();
   const dispatch = useDispatch();
-  const auth = useSelector(state => state.user.auth);
-  const userName = useSelector(state => state.user.data?.displayName);
+  const { auth, data: { displayName } } = useSelector(authSelector);
+  // const userName = useSelector(state => state.auth.data?.displayName);
 
   if (!auth) return <></>
 
@@ -29,7 +30,7 @@ const Header = () => {
       <Grid container alignItems="center" justifyContent="flex-end">
         <Grid item xs={6}></Grid>
         <Grid item xs={6} container alignItems="center" justifyContent="flex-end">
-          <span>Hi, {userName}</span>
+          <span>Hi, {displayName}</span>
           <IconButton onClick={ handleClick }>
             <ExitToAppIcon />
           </IconButton>

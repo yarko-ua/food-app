@@ -21,7 +21,7 @@ export const addUserRecord = createAsyncThunk(
 
     const files = state.files.filesList;
     const currentList = state.lists.currentList
-    const user = state.user.data
+    const user = state.auth.data
 
     console.log(`st`, files);
 

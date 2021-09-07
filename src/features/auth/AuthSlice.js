@@ -1,40 +1,9 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import firebase from 'firebase/app';
 import 'firebase/auth'
-// import { auth } from '../../app/firebase';
 import { loadState, saveState } from '../../helpers/appState';
 import { fbApp } from '../app/fileUploader/fileUploaderAPI';
 import { signIn, signOut, signUp } from './authAPI';
-
-// const defaultFbAuth = firebase.auth(fbApp);
-
-// console.log(`defaultFbAuth`, defaultFbAuth);
-// console.log(`currentUser`, defaultFbAuth.currentUser);
-
-
-// const data = loadState('user');
-// const currentUser = auth.currentUser
-// let data = currentUser ?
-//   {
-//     uid: currentUser.uid,
-//     displayName: currentUser.displayName,
-//     photoURL: currentUser.photoURL,
-//   }
-//   : null
-
-// console.log(`userData`, data);
-
-// auth.onAuthStateChanged(user => {
-//   console.log(`state changed user`, user)
-
-  // if (user) {
-  //   data = {
-  //     uid: user.uid,
-  //     displayName: user.displayName,
-  //     photoURL: user.photoURL,
-  //   }
-  // }
-// })
 
 const initialState = {
   auth: null,
@@ -52,11 +21,13 @@ export const signInUser = createAsyncThunk(
       console.log('signin response', user)
   
       saveState('user', { uid: user.uid } )
+
       await new Promise(res => { 
         setTimeout(() => {
           res(1)
         }, 2500)
       })
+
       console.log(`signin end`)
       
       return user;
@@ -98,25 +69,28 @@ export const signOutUser = createAsyncThunk(
   }
 )
 
-export const getUserFullInfo = createAsyncThunk(
-  'user/getFullInfo',
-  async () => {
-    // console.log(`auth`, auth)
-    const user =  firebase.auth().currentUser
-    console.log(`user !!!!`, user)
+export const updateUser = createAsyncThunk(
+  'auth/updateUser',
+  async data => {
+    try {
+      const user =  firebase.auth(fbApp).currentUser
 
-    // if (!user) {
-    //   const u = firebase.auth().currentUser
+      console.log(`user`, user)
 
-    //   console.log(`u`, u)
-    // }
-
-    if (user) {
-      console.log(`user.toJSON()`, user.toJSON())
+      const userOptions = {
+        photoURL: data.photoURL ,
+      }
+    
+      const response = await user.updateProfile(userOptions)
+      console.log(`response`, response)
+      return true;
+    } catch (error) {
+      console.log(`error`, error)
+      throw new Error(error.message)
     }
-
-    return user.uid
+    
   }
+
 )
 
 export const authReducer = createSlice({
@@ -164,22 +138,9 @@ export const authReducer = createSlice({
         state.loading = false;
         state.data = null;
         state.auth = false;
-
-        // saveState('user', state);
-
       })
       .addCase(signOutUser.rejected, (state, action) => {
         state.loading = false;
-      })
-      .addCase(getUserFullInfo.pending, (state) => {
-        state.loading = true;
-      })
-      .addCase(getUserFullInfo.rejected, (state) => {
-        state.loading = false;
-      })
-      .addCase(getUserFullInfo.fulfilled, (state, action) => {
-        state.loading = false;
-        console.log(`action`, action)
       })
   }
 })

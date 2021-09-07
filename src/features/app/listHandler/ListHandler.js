@@ -30,7 +30,7 @@ export const ListHandler = ({label, onSubmit, form: Form }) => {
   console.log(`Form`, Form)
 
   const dispatch = useDispatch()
-  const uid = useSelector(state => state.user.data.uid)
+  const uid = useSelector(state => state.auth.data.uid)
   const submitting = useSelector(state => state.fbList.submitting)
   // const formStyles = useFormStyles()
 

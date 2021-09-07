@@ -10,8 +10,8 @@ import { BackToPrevious } from "../../../components/backTo/BackTo"
 export const SignUp = (props) => {
 
   const dispatch = useDispatch();
-  const loading = useSelector(state => state.user.loading);
-  const auth = useSelector(state => state.user.auth);
+  const loading = useSelector(state => state.auth.loading);
+  const auth = useSelector(state => state.auth.auth);
   const history = useHistory()
 
   // const [state, setstate] = useState(initialState)

@@ -36,7 +36,7 @@ const Menu = ({isMobile, widthCover, offsetLeft}) => {
 
   console.log(`styles`, styles)
 
-  const photoURL = useSelector(state => state.user.data.photoURL)
+  const photoURL = useSelector(state => state.auth.data.photoURL)
 
   // useEffect(() => {
   //   if (ref.current)

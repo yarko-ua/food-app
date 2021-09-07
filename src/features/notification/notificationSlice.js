@@ -1,6 +1,7 @@
 import { StarTwoTone } from "@material-ui/icons";
 import { createSlice } from "@reduxjs/toolkit";
 import { addUserRecord } from "../app/listHandler/listHandlerSlice";
+import { getUserFullInfo } from "../app/profile/profileSlice";
 import { addProductToList } from "../app/userLists/userListsSlice";
 import { signInUser } from "../auth/authSlice";
 
@@ -35,7 +36,11 @@ const notification = createSlice({
       state.type = 'success'
       state.message = 'Product successfully added'
     })
-    
+    .addCase(getUserFullInfo.rejected, (state, action) => {
+      state.show = true
+      state.type = 'error'
+      state.message = action.error.message
+    })
   }
 })
 

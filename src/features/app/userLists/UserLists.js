@@ -21,7 +21,7 @@ const useStyles = makeStyles({
 export const UserLists = props => {
   const list = useSelector(state => state.lists.data)
   console.log(`list`, list)
-  const userData = useSelector(state => state.user.data)
+  const userData = useSelector(state => state.auth.data)
   const dispatch = useDispatch()
 
   const styles = useStyles()

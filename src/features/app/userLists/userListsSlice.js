@@ -19,7 +19,7 @@ export const getUserLists = createAsyncThunk(
   async (userID = null, thunkAPI) => {
     // later userID need to get lists to compare ?
     const state = thunkAPI.getState()
-    const { uid } = state.user.data
+    const { uid } = state.auth.data
 
     const userListsRef = await fbdb.collection(`users/${userID || uid}/lists`).get()
 
@@ -53,7 +53,7 @@ export const getUserLists = createAsyncThunk(
 export const getUserList = createAsyncThunk(
   'userLists/getList',
   async (listID, thunkAPI) => {
-    const { uid } = thunkAPI.getState().user.data
+    const { uid } = thunkAPI.getState().auth.data
     console.log(`uid`, uid)
 
     const lists = thunkAPI.getState().lists.data
@@ -160,7 +160,7 @@ export const addProductToList = createAsyncThunk(
 
     console.log(`st3`, state)
     const currentList = state.lists.currentList
-    const user = state.user.data
+    const user = state.auth.data
     // const product = state.product.data
 
     // const createdAt = firebase.firestore.FieldValue.serverTimestamp()
