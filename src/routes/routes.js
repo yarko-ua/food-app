@@ -1,3 +1,3 @@
-const routes = {
-  SIGN_IN: {}
+export const routes = {
+  PROFILE : '/profile'
 }

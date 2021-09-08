@@ -13,6 +13,7 @@ import { Notification } from './features/notification/Notification';
 import { auth } from './app/firebase';
 import { SignIn } from './features/auth/signIn/SignIn';
 import { SignUp } from './features/auth/signUp/SignUp';
+import { ProfilePublic } from './features/app/profile/ProfilePublic';
 
 
 // auth
@@ -79,6 +80,7 @@ function App() {
                   <Route exact path="/signin" component={SignIn} />
                   <Route exact path="/signup" component={SignUp} />
                   <Route exact path="/product/:productID" component={Product} />
+                  <Route exact path={`/profile/:userID`} component={ProfilePublic} />
                   {/* <PrivateRoute exact path="/app/settings" render={props => <> App settings </>} /> */}
                   <PrivateRoute path="/" component={AppWrapper} />
                   <Route path="*" render={props => (<h1>Not Found</h1>)} />

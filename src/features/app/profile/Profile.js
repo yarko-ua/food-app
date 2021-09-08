@@ -109,6 +109,14 @@ export const Profile = props => {
                 outerGap={`0 10px 0 0`}
               />
             </div>
+
+            <Container>
+              <h5>Private files: </h5>
+
+              <div>
+
+              </div>
+            </Container>
             
           </Grid>
           <Grid item xs></Grid>

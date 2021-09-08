@@ -30,24 +30,27 @@ export const productsStorage = fbStorage.ref('products')
 export const listsStorage = fbStorage.ref('lists')
 
 export const usersStorage = fbStorage.ref('users')
-export const publicUsersStorage = usersStorage.child('public')
-export const privateUsersStorage = usersStorage.child('private')
+export const userPubStorage = uid => usersStorage.child(`${uid}/public`)
+export const userPrivStorage = uid => usersStorage.child(`${uid}/private`)
+export const userPrivStorPath = (uid, path) => userPrivStorage(uid).child(path)
+export const userPubStorPath = (uid, path) => userPrivStorage(uid).child(path)
 
 
 export const fbStorageConfig = {
   fbStorageRef,
   imagesRef,
   usersStorage,
-  publicUsersStorage,
-  privateUsersStorage
+
+  userPubStorage,
+  userPrivStorage
 }
 
 console.log(`fbStorageConfig`, fbStorageConfig)
 
 console.log(`imagesRef`, imagesRef)
 console.log(`productsStorage`, productsStorage)
-console.log(`publicUsersStorage`, publicUsersStorage)
-console.log(`privateUsersStorage`, privateUsersStorage)
+console.log(`userPubStorage`, userPubStorage)
+console.log(`userPrivStorage`, userPrivStorPath)
 console.log(`listsStorage`, listsStorage)
 console.log(`usersStorage`, usersStorage)
 

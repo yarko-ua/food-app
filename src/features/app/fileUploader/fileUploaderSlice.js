@@ -32,7 +32,7 @@ const readAsDataURL = (file) => {
 
 export const uploadToStore = createAsyncThunk(
   'uploader/uploadToStore',
-  async ({ storeReference = PATH_TO_IMAGES_STORAGE, path = null }, thunkAPI) => {
+  async ({ storeReference = PATH_TO_IMAGES_STORAGE, key = null }, thunkAPI) => {
 
     const state = thunkAPI.getState()
     const files = state.files.data
@@ -40,7 +40,7 @@ export const uploadToStore = createAsyncThunk(
     if (files && files.length) {
       const filesToUpload = []
 
-      const fullStoreRef = path ? fbStorageConfig[storeReference].child(path) : fbStorageConfig[storeReference];
+      const fullStoreRef = key ? fbStorageConfig[storeReference](key) : fbStorageConfig[storeReference];
 
       try {
         for (let i = 0; i < files.length; i++) {

@@ -6,32 +6,54 @@ import { signInUser, signOutUser, signUpUser, updateUser } from "../../auth/auth
 import { uploadToStore } from "../fileUploader/fileUploaderSlice";
 
 const initialState = {
-  photoURL: null,
-  id: '',
-  email: '',
-  firstName: '',
-  lastName: '',
-  address: '',
-  friends: null,
+  data: {
+    photoURL: null,
+    id: '',
+    email: '',
+    firstName: '',
+    lastName: '',
+    address: '',
+    friends: null,
+  },
+  current: {
+    photoURL: null,
+    id: '',
+    email: '',
+    firstName: '',
+    lastName: '',
+    address: '',
+    friends: null,
+  },
   loading: false
 }
 
 export const getUserFullInfo = createAsyncThunk(
   'user/getFullInfo',
-  async (_, thunkAPI) => {
+  async (userID = null, thunkAPI) => {
     const { uid } = thunkAPI.getState().auth.data
     console.log(`get uid`, uid)
+    console.log(`get userID`, userID)
+
+    // ERROR !!! userID is get as some id ??
 
     try {
-      const userRef = fbdb.doc(`/users/${uid}`);
+      const userRef = fbdb.doc(`/users/${ userID || uid }`);
       const user = await userRef.get()
+
+      console.log(`user doc in get info`, user)
 
       if (!user.exists)
         throw new Error('User doesn\'t exists')
 
       console.log(`user`, user)
       const userData = user.data()
-      return {...userData, id: uid }
+      return { 
+        data: {
+          ...userData,
+          id: user.id
+        }, 
+        userType: userID ?  'current' : 'data'
+      }
     } catch (error) {
       console.log(`error`, error)
       throw new Error(error.message) 
@@ -42,14 +64,14 @@ export const getUserFullInfo = createAsyncThunk(
 export const updateProfilePhoto = createAsyncThunk(
   'user/updatePhoto',
   async (_, thunkAPI) => {
-    const user = thunkAPI.getState().user
+    const user = thunkAPI.getState().user.data
 
     console.log(`user to update`, user)
 
     try {
       const uploadPhoto = await thunkAPI.dispatch(uploadToStore({
         storeReference: PATH_TO_USERS_PUBLIC_STORAGE, 
-        path: user.id 
+        key: user.id 
       }))
       console.log(`uploadPhoto`, uploadPhoto)
   
@@ -60,14 +82,14 @@ export const updateProfilePhoto = createAsyncThunk(
       
         console.log(`updateCurrentUser`, updateCurrentUser)
 
-        if(updateCurrentUser) {
+        if(updateCurrentUser.payload) {
           const userDoc = await fbdb.doc(`users/${user.id}`).get()
 
           console.log(`userDoc`, userDoc)
     
           if (userDoc.exists) {
             userDoc.ref.update({
-              photoURL: uploadPhoto.payload 
+              photoURL: uploadPhoto.payload[0]
             })
   
             return uploadPhoto.payload[0]
@@ -82,47 +104,89 @@ export const updateProfilePhoto = createAsyncThunk(
     
     
   }
-) 
+)
+
+
+export const getFriends = createAsyncThunk(
+  'user/getFriends',
+  async (_, thunkAPI) => {
+    const { friends } = thunkAPI.getState().user.data
+
+    const promises = []
+
+    if (friends && friends.length > 0) {
+      for (let i = 0; i < friends.length; i++) {
+        const friendID = friends[i];
+
+        promises.push(
+          thunkAPI.dispatch(getUserFullInfo(friendID))
+        )
+      }
+
+      const friendsList = (await Promise.allSettled(promises))
+        .filter(promise => promise.status === 'fulfilled')
+        .map(promise => promise.value)
+
+        console.log(`friendsList`, friendsList)
+    }
+  }
+)
 
 const profile = createSlice({
   name: 'user',
   initialState,
+  reducers: {
+    clearCurrentUser: state => {
+      state.current = {
+        photoURL: null,
+        id: '',
+        email: '',
+        firstName: '',
+        lastName: '',
+        address: '',
+        friends: null
+      }
+    }
+  },
   extraReducers: builder => {
     builder
       .addCase(signOutUser.fulfilled, state => ({...initialState}))
       .addCase(signInUser.fulfilled, (state, action) => {
         const { uid, photoURL, displayName, email } = action.payload
-        state.id = uid
-        state.photoURL = photoURL
-        state.firstName = displayName
-        state.email = email
+        state.data.id = uid
+        state.data.photoURL = photoURL
+        state.data.firstName = displayName
+        state.data.email = email
       })
       .addCase(signUpUser.fulfilled, (state, action) => {
         const { uid, photoURL, displayName, email } = action.payload
-        state.id = uid
-        state.photoURL = photoURL
-        state.firstName = displayName
-        state.email = email
+        state.data.id = uid
+        state.data.photoURL = photoURL
+        state.data.firstName = displayName
+        state.data.email = email
       })
       .addCase(getUserFullInfo.pending, state => {state.loading = true})
       .addCase(getUserFullInfo.rejected, state => {state.loading = false})
       .addCase(getUserFullInfo.fulfilled, (state, action) => {
         console.log(`action.payload`, action.payload)
         state.loading = false
+        const { data, userType } = action.payload
         
-        for (const key in action.payload) {
-          if (Object.hasOwnProperty.call(action.payload, key)) {
-            const value = action.payload[key];
+        for (const key in data) {
+          if (Object.hasOwnProperty.call(data, key)) {
+            const value = data[key];
             
-            state[key] = value
+            state[userType][key] = value
           }
         }
       })
 
       .addCase(updateProfilePhoto.fulfilled, (state, action) => {
-        state.photoURL = action.payload
+        state.data.photoURL = action.payload
       })
   }
 })
+
+export const { clearCurrentUser } = profile.actions
 
 export default profile.reducer

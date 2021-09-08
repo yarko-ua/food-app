@@ -1,6 +1,6 @@
 import firebase from 'firebase/app';
 import 'firebase/auth';
-import { fbApp, fbdb } from '../app/fileUploader/fileUploaderAPI';
+import  fbApp, { fbdb } from '../../app/firebase';
 
 export const signIn = async (uemail, password) => {
   try {

@@ -1,19 +1,21 @@
 import { CircularProgress, Grid } from "@material-ui/core"
 import { useEffect, useMemo, useState } from "react"
-// import { Redirect, Route, Switch, useHistory } from "react-router-dom"
 import firebase from 'firebase/app'
 import fbApp, { auth } from "../../app/firebase"
 import { loadState } from "../../helpers/appState"
-// import { UserList } from "../app/userList/UserList"
-// import { SignIn } from "./signIn/SignIn"
-// import { SignUp } from "./signUp/SignUp"
 import { setUser } from "./authSlice"
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
+import { getUserFullInfo } from "../app/profile/profileSlice"
+import { authSelector } from "../../selectors"
 
 export const AuthWrapper = ({children}) => {
+  const auth = useSelector(authSelector)
+
+  console.log(`auth in authWrapp`, auth)
+
   const [loading, setLoading] = useState(true)
+  const [isAuth, setIsAuth] = useState(auth.auth)
   const dispatch = useDispatch()
-  // const history = useHistory()
 
   const user = useMemo( () => loadState('user'), [] )
 
@@ -35,16 +37,15 @@ export const AuthWrapper = ({children}) => {
           : null
 
         dispatch(setUser(data))
+        // wait for setting user !!!!
+        // dispatch(getUserFullInfo())
 
-        // if (!userCredential) {
-        //   history.push('/signin')
-        // } else {
-        //   history.push('/lists')
-        // }
+        setIsAuth(true)
 
-        setTimeout(() => {
-          setLoading(false)
-        }, 1000)
+
+        // setTimeout(() => {
+        //   setLoading(false)
+        // }, 1000)
 
       })
 
@@ -56,6 +57,16 @@ export const AuthWrapper = ({children}) => {
     }
 
   }, [dispatch, user])
+
+  useEffect(() => {
+    if (isAuth) {
+      dispatch(getUserFullInfo())
+
+      setTimeout(() => {
+        setLoading(false)
+      }, 1000)
+    }
+  }, [dispatch, isAuth])
 
   if (loading) {
     return (

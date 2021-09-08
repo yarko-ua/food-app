@@ -7,6 +7,7 @@ import authReducer from '../features/auth/authSlice';
 import productReducer from '../features/product/productSlice'
 import notification from '../features/notification/notificationSlice'
 import userReducer from '../features/app/profile/profileSlice' 
+import friendsReducer from '../features/app/friends/friendsSlice'
 
 export const store = configureStore({
   reducer: {
@@ -17,6 +18,7 @@ export const store = configureStore({
     product: productReducer,
     auth: authReducer,
     user: userReducer,
+    friends: friendsReducer,
     [listApi.reducerPath]: listApi.reducer,
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(listApi.middleware)

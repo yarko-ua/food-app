@@ -7,6 +7,7 @@ import Menu from "../../components/menu/Menu"
 import { UserLists } from "./userLists/UserLists"
 import { Profile } from "./profile/Profile"
 import { UserList } from "./userList/UserList"
+import { Friends } from './friends/Friends'
 // import { ListHandler } from "./listHandler/ListHandler"
 
 
@@ -65,7 +66,7 @@ export const AppWrapper = ({match, ...props}) => {
             <Route 
               exact 
               path={`/friends`} 
-              render={props => <> Friends </>}
+              component={Friends}
             />
             <Route 
               exact path={`/recommendations`}
