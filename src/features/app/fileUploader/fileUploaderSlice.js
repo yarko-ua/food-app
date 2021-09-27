@@ -11,7 +11,7 @@ const initialState = {
   status: null,
   remoteStorage: {
     data: null
-  },
+  }, 
 }
 
 const readAsDataURL = (file) => {

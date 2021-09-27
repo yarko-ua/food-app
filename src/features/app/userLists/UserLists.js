@@ -65,3 +65,5 @@ export const UserLists = props => {
     </Grid>
   )
 }
+
+export default UserLists

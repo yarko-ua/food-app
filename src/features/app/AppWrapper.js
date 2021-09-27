@@ -1,15 +1,20 @@
-import { useState, useEffect, useRef } from 'react'
+import loadable from '@loadable/component'
+import { useState, useEffect, useRef, Suspense } from 'react'
 import {Grid, makeStyles, useMediaQuery } from "@material-ui/core"
 import { useSelector } from "react-redux"
-import Header from "../../components/header/Header"
+import Header from "components/header/Header"
 import { Link, Switch, Route, Redirect  } from 'react-router-dom'
-import Menu from "../../components/menu/Menu"
+import Menu from "components/menu/Menu"
 import { UserLists } from "./userLists/UserLists"
-import { Profile } from "./profile/Profile"
-import { UserList } from "./userList/UserList"
-import { Friends } from './friends/Friends'
+// import { Profile } from "./profile/Profile"
+// import { UserList } from "./userList/UserList"
+// import { Friends } from './friends/Friends'
+import { authDataSelector } from 'selectors/auth'
+import { routeComponent, ROUTES } from 'routes/routes'
+import { ComponentsPath, lazyRouteComponent } from 'routes/lazy'
 // import { ListHandler } from "./listHandler/ListHandler"
 
+// const MyLists = loadable(() => import('./userLists/UserLists'))
 
 const useAppStyles =  makeStyles({
   root: {
@@ -23,7 +28,7 @@ export const AppWrapper = ({match, ...props}) => {
   const appStyles = useAppStyles()
   const menuWrapper = useRef()
 
-  const uid = useSelector(state => state.auth.data.uid);
+  const { uid } = useSelector(authDataSelector);
   // const [isMobile, setIsMobile] = useState(window.innerWidth < 960)
 
   const [widthCover, setWidthCover] = useState(0)
@@ -49,34 +54,31 @@ export const AppWrapper = ({match, ...props}) => {
         <Header />
         <Switch>
             <Route 
-              exact 
-              path={`/profile`}
-              component={Profile}
+              exact path={ROUTES.LISTS}
+              component={ routeComponent( ROUTES.LISTS ) }
             />
             <Route 
-              exact 
-              path={`/lists`}
-              component={UserLists}
+              exact path={ROUTES.PROFILE}
+              component={ routeComponent( ROUTES.PROFILE ) }
+            />
+            
+            <Route 
+              exact path={ROUTES.PRODUCTS_LISTS}
+              component={ routeComponent( ROUTES.PRODUCTS_LISTS ) }
             />
             <Route 
-              exact 
-              path={`/lists/:listID`}
-              component={UserList}
+              exact path={ROUTES.FRIENDS}
+              component={ routeComponent( ROUTES.FRIENDS ) }
             />
-            <Route 
-              exact 
-              path={`/friends`} 
-              component={Friends}
-            />
-            <Route 
-              exact path={`/recommendations`}
+            <Route
+              exact path={ROUTES.RECOMMENDATIONS}
               render={props => <> recommendations </>}
             />
-            <Route exact path={`/settings`}
+            <Route exact path={ROUTES.SETTINGS}
               render={props => <> settings </>}
             />
 
-            <Redirect to={`/lists`}/>
+            <Redirect to={ROUTES.LISTS} />
         </Switch>
         {/* <FileUploader />
         <MyList  /> */}

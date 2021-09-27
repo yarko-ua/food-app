@@ -2,8 +2,8 @@ import { Button, Grid, IconButton } from "@material-ui/core"
 import { makeStyles } from '@material-ui/core/styles';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import { useDispatch, useSelector } from "react-redux";
-import { signOutUser } from "../../features/auth/authSlice";
-import { authSelector } from "../../selectors";
+import { signOutUser } from "features/auth/authSlice";
+import { authDataSelector, isAuthSelector } from "selectors/auth";
 
 const useHeaderStyles = makeStyles({
   root: {
@@ -16,10 +16,11 @@ const useHeaderStyles = makeStyles({
 const Header = () => {
   const styles = useHeaderStyles();
   const dispatch = useDispatch();
-  const { auth, data: { displayName } } = useSelector(authSelector);
+  const isAuth = useSelector(isAuthSelector); 
+  const { displayName } = useSelector(authDataSelector); 
   // const userName = useSelector(state => state.auth.data?.displayName);
 
-  if (!auth) return <></>
+  if (!isAuth) return <></>
 
   const handleClick = () => {
     dispatch(signOutUser());

@@ -4,13 +4,14 @@ import { useFormik } from "formik"
 import { useEffect } from "react"
 import { useSelector,useDispatch } from "react-redux"
 import { Link, Redirect, useHistory } from "react-router-dom"
-import { signInValidationSchema } from "../../../validation/signIn"
+import { isAuthSelector } from "selectors/auth"
+import { signInValidationSchema } from "validation/signIn"
 import { signInUser } from "../authSlice"
 
 export const SignIn = () => {
   const dispatch = useDispatch();
   const loading = useSelector(state => state.auth.loading);
-  const auth = useSelector(state => state.auth.auth);
+  const isAuth = useSelector(isAuthSelector);
   const history = useHistory()
 
   // const [state, setstate] = useState(initialState)
@@ -32,7 +33,7 @@ export const SignIn = () => {
   })
 
   useEffect(() => {
-    if (auth) {
+    if (isAuth) {
       const { state }  = history.location
 
       console.log(`state`, state)
@@ -40,7 +41,7 @@ export const SignIn = () => {
       history.push( state?.from ? state.from.pathname : '/')
       // history.push('/lists')
     }
-  }, [auth, history])
+  }, [isAuth, history])
 
 
   if (loading) {

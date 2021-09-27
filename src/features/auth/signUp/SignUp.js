@@ -3,15 +3,17 @@ import { Link, useHistory } from "react-router-dom"
 import { Button, TextField, CircularProgress, Grid } from "@material-ui/core"
 import { useFormik } from "formik"
 import { useSelector,useDispatch } from "react-redux"
-import { signUpValidationSchema } from "../../../validation/signUp"
+import { signUpValidationSchema } from "validation/signUp"
 import { signUpUser } from "../authSlice"
-import { BackToPrevious } from "../../../components/backTo/BackTo"
+import { BackToPrevious } from "components/backTo/BackTo"
+import { isAuthSelector } from "selectors/auth"
+import { ROUTES } from "routes/routes"
 
 export const SignUp = (props) => {
 
   const dispatch = useDispatch();
   const loading = useSelector(state => state.auth.loading);
-  const auth = useSelector(state => state.auth.auth);
+  const isAuth = useSelector(isAuthSelector);
   const history = useHistory()
 
   // const [state, setstate] = useState(initialState)
@@ -39,10 +41,10 @@ export const SignUp = (props) => {
   })
 
   useEffect(() => {
-    if (auth) {
-      history.push('/lists')
+    if (isAuth) {
+      history.push(ROUTES.LISTS)
     }
-  }, [auth, history])
+  }, [isAuth, history])
 
 
   if (loading) {

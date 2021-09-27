@@ -2,15 +2,17 @@ import { useCallback, useEffect, useState } from 'react'
 import { Button, Container, Grid, IconButton, Modal } from "@material-ui/core"
 import { useDispatch, useSelector } from "react-redux"
 import { getUserFullInfo, updateProfilePhoto } from './profileSlice'
-import { ProfileForm } from '../../../components/forms/profileForm/ProfileForm'
+import { ProfileForm } from 'components/forms/profileForm/ProfileForm'
 import { useFormik } from 'formik'
-import { profileFormValidation } from '../../../validation/profile'
-import avatarDefault from '../../../images/avatar-default.png'
-import { CoverImg } from '../../../components/coverImg/CoverImg'
+import { profileFormValidation } from 'validation/profile'
+import avatarDefault from 'images/avatar-default.png'
+import { CoverImg } from 'components/coverImg/CoverImg'
 import { Edit } from '@material-ui/icons'
 import { makeStyles } from '@material-ui/styles'
 import { FileUploader } from '../fileUploader/FileUploader'
-import { filesSelector, userSelector } from '../../../selectors'
+import { userSelector } from 'selectors/user'
+import { filesSelector } from 'selectors/files'
+// import { filesSelector, userSelector } from 'selectors/user'
 
 const useStyles = makeStyles({
   editImgContainer: {

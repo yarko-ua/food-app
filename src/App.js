@@ -5,15 +5,17 @@ import { Box, Container, Paper, useMediaQuery } from "@material-ui/core"
 import { makeStyles } from '@material-ui/core/styles';
 import { Provider } from 'react-redux';
 import { store } from './app/store';
-import { AppWrapper } from './features/app/AppWrapper';
-import { AuthWrapper} from './features/auth/AuthWrapper';
-import PrivateRoute from './routes/PrivateRoute';
-import { Product } from './features/product/Product';
-import { Notification } from './features/notification/Notification';
+import { AppWrapper } from 'features/app/AppWrapper';
+import { AuthWrapper} from 'features/auth/AuthWrapper';
+import PrivateRoute from 'routes/PrivateRoute';
+import { Product } from 'features/product/Product';
+import { Notification } from 'features/notification/Notification';
 import { auth } from './app/firebase';
-import { SignIn } from './features/auth/signIn/SignIn';
-import { SignUp } from './features/auth/signUp/SignUp';
-import { ProfilePublic } from './features/app/profile/ProfilePublic';
+import { SignIn } from 'features/auth/signIn/SignIn';
+import { SignUp } from 'features/auth/signUp/SignUp';
+import { ProfilePublic } from 'features/app/profile/ProfilePublic';
+import { routeComponent, ROUTES } from 'routes/routes';
+import { lazyRouteComponent } from 'routes/lazy';
 
 
 // auth
@@ -77,10 +79,10 @@ function App() {
             <AuthWrapper>
               <Container maxWidth={false} disableGutters className={classes.container} >
                 <Switch>
-                  <Route exact path="/signin" component={SignIn} />
-                  <Route exact path="/signup" component={SignUp} />
-                  <Route exact path="/product/:productID" component={Product} />
-                  <Route exact path={`/profile/:userID`} component={ProfilePublic} />
+                  <Route exact path={ROUTES.SIGN_IN} component={ routeComponent( ROUTES.SIGN_IN ) } />
+                  <Route exact path={ROUTES.SIGN_UP} component={ routeComponent( ROUTES.SIGN_UP ) } />
+                  <Route exact path={ROUTES.PRODUCT} component={ routeComponent( ROUTES.PRODUCT ) } />
+                  <Route exact path={ROUTES.PROFILE_PUBLIC} component={ routeComponent( ROUTES.PROFILE_PUBLIC ) } />
                   {/* <PrivateRoute exact path="/app/settings" render={props => <> App settings </>} /> */}
                   <PrivateRoute path="/" component={AppWrapper} />
                   <Route path="*" render={props => (<h1>Not Found</h1>)} />

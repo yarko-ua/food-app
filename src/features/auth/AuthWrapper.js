@@ -2,19 +2,19 @@ import { CircularProgress, Grid } from "@material-ui/core"
 import { useEffect, useMemo, useState } from "react"
 import firebase from 'firebase/app'
 import fbApp, { auth } from "../../app/firebase"
-import { loadState } from "../../helpers/appState"
+import { loadState } from "helpers/appState"
 import { setUser } from "./authSlice"
 import { useDispatch, useSelector } from "react-redux"
-import { getUserFullInfo } from "../app/profile/profileSlice"
-import { authSelector } from "../../selectors"
+import { getUserFullInfo } from "features/app/profile/profileSlice"
+import { isAuthSelector } from "selectors/auth"
 
 export const AuthWrapper = ({children}) => {
-  const auth = useSelector(authSelector)
+  const authState = useSelector(isAuthSelector)
 
-  console.log(`auth in authWrapp`, auth)
+  console.log(`auth in authWrapp`, authState)
 
   const [loading, setLoading] = useState(true)
-  const [isAuth, setIsAuth] = useState(auth.auth)
+  const [isAuth, setIsAuth] = useState(authState)
   const dispatch = useDispatch()
 
   const user = useMemo( () => loadState('user'), [] )

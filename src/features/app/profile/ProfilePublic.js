@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { BackToPrevious } from '../../../components/backTo/BackTo'
-import { userPublicSelector } from '../../../selectors'
+import { BackToPrevious } from 'components/backTo/BackTo'
+import { userPublicSelector } from 'selectors/user'
 import { clearCurrentUser, getUserFullInfo } from './profileSlice'
 
 export const ProfilePublic = (props) => {

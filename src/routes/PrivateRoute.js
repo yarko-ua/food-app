@@ -1,10 +1,12 @@
 import { useSelector } from "react-redux"
 import { Redirect, Route } from "react-router-dom";
+import { isAuthSelector } from "selectors/auth";
+import { ROUTES } from "./routes";
 
 const PrivateRoute = ({component: Component, ...props}) => {
-  const auth = useSelector(state => state.auth.auth);
+  const isAuth = useSelector(isAuthSelector);
 
-  console.log(`auth in private route`, auth)
+  console.log(`auth in private route`, isAuth)
 
   // if (!auth)
   //   return <Redirect to="/signin" />
@@ -12,11 +14,11 @@ const PrivateRoute = ({component: Component, ...props}) => {
   return (
     <Route {...props} render={({location}) => {
       console.log(`location`, location)
-      return auth ?  
+      return isAuth ?  
         <Component />
         :
         <Redirect to={{
-            pathname: '/signin',
+            pathname: ROUTES.SIGN_IN,
             state: {
               from : location
             }

@@ -6,7 +6,7 @@ import { fbApp } from '../app/fileUploader/fileUploaderAPI';
 import { signIn, signOut, signUp } from './authAPI';
 
 const initialState = {
-  auth: null,
+  isAuth: null,
   loading: false,
   data: null
 };
@@ -100,7 +100,7 @@ export const authReducer = createSlice({
     setUser: (state, action) => {
       console.log(`action`, action)
       state.data = action.payload
-      state.auth = Boolean(action.payload)
+      state.isAuth = Boolean(action.payload)
     }
   },
   extraReducers: builder => {
@@ -111,7 +111,7 @@ export const authReducer = createSlice({
       .addCase(signInUser.fulfilled, (state, action) => {
         state.loading = false;
         state.data = action.payload;
-        state.auth = true;
+        state.isAuth = true;
       })
       .addCase(signInUser.rejected, (state, action) => {
         state.loading = false;
@@ -124,7 +124,7 @@ export const authReducer = createSlice({
       .addCase(signUpUser.fulfilled, (state, action) => {
         state.loading = false;
         state.data = action.payload;
-        state.auth = true;
+        state.isAuth = true;
       })
       .addCase(signUpUser.rejected, (state, action) => {
         state.loading = false;
@@ -137,7 +137,7 @@ export const authReducer = createSlice({
       .addCase(signOutUser.fulfilled, (state, action) => {
         state.loading = false;
         state.data = null;
-        state.auth = false;
+        state.isAuth = false;
       })
       .addCase(signOutUser.rejected, (state, action) => {
         state.loading = false;

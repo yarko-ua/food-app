@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "baseUrl": "./src",
+    "paths": {
+      "components/*": ["components/*"],
+      "appFeatures/*": ["features/app/*"],
+      "features/*": ["features/*"],
+      "routes/*": ["routes/*"],
+      "selectors/*":  ["selectors/*"],
+      "validation/*": ["validation/*"],
+      "helpers/*": ["helpers/*"],
+      "images/*": ["images/*"]
+    }
+  },
+  "exclude": ["node_modules"]
+}

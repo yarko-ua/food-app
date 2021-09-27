@@ -2,8 +2,8 @@ import { Grid } from '@material-ui/core'
 import { useEffect, useState } from 'react'
 import {useDispatch, useSelector } from 'react-redux'
 import { Link, useHistory } from 'react-router-dom'
-import { routes } from '../../../routes/routes'
-import { friendsSelector } from '../../../selectors'
+import { ROUTES } from 'routes/routes'
+import { friendsRecommendationsSelector, friendsSelector } from 'selectors/friends'
 import { getFriends, getSuggestedPeople } from './friendsSlice'
 
 export const Friends = () => {
@@ -13,7 +13,7 @@ export const Friends = () => {
   console.log(`history`, history)
 
   const friendsList = useSelector(friendsSelector)
-  const suggestions = useSelector(st => st.friends.suggestion)
+  const suggestions = useSelector(friendsRecommendationsSelector)
   const [friends, setFriends] = useState(friendsList)
   const [recommendations, setRecommendations] = useState(suggestions)
 
@@ -22,9 +22,13 @@ export const Friends = () => {
 
   useEffect(() => {
     dispatch(getFriends())
-    setFriends(friendsList)
+    // setFriends(friendsList)
     // setRecommendations(suggestions)
   }, [dispatch])
+
+  useEffect(() => {
+    setFriends(friendsList)
+  }, [friendsList])
 
   useEffect(() => {
     setRecommendations(suggestions)
@@ -48,7 +52,7 @@ export const Friends = () => {
             </li>
           ))
         }
-        { !friends || friends.length < 1 && 'You have no friends :c'}
+        { (!friends || friends.length < 1) && 'You have no friends :c'}
       </ul>
       </Grid>
       <Grid item xs>
@@ -60,7 +64,7 @@ export const Friends = () => {
             recommendations.map(human => (
               <li key={human.id}>
                 <Link to={{
-                  pathname: `${routes.PROFILE}/${human.id}`,
+                  pathname: `${ROUTES.PROFILE}/${human.id}`,
                   state: {
                     from: history.location.pathname
                   }
