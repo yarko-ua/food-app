@@ -3,19 +3,19 @@ import { Redirect, Route } from "react-router-dom";
 import { isAuthSelector } from "selectors/auth";
 import { ROUTES } from "./routes";
 
-const PrivateRoute = ({component: Component, ...props}) => {
+const PrivateRoute = ({
+  component: Component,
+  children = null,
+  ...props
+}) => {
   const isAuth = useSelector(isAuthSelector);
 
-  console.log(`auth in private route`, isAuth)
-
-  // if (!auth)
-  //   return <Redirect to="/signin" />
-
   return (
-    <Route {...props} render={({location}) => {
-      console.log(`location`, location)
+    <Route {...props} render={({location, ...subprops}) => {
       return isAuth ?  
-        <Component />
+        ( 
+          Component ? <Component {...subprops} /> : children
+        )
         :
         <Redirect to={{
             pathname: ROUTES.SIGN_IN,

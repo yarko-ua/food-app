@@ -1,3 +1,6 @@
+import { Recommendations } from "features/app/recommendations/Recommendations"
+import { Settings } from "features/app/settings/Settings"
+import { AppWrapper } from "features/app/AppWrapper"
 import { Friends } from "features/app/friends/Friends"
 import { Profile } from "features/app/profile/Profile"
 import { ProfilePublic } from "features/app/profile/ProfilePublic"
@@ -33,3 +36,67 @@ const Components = {
 }
 
 export const routeComponent = route => Components[route]
+
+
+const ROUTER = [
+  {
+    path: ROUTES.SIGN_IN,
+    exact: true,
+    component: SignIn,
+  },
+  {
+    path: ROUTES.SIGN_UP,
+    exact: true,
+    component: SignUp,
+  },
+  {
+    path: ROUTES.PRODUCT,
+    exact: true,
+    component: Product,
+  },
+  {
+    path: ROUTES.PROFILE_PUBLIC,
+    exact: true,
+    component: ProfilePublic,
+  },
+  {
+    path: ROUTES.APP,
+    exact: false,
+    component: AppWrapper,
+    isPrivate: true,
+    routes: [
+      {
+        path: ROUTES.PROFILE,
+        exact: true,
+        component: Profile
+      },
+      {
+        path: ROUTES.LISTS,
+        exact: true,
+        component: UserLists
+      },
+      {
+        path: ROUTES.PRODUCTS_LISTS,
+        exact: true,
+        component: UserList
+      },
+      {
+        path: ROUTES.FRIENDS,
+        exact: true,
+        component: Friends
+      },
+      {
+        path: ROUTES.RECOMMENDATIONS,
+        exact: true,
+        component: Recommendations
+      },
+      {
+        path: ROUTES.SETTINGS,
+        exact: true,
+        component: Settings
+      },
+    ]
+  }
+]
+
+export default ROUTER
