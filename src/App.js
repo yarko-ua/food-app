@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { Suspense, useEffect } from 'react';
 import './App.css';
 import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';
 import { Box, Container, Paper, useMediaQuery } from "@material-ui/core"
@@ -79,9 +79,11 @@ function App() {
           <Paper elevation={5} className={classes.paper}>
             <AuthWrapper>
               <Container maxWidth={false} disableGutters className={classes.container} >
-                <Switch>
-                  { routes.map(route => <NestedRoute key={route.path} {...route} /> ) }
-                </Switch>
+                <Suspense fallback={<>Loading ...</>}>
+                  <Switch>
+                    { routes.map(route => <NestedRoute key={route.path} {...route} /> ) }
+                  </Switch>
+                </Suspense>
               </Container>
             </AuthWrapper>
           </Paper>

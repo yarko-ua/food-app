@@ -139,3 +139,5 @@ export const Product = ({match, ...props}) => {
     </div>
   )
 }
+
+export default Product

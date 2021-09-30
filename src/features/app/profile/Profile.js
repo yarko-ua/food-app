@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { Suspense, useCallback, useEffect, useState } from 'react'
 import { Button, Container, Grid, IconButton, Modal } from "@material-ui/core"
 import { useDispatch, useSelector } from "react-redux"
 import { getUserFullInfo, updateProfilePhoto } from './profileSlice'
@@ -14,6 +14,9 @@ import { userSelector } from 'selectors/user'
 import { filesSelector } from 'selectors/files'
 // import { filesSelector, userSelector } from 'selectors/user'
 
+import { lazy } from 'react'
+
+
 const useStyles = makeStyles({
   editImgContainer: {
     position: 'relative'
@@ -27,7 +30,7 @@ const useStyles = makeStyles({
 })
 
 
-export const Profile = props => {
+const Profile = props => {
 
   const dispatch = useDispatch()
   const user = useSelector(userSelector)
@@ -140,3 +143,6 @@ export const Profile = props => {
     // </Container>
   )
 }
+
+
+export default Profile

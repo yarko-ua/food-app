@@ -57,10 +57,12 @@ export const AppWrapper = ({match, routes, ...props}) => {
       </Grid>
       <Grid item xs={9} sm={11} md >
         <Header />
-        <Switch>
-          { routes.map(route => <NestedRoute key={route.path} {...route} />) }
-          <Redirect to={ROUTES.LISTS} />
-        </Switch>
+        <Suspense fallback={<>Loading ...</>}>
+          <Switch>
+            { routes.map(route => <NestedRoute key={route.path} {...route} />) }
+            <Redirect to={ROUTES.LISTS} />
+          </Switch>
+        </Suspense>
         {/* <FileUploader />
         <MyList  /> */}
       </Grid>

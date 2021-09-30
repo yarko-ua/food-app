@@ -1,24 +1,10 @@
-// import loadable from '@loadable/component'
-// // import Loadable from 'react-loadable'
-// import { ROUTES } from './routes'
+import { lazy } from 'react'
 
-// export const ComponentsPath = {
-//   [ROUTES.SIGN_IN]: "features/auth/signIn/SignIn",
-//   [ROUTES.SIGN_UP]: "features/auth/signUp/SignUp",
-//   [ROUTES.PROFILE]: "features/app/profile/Profile",
-//   [ROUTES.PROFILE_PUBLIC]: "features/app/profile/ProfilePublic",
-//   [ROUTES.LISTS]: "features/app/userLists/UserLists",
-//   [ROUTES.PRODUCTS_LISTS]: "features/app/userList/UserList",
-//   [ROUTES.PRODUCT]: "features/product/Product",
-//   [ROUTES.FRIENDS]: "features/app/friends/Friends",
-
-// }
-
-// export const lazyRouteComponent = route => loadable(() => import(ComponentsPath[route]))
-
-// // export const lazyRouteComponent = (route) => Loadable({
-// //   loader: () => import(`${ComponentsPath[route]}`),
-// //   loading(){return <div>Loading...</div>}
-// // })
-
-// console.log(`lazyRouteComponent`, lazyRouteComponent(ROUTES.LISTS) )
+export const Recommendations = lazy( () =>  import( "features/app/recommendations/Recommendations" ) )
+export const Settings = lazy( () =>  import( "features/app/settings/Settings" ) )
+export const Friends = lazy( () =>  import( "features/app/friends/Friends" ) )
+export const UserList = lazy( () =>  import( "features/app/userList/UserList" ) )
+export const UserLists = lazy( () =>  import( "features/app/userLists/UserLists" ) )
+export const Profile = lazy( () => import('features/app/profile/Profile') )
+export const ProfilePublic = lazy( () => import('features/app/profile/ProfilePublic') )
+export const Product = lazy( () => import('features/product/Product') )

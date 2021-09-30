@@ -31,3 +31,5 @@ export const ProfilePublic = (props) => {
     </div>
   </>
 }
+
+export default ProfilePublic

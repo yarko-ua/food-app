@@ -1,14 +1,21 @@
-import { Recommendations } from "features/app/recommendations/Recommendations"
-import { Settings } from "features/app/settings/Settings"
-import { AppWrapper } from "features/app/AppWrapper"
-import { Friends } from "features/app/friends/Friends"
-import { Profile } from "features/app/profile/Profile"
-import { ProfilePublic } from "features/app/profile/ProfilePublic"
-import { UserList } from "features/app/userList/UserList"
-import { UserLists } from "features/app/userLists/UserLists"
+// import loadable from '@loadable/component'
+
 import { SignIn } from "features/auth/signIn/SignIn"
 import { SignUp } from "features/auth/signUp/SignUp"
-import { Product } from "features/product/Product"
+import { AppWrapper } from "features/app/AppWrapper"
+
+import { 
+  Recommendations,
+  Settings ,
+  Friends ,
+  UserList ,
+  UserLists ,
+  Profile,
+  ProfilePublic,
+  Product
+} from './lazy'
+
+
 
 export const ROUTES = {
   APP: '/',
@@ -27,7 +34,7 @@ export const ROUTES = {
 const Components = {
   [ROUTES.SIGN_IN]: SignIn,
   [ROUTES.SIGN_UP]: SignUp,
-  [ROUTES.PROFILE]: Profile,
+  // [ROUTES.PROFILE]: Profile,
   [ROUTES.PROFILE_PUBLIC]: ProfilePublic,
   [ROUTES.LISTS]: UserLists,
   [ROUTES.PRODUCTS_LISTS]: UserList,

@@ -101,6 +101,6 @@ export const UserList = props => {
   )
 }
 
-
+export default UserList
 
 // export const UserList = withRouter(productsList);
