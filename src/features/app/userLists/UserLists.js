@@ -2,11 +2,11 @@ import { Container, Grid } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 import { useCallback, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { AddListForm } from "../../../components/forms/addListForm/AddListForm";
-import { AddProductForm } from "../../../components/forms/addProductForm/AddProductForm";
-import MyList from "../../../components/list/List";
-import { PATH_TO_LISTS } from "../../../constants";
-import { retrieveFormData } from "../../../helpers/retrieveFormData";
+import { AddList } from "components/forms/addList/AddList";
+import { AddProduct } from "components/forms/addProduct/AddProduct";
+import MyList from "components/list/List";
+import { PATH_TO_LISTS } from "constants/constants";
+import { retrieveFormData } from "helpers/retrieveFormData";
 import { ListHandler } from "../listHandler/ListHandler";
 import { addNewList, getUserLists, removeList} from "./userListsSlice";
 
@@ -50,7 +50,7 @@ export const UserLists = props => {
     <Grid className={styles.root} container spacing={1} justifyContent="space-between">
       <Grid item xs={12} md={4}>
         <h2>Want to add a new list?</h2>
-        <AddListForm onSubmit={handleListSubmit}/>
+        <AddList onSubmit={handleListSubmit}/>
       </Grid>
       <Grid item xs={12} md={7} >
         <MyList 

@@ -5,7 +5,7 @@ import { FileUploader } from "../../../features/app/fileUploader/FileUploader";
 import { Rating } from "@material-ui/lab";
 
 
-export const AddProductForm = ({onSubmit}) => {
+export const AddProduct = ({onSubmit}) => {
   const [productName, setProductName]  = useState('')
   const [productDescription, setProductDescription]  = useState('')
   const [rating, setRating] = useState(0)
@@ -97,7 +97,7 @@ export const AddProductForm = ({onSubmit}) => {
   )
 }
 
-AddProductForm.propTypes= {
+AddProduct.propTypes= {
   onSubmit: PropTypes.func.isRequired,
   // handleUpload: PropTypes.func.isRequired
 }

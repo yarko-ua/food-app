@@ -1,9 +1,10 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { fbdb } from "../../../app/firebase";
-import { PATH_TO_USERS_PUBLIC_STORAGE } from "../../../constants";
+import fbApp, { fbdb } from "../../../app/firebase";
+import { PATH_TO_USERS_PUBLIC_STORAGE } from "constants/constants";
 // import firebase from 'firebase/app'
-import { signInUser, signOutUser, signUpUser, updateUser } from "../../auth/authSlice";
+import { signInUser, signOutUser, signUpUser, updateUser } from "features/auth/authSlice";
 import { uploadToStore } from "../fileUploader/fileUploaderSlice";
+import firebase from 'firebase'
 
 const initialState = {
   data: {
@@ -106,6 +107,35 @@ export const updateProfilePhoto = createAsyncThunk(
   }
 )
 
+export const updatePassword = createAsyncThunk(
+  'user/updatePassword',
+  async (newPass) => {
+    const user = firebase.auth(fbApp).currentUser
+
+    if(newPass) {
+      const updatingPass = await user.updatePassword(newPass)
+
+      console.log(`updatingPass`, updatingPass)
+
+      return newPass
+    }
+  } 
+)
+
+export const updateEmail = createAsyncThunk(
+  'user/updateEmail',
+  async (newEmail) => {
+    const user = firebase.auth(fbApp).currentUser
+
+    if(newEmail) {
+      const updatingEmail = await user.updateEmail(newEmail)
+
+      console.log(`updatingEmail`, updatingEmail)
+
+      return newEmail
+    }
+  } 
+)
 
 export const getFriends = createAsyncThunk(
   'user/getFriends',
@@ -184,6 +214,27 @@ const profile = createSlice({
       .addCase(updateProfilePhoto.fulfilled, (state, action) => {
         state.data.photoURL = action.payload
       })
+
+      .addCase(updatePassword.pending, state  => {
+        state.loading = true
+      }) 
+      .addCase(updatePassword.rejected, state  => {
+        state.loading = false
+      }) 
+      .addCase(updatePassword.fulfilled, state  => {
+        state.loading = false
+      }) 
+
+      .addCase(updateEmail.pending, state  => {
+        state.loading = true
+      }) 
+      .addCase(updateEmail.rejected, state  => {
+        state.loading = false
+      }) 
+      .addCase(updateEmail.fulfilled, (state, action)  => {
+        state.loading = false
+        state.data.email = action.payload
+      }) 
   }
 })
 

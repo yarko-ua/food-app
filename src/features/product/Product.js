@@ -10,9 +10,9 @@ import SwiperCore, { Navigation, Pagination } from 'swiper';
 import 'swiper/swiper.scss';
 import 'swiper/components/navigation/navigation.scss';
 import 'swiper/components/pagination/pagination.scss';
-import { Image } from '../../components/image/Image';
+import { Image } from 'components/image/Image';
 import { Rating } from '@material-ui/lab';
-import { BackToPrevious } from '../../components/backTo/BackTo';
+import { BackToPrevious } from 'components/backTo/BackTo';
 import { Edit } from '@material-ui/icons';
 
 SwiperCore.use([Navigation, Pagination ]);

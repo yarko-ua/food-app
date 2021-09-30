@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { imagesRef } from './fileUploaderAPI';
 import firebase from 'firebase/app';
 import { fbStorageConfig } from '../../../app/firebase';
-import { PATH_TO_IMAGES_STORAGE } from '../../../constants';
+import { PATH_TO_IMAGES_STORAGE } from 'constants/constants';
 
 const initialState = {
   filesCount: 0,

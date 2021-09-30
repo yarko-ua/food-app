@@ -3,7 +3,7 @@ import { Button, TextField } from "@material-ui/core";
 import PropTypes from 'prop-types'
 
 
-export const AddListForm = props => {
+export const AddList = props => {
   const [productName, setProductName]  = useState('')
 
   const handleName = useCallback(
@@ -49,6 +49,6 @@ export const AddListForm = props => {
   )
 }
 
-AddListForm.propTypes= {
+AddList.propTypes= {
   onSubmit: PropTypes.func.isRequired,
 }
