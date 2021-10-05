@@ -1,5 +1,5 @@
 import { useEffect } from "react"
-import { Link, useHistory } from "react-router-dom"
+import { useHistory } from "react-router-dom"
 import { Button, TextField, CircularProgress, Grid } from "@material-ui/core"
 import { useFormik } from "formik"
 import { useSelector,useDispatch } from "react-redux"
@@ -30,13 +30,6 @@ export const SignUp = (props) => {
       console.log(`values`, values);
       
       dispatch(signUpUser(values))
-
-
-      // await new Promise(resolve => setTimeout(() => resolve(values), 700));
-
-      // return values;
-
-      // history.replace('/app');
     }
   })
 

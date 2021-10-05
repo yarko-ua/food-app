@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import firebase from 'firebase/app';
 import 'firebase/auth'
-import { loadState, saveState } from '../../helpers/appState';
+import { saveState } from '../../helpers/appState';
 import { fbApp } from '../app/fileUploader/fileUploaderAPI';
 import { signIn, signOut, signUp } from './authAPI';
 
@@ -15,7 +15,7 @@ const initialState = {
 export const signInUser = createAsyncThunk(
   'auth/signIn',
   async ({ email , password}) => {
-    try {
+    // try {
       const user = await signIn(email, password)
 
       console.log('signin response', user)
@@ -31,10 +31,10 @@ export const signInUser = createAsyncThunk(
       console.log(`signin end`)
       
       return user;
-    } catch (e) {
-      console.log(`e`, e)
-      throw new Error(e)
-    }
+    // } catch (e) {
+    //   console.log(`e`, e)
+    //   throw new Error(e)
+    // }
     
   }
 )

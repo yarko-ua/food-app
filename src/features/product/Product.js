@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import ArrowBackIcon from '@material-ui/icons/ArrowBack';
-import {Link, useHistory} from 'react-router-dom'
+// import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+// import {Link, useHistory} from 'react-router-dom'
 import { CircularProgress, Grid, IconButton, makeStyles, TextField } from '@material-ui/core';
-import productSlice, { getProduct } from './productSlice';
+import { getProduct } from './productSlice';
 import { Swiper, SwiperSlide } from 'swiper/react'
 import SwiperCore, { Navigation, Pagination } from 'swiper';
 

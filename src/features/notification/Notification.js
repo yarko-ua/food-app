@@ -6,14 +6,12 @@ import 'react-toastify/dist/ReactToastify.css'
 import { resetToast } from './notificationSlice'
 
 export const Notification = () => {
-  const type = useSelector(state => state.notification.type)
-  const show = useSelector(state => state.notification.show)
-  const message = useSelector(state => state.notification.message)
+  const { type, show, message }  = useSelector(state => state.notification)
   const dispatch = useDispatch()
 
   const handleClose = useCallback(() => {
     dispatch(resetToast())
-  }, [])
+  }, [dispatch])
 
   useEffect(() => {
     if (show) {

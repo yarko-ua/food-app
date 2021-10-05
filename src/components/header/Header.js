@@ -1,4 +1,4 @@
-import { Button, Grid, IconButton } from "@material-ui/core"
+import { Grid, IconButton } from "@material-ui/core"
 import { makeStyles } from '@material-ui/core/styles';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import { useDispatch, useSelector } from "react-redux";

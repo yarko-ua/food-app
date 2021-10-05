@@ -32,22 +32,22 @@ export const loadState = key => {
   if (appState) {
     const state = JSON.parse(appState)
 
-    console.log(`state`, state)
-    console.log(`Object.keys(state)`, Object.keys(state))
-    console.log(`Object.keys(state).indexOf(key)`, Object.keys(state).indexOf(key))
-    console.log(`state[key]`, state[key])
-    console.log(`typeof state[key]`, typeof state[key])
-    if(state[key]) {
-      console.log(`Object.keys(state[key])`, Object.keys(state[key]))
+    // console.log(`state`, state)
+    // console.log(`Object.keys(state)`, Object.keys(state))
+    // console.log(`Object.keys(state).indexOf(key)`, Object.keys(state).indexOf(key))
+    // console.log(`state[key]`, state[key])
+    // console.log(`typeof state[key]`, typeof state[key])
+    // if(state[key]) {
+    //   console.log(`Object.keys(state[key])`, Object.keys(state[key]))
       
-    }
+    // }
 
     if ( 
       !Object.keys(state).indexOf(key) < 0 ||
       !state[key] ||
       (typeof state[key] === 'object' && Object.keys(state[key]).length  < 1 ) 
       ) {
-      console.log(`return null`)
+      // console.log(`return null`)
       return null
     }
 

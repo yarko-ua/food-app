@@ -1,9 +1,11 @@
+import { useDispatch } from "react-redux"
 import { Button, Container, Grid, TextField } from "@material-ui/core"
 import { makeStyles } from "@material-ui/styles"
 import { useFormik } from "formik"
 import PropTypes from 'prop-types'
 import { divideCamelString } from "helpers/strings"
-import { emailValidationSchema } from "validation/email"
+import { updatePasswordValidationSchema } from "validation/updatePass"
+import { showToast } from "features/notification/notificationSlice"
 
 const useStyles = makeStyles({
   input: {
@@ -12,20 +14,37 @@ const useStyles = makeStyles({
 })
 
 
-const UpdateEmail = ({ email, handleSubmit }) => {
+const UpdatePassword = ({ handleSubmit }) => {
+
+  const dispatch = useDispatch()
 
   const formik = useFormik({
     initialValues: {
-      email
+      password: '',
+      confirmationPassword: ''
     },
-    validationSchema: emailValidationSchema,
+    validationSchema: updatePasswordValidationSchema,
     onSubmit: async (values, formikBag) => {
       console.log(`values`, values)
-      console.log(`formikBag`, formikBag)
-      handleSubmit && handleSubmit(values.email)
+
+      if (values.password !== values.confirmationPassword) {
+        dispatch(showToast({
+          show: true,
+          type: 'error',
+          message: 'Passwords are not same'
+        }))
+
+        return null
+      }
+
+      handleSubmit && handleSubmit(values)
+      // console.log(`formikBag`, formikBag)
+      formikBag.resetForm()
     }
   })
   const formStyles = useStyles()
+
+  console.log(`formik`, formik)
 
   return (
     <form onSubmit={formik.handleSubmit}>
@@ -43,7 +62,7 @@ const UpdateEmail = ({ email, handleSubmit }) => {
                   variant="outlined"
                   label={divideCamelString(field[0])}
                   id={field[0]}
-                  type="email"
+                  type="password"
                   error={formik.touched[field[0]] && Boolean(formik.errors[field[0]])} 
                   helperText={formik.touched[field[0]] && formik.errors[field[0]]} 
                 />
@@ -54,7 +73,7 @@ const UpdateEmail = ({ email, handleSubmit }) => {
 
         <Grid item xs={12}>
           <Container>
-            <Button disabled={!formik.dirty} type="submit" variant="contained" color="primary" >Update email</Button>
+            <Button disabled={!formik.dirty} type="submit" variant="contained" color="primary" >Update password</Button>
           </Container>
         </Grid>
       </Grid>
@@ -63,13 +82,12 @@ const UpdateEmail = ({ email, handleSubmit }) => {
   )
 }
 
-UpdateEmail.propTypes = {
-  email: PropTypes.string.isRequired,
+UpdatePassword.propTypes = {
   handleSubmit: PropTypes.func
 }
 
-UpdateEmail.defaultProps = {
+UpdatePassword.defaultProps = {
   handleSubmit: () => {}
 }
 
-export default UpdateEmail
+export default UpdatePassword

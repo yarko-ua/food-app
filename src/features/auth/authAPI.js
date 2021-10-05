@@ -15,10 +15,7 @@ export const signIn = async (uemail, password) => {
 
     return { uid, displayName, email, photoURL }
   } catch (error) {
-      console.log(`SignIn error`, error)
-
-      console.log(`error.code`, error.code)
-
+      // console.log(`SignIn error`, error)
       throw new Error(error.message)
   }
   

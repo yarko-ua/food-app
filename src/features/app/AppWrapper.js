@@ -1,18 +1,11 @@
-import loadable from '@loadable/component'
 import { useState, useEffect, useRef, Suspense } from 'react'
 import {Grid, makeStyles, useMediaQuery } from "@material-ui/core"
-import { useSelector } from "react-redux"
+// import { useSelector } from "react-redux"
 import Header from "components/header/Header"
-import { Link, Switch, Route, Redirect  } from 'react-router-dom'
+import { Switch, Redirect  } from 'react-router-dom'
 import Menu from "components/menu/Menu"
-import { UserLists } from "./userLists/UserLists"
-import { Profile } from "./profile/Profile"
-import { UserList } from "./userList/UserList"
-
-import { authDataSelector } from 'selectors/auth'
-import { routeComponent, ROUTES } from 'routes/routes'
-import { ComponentsPath, lazyRouteComponent } from 'routes/lazy'
-import  { Friends }  from './friends/Friends'
+// import { authDataSelector } from 'selectors/auth'
+import { ROUTES } from 'routes/routes'
 import NestedRoute from 'routes/NestedRoute'
 // import { ListHandler } from "./listHandler/ListHandler"
 
@@ -30,7 +23,7 @@ export const AppWrapper = ({match, routes, ...props}) => {
   const appStyles = useAppStyles()
   const menuWrapper = useRef()
 
-  const { uid } = useSelector(authDataSelector);
+  // const { uid } = useSelector(authDataSelector);
   // const [isMobile, setIsMobile] = useState(window.innerWidth < 960)
 
   const [widthCover, setWidthCover] = useState(0)

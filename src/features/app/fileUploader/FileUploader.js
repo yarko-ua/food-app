@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState, useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { uploadFiles, removeFile, clearFiles } from './fileUploaderSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { PhotoCamera } from '@material-ui/icons';

@@ -1,8 +1,8 @@
-import { useRef } from 'react'
+// import { useRef } from 'react'
 import { IconButton, makeStyles, MenuItem, MenuList, Typography } from "@material-ui/core"
 import { AccountCircle, Dashboard, PeopleAltRounded, Settings, ViewList } from "@material-ui/icons"
 import { useSelector } from "react-redux"
-import { Link, NavLink } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
 
 const useStyles = makeStyles({
   menu: {
@@ -24,7 +24,7 @@ const useStyles = makeStyles({
       top: 0,
       // left: 0,
       left: props => props.offsetLeft,
-      background: props => props.width != 0 ? 'grey' : 'transparent'
+      background: props => props.width !== 0 ? 'grey' : 'transparent'
     }
   }
 })
@@ -37,14 +37,6 @@ const Menu = ({isMobile, widthCover, offsetLeft}) => {
   console.log(`styles`, styles)
 
   const photoURL = useSelector(state => state.auth.data.photoURL)
-
-  // useEffect(() => {
-  //   if (ref.current)
-  //   return () => {
-  //     cleanup
-  //   }
-  // }, [input])
-
 
   return ( <MenuList className={styles.menu}>
     <NavLink to={`/profile`}>

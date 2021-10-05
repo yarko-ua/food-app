@@ -1,7 +1,6 @@
-import { StarTwoTone } from "@material-ui/icons";
 import { createSlice } from "@reduxjs/toolkit";
 import { addUserRecord } from "../app/listHandler/listHandlerSlice";
-import { getUserFullInfo } from "../app/profile/profileSlice";
+import { getUserFullInfo, updateEmail, updatePassword } from "../app/profile/profileSlice";
 import { addProductToList } from "../app/userLists/userListsSlice";
 import { signInUser } from "../auth/authSlice";
 
@@ -15,15 +14,18 @@ const notification = createSlice({
   name: 'notification',
   initialState,
   reducers: {
-    resetToast: state => initialState
+    resetToast: state => initialState,
+    showToast: (state, { payload: {show, type, message} } ) => {
+      state.show = show
+      state.type = type
+      state.message = message
+    }
   },
   extraReducers: builder => {
     builder.addCase(signInUser.rejected, (state, action) => {
       state.type = 'error'
       state.message = action.error.message
       state.show = true
-      console.log(`action`, action)
-      // state.message = action.payload
     })
     .addCase(addUserRecord.rejected, (state, action) => {
       console.log(`action`, action)
@@ -41,9 +43,20 @@ const notification = createSlice({
       state.type = 'error'
       state.message = action.error.message
     })
+
+    .addCase(updateEmail.fulfilled, (state) => {
+      state.show = true
+      state.type = 'success'
+      state.message = 'Email successfully updated'
+    })
+    .addCase(updatePassword.fulfilled, (state) => {
+      state.show = true
+      state.type = 'success'
+      state.message = 'Password successfully updated'
+    })
   }
 })
 
-export const { resetToast } = notification.actions 
+export const { resetToast, showToast } = notification.actions 
 
 export default notification.reducer

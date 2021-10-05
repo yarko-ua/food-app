@@ -1,18 +1,18 @@
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect } from "react"
 import { CircularProgress, Grid } from "@material-ui/core";
 import { useDispatch, useSelector } from "react-redux";
-import { withRouter } from "react-router-dom";
+// import { withRouter } from "react-router-dom";
 import MyList from "components/list/List";
-import { FileUploader } from "../fileUploader/FileUploader"
+// import { FileUploader } from "../fileUploader/FileUploader"
 // import { uploadToStore } from "../fileUploader/fileUploaderSlice";
-import { ListHandler } from "../listHandler/ListHandler";
-import { addUserRecord, deleteUserRecord, removeRecord } from "../listHandler/listHandlerSlice";
+// import { ListHandler } from "../listHandler/ListHandler";
+// import { addUserRecord, deleteUserRecord, removeRecord } from "../listHandler/listHandlerSlice";
 import { addProductToList, clearList, getUserList, removeProductFromList } from "../userLists/userListsSlice";
 import { AddProduct } from "components/forms/addProduct/AddProduct";
 import { retrieveFormData } from "helpers/retrieveFormData";
 import { PATH_TO_PRODUCT } from "constants/constants";
-import { clearFiles, uploadToStore } from "../fileUploader/fileUploaderSlice";
-import { addProduct } from "../../product/productSlice";
+import { clearFiles } from "../fileUploader/fileUploaderSlice";
+// import { addProduct } from "../../product/productSlice";
 import { makeStyles } from "@material-ui/styles";
 
 const useStyles = makeStyles({

@@ -14,6 +14,7 @@ const initialState = {
     firstName: '',
     lastName: '',
     address: '',
+    city: '',
     friends: null,
   },
   current: {
@@ -127,10 +128,30 @@ export const updateEmail = createAsyncThunk(
   async (newEmail) => {
     const user = firebase.auth(fbApp).currentUser
 
-    if(newEmail) {
-      const updatingEmail = await user.updateEmail(newEmail)
+    console.log(`user`, user)
 
-      console.log(`updatingEmail`, updatingEmail)
+    if(newEmail) {
+
+      try {
+        const updatingEmail = await user.updateEmail(newEmail)
+        console.log(`updatingEmail`, updatingEmail)
+
+        const userRef = fbdb.doc(`users/${user.uid}`)
+
+        const updatingUser = await userRef.update({email: newEmail})
+
+        console.log(`updatingUser`, updatingUser)
+        
+      } catch (error) {
+        console.log(`error.message`, error.message)
+
+        if (error.code === 'auth/requires-recent-login') {
+          console.log('show login modal');
+        }
+      }
+
+
+      
 
       return newEmail
     }

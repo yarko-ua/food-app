@@ -45,6 +45,8 @@ export const fbStorageConfig = {
   userPrivStorage
 }
 
+window.fire = firebase
+
 console.log(`fbStorageConfig`, fbStorageConfig)
 
 console.log(`imagesRef`, imagesRef)

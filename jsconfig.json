@@ -3,6 +3,7 @@
     "baseUrl": "./src",
     "paths": {
       "components/*": ["components/*"],
+      "forms/*": ["components/forms/*"],
       "constants/*": ["constants/*"],
       "appFeatures/*": ["features/app/*"],
       "features/*": ["features/*"],

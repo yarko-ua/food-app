@@ -60,7 +60,8 @@ export const addUserRecord = createAsyncThunk(
 
     // console.log(`data`, data)
 
-    const { name, photos: productPhotos, rating = 0, description } = payload
+    // const { name, photos: productPhotos, rating = 0, description } = payload
+    const { name, rating = 0, description } = payload
 
 
     // if no variable productRating what to do:

@@ -1,21 +1,22 @@
-import React, { Suspense, useEffect } from 'react';
+import React, { Suspense } from 'react';
 import './App.css';
-import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';
+import { BrowserRouter, Switch } from 'react-router-dom';
 import { Box, Container, Paper, useMediaQuery } from "@material-ui/core"
 import { makeStyles } from '@material-ui/core/styles';
 import { Provider } from 'react-redux';
 import { store } from './app/store';
 // import { AppWrapper } from 'features/app/AppWrapper';
 import { AuthWrapper} from 'features/auth/AuthWrapper';
-import PrivateRoute from 'routes/PrivateRoute';
-import { Product } from 'features/product/Product';
+// import PrivateRoute from 'routes/PrivateRoute';
+// import { Product } from 'features/product/Product';
 import { Notification } from 'features/notification/Notification';
-import { auth } from './app/firebase';
-import { SignIn } from 'features/auth/signIn/SignIn';
-import { SignUp } from 'features/auth/signUp/SignUp';
-import { ProfilePublic } from 'features/app/profile/ProfilePublic';
-import routes, { routeComponent, ROUTES } from 'routes/routes';
+// import { auth } from './app/firebase';
+// import { SignIn } from 'features/auth/signIn/SignIn';
+// import { SignUp } from 'features/auth/signUp/SignUp';
+// import { ProfilePublic } from 'features/app/profile/ProfilePublic';
+import routes from 'routes/routes';
 import NestedRoute from 'routes/NestedRoute';
+import ModalContainer from 'features/modal/Modal';
 // import { lazyRouteComponent } from 'routes/lazy';
 
 
@@ -62,15 +63,6 @@ function App() {
   const isMobile = useMediaQuery('(max-width: 960px)')
   const classes = useStyles({isMobile});
 
-  useEffect(() => {
-    // auth.onAuthStateChanged(user => {
-    //   console.log(`user`, user)
-    // })
-    // return () => {
-    //   cleanup
-    // }
-  }, [])
-
   return (
     <BrowserRouter>
       <Provider store={store}>
@@ -88,6 +80,7 @@ function App() {
             </AuthWrapper>
           </Paper>
           <Notification />
+          <ModalContainer />
         </Box>
       </Provider>
     </BrowserRouter>

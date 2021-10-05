@@ -1,13 +1,13 @@
-import { Container, Grid } from "@material-ui/core";
+import { Grid } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 import { useCallback, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AddList } from "components/forms/addList/AddList";
-import { AddProduct } from "components/forms/addProduct/AddProduct";
+// import { AddProduct } from "components/forms/addProduct/AddProduct";
 import MyList from "components/list/List";
 import { PATH_TO_LISTS } from "constants/constants";
 import { retrieveFormData } from "helpers/retrieveFormData";
-import { ListHandler } from "../listHandler/ListHandler";
+// import { ListHandler } from "../listHandler/ListHandler";
 import { addNewList, getUserLists, removeList} from "./userListsSlice";
 
 
@@ -29,9 +29,9 @@ export const UserLists = props => {
 
   useEffect(() => {
     dispatch(getUserLists(userData.uid))
-    console.log(`mount`)
-    console.log(`list`, list)
-  }, [])
+    // console.log(`mount`)
+    // console.log(`list`, list)
+  }, [dispatch, getUserLists])
 
   const handleListSubmit = useCallback(e => {
     e.preventDefault();

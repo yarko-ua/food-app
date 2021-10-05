@@ -4,7 +4,7 @@ import {useDispatch, useSelector } from 'react-redux'
 import { Link, useHistory } from 'react-router-dom'
 import { ROUTES } from 'routes/routes'
 import { friendsRecommendationsSelector, friendsSelector } from 'selectors/friends'
-import { getFriends, getSuggestedPeople } from './friendsSlice'
+import { getFriends } from './friendsSlice'
 
 export const Friends = () => {
   const dispatch = useDispatch()

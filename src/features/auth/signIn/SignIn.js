@@ -1,9 +1,8 @@
 import { Button, TextField, CircularProgress, Grid } from "@material-ui/core"
-import { LocalDiningOutlined } from "@material-ui/icons"
 import { useFormik } from "formik"
 import { useEffect } from "react"
 import { useSelector,useDispatch } from "react-redux"
-import { Link, Redirect, useHistory } from "react-router-dom"
+import { Link, useHistory } from "react-router-dom"
 import { isAuthSelector } from "selectors/auth"
 import { signInValidationSchema } from "validation/signIn"
 import { signInUser } from "../authSlice"
@@ -24,11 +23,7 @@ export const SignIn = () => {
     validationSchema: signInValidationSchema,
     // validateOnMount: true,
     onSubmit: async values => {
-      console.log(`values`, values);
-
       dispatch(signInUser(values));
-
-      // history.replace('/app');
     }
   })
 
@@ -39,7 +34,6 @@ export const SignIn = () => {
       console.log(`state`, state)
 
       history.push( state?.from ? state.from.pathname : '/')
-      // history.push('/lists')
     }
   }, [isAuth, history])
 
