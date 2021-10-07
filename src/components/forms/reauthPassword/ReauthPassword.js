@@ -1,15 +1,43 @@
+import { useContext } from 'react'
 import { useDispatch } from "react-redux"
-import { Button, Container, Grid, TextField } from "@material-ui/core"
+import { Box, Button, Container, Grid, TextField } from "@material-ui/core"
 import { makeStyles } from "@material-ui/styles"
 import { useFormik } from "formik"
 import PropTypes from 'prop-types'
 import { divideCamelString } from "helpers/strings"
-import { updatePasswordValidationSchema } from "validation/updatePass"
 import { showToast } from "features/notification/notificationSlice"
+import { ModalContext } from "features/modal/Modal"
+import { passwordValidationSchema } from 'validation/password'
 
 const useStyles = makeStyles({
+  form: {
+    // backgroundColor: '#FFFFFF'
+  },
   input: {
     marginBottom: 15
+  },
+  submit: {
+    '&:not([disabled])': {
+      backgroundColor: 'rgba(100, 255, 100, 1)',
+
+      '&:hover' : {
+        backgroundColor: 'rgba(50, 205, 50, 1)',
+      }
+    },
+  },
+  submitNotValid: {
+    backgroundColor: 'rgba(194, 194, 25, 1)',
+
+    '&:hover' : {
+      backgroundColor: 'rgba(154, 154, 11, 1)',
+    }
+  },
+  decline: {
+    backgroundColor: 'rgba(215, 75, 75, 1)',
+    marginTop: 10,
+    '&:hover': {
+      backgroundColor: 'rgba(165, 25, 25, 1)',
+    }
   }
 })
 
@@ -18,27 +46,21 @@ const ReauthPassword = ({ handleSubmit }) => {
 
   const dispatch = useDispatch()
 
+  const modal = useContext(ModalContext)
+
   const formik = useFormik({
     initialValues: {
       password: '',
     },
-    validationSchema: updatePasswordValidationSchema,
+    validationSchema: passwordValidationSchema,
     onSubmit: async (values, formikBag) => {
       console.log(`values`, values)
 
-      if (values.password !== values.confirmationPassword) {
-        dispatch(showToast({
-          show: true,
-          type: 'error',
-          message: 'Passwords are not same'
-        }))
+      modal.handleClose()
 
-        return null
-      }
-
-      handleSubmit && handleSubmit(values)
+      // handleSubmit && handleSubmit(values)
       // console.log(`formikBag`, formikBag)
-      formikBag.resetForm()
+      // formikBag.resetForm()
     }
   })
   const formStyles = useStyles()
@@ -46,13 +68,16 @@ const ReauthPassword = ({ handleSubmit }) => {
   console.log(`formik`, formik)
 
   return (
-    <form onSubmit={formik.handleSubmit}>
-      <Grid container justifyContent="space-between">
+    <form onSubmit={formik.handleSubmit} className={formStyles.form}>
+      <Grid container>
+
+        <Grid item xs={12}>
+            <Box component={`h2`} sx={{textAlign: 'center', mt: 0}}>Confirmation required</Box>
+        </Grid>
 
         {
           Object.entries(formik.initialValues).map(field => (
-            <Grid key={field[0]} item xs={6} className={formStyles.input}>
-              <Container>
+            <Grid key={field[0]} item xs={12} className={formStyles.input}>
                 <TextField
                   fullWidth
                   value={formik.values[field[0]]}
@@ -65,15 +90,33 @@ const ReauthPassword = ({ handleSubmit }) => {
                   error={formik.touched[field[0]] && Boolean(formik.errors[field[0]])} 
                   helperText={formik.touched[field[0]] && formik.errors[field[0]]} 
                 />
-              </Container>
             </Grid>
           ))
         }
 
         <Grid item xs={12}>
-          <Container>
-            <Button disabled={!formik.dirty} type="submit" variant="contained" color="primary" >Update password</Button>
-          </Container>
+            <Button 
+              disabled={!formik.dirty} 
+              type="submit" 
+              variant="contained" 
+              color="primary"
+              className={`${formik.dirty && !formik.isValid ? formStyles.submitNotValid : formStyles.submit}`}
+              fullWidth
+            >
+              Confirm
+            </Button>
+        </Grid>
+        <Grid item xs={12}>
+            <Button  
+              type="button" 
+              variant="contained" 
+              color="primary"
+              className={formStyles.decline}
+              fullWidth
+              onClick={modal.handleClose}
+            >
+              Decline
+            </Button>
         </Grid>
       </Grid>
     

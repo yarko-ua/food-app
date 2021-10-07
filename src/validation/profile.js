@@ -14,5 +14,4 @@ export const profileFormValidation  = yup.object({
   city: yup
     .string('Fill in a city name')
     .min(2)
-    .required('Fill in a city name')
 })

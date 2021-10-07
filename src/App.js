@@ -69,18 +69,19 @@ function App() {
         <Box component="main" className={classes.root}>
           <h6 className={classes.version}>App v.{process.env.REACT_APP_VERSION} </h6>
           <Paper elevation={5} className={classes.paper}>
-            <AuthWrapper>
-              <Container maxWidth={false} disableGutters className={classes.container} >
-                <Suspense fallback={<>Loading ...</>}>
-                  <Switch>
-                    { routes.map(route => <NestedRoute key={route.path} {...route} /> ) }
-                  </Switch>
-                </Suspense>
-              </Container>
-            </AuthWrapper>
+            <ModalContainer>
+              <AuthWrapper>
+                <Container maxWidth={false} disableGutters className={classes.container} >
+                  <Suspense fallback={<>Loading ...</>}>
+                    <Switch>
+                      { routes.map(route => <NestedRoute key={route.path} {...route} /> ) }
+                    </Switch>
+                  </Suspense>
+                </Container>
+              </AuthWrapper>
+            </ModalContainer>
           </Paper>
           <Notification />
-          <ModalContainer />
         </Box>
       </Provider>
     </BrowserRouter>

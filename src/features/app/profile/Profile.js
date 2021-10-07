@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useState, useMemo } from 'react'
+import { useCallback, useEffect, useState, useMemo, useContext } from 'react'
 import { Button, Container, Divider, Grid, IconButton, Modal } from "@material-ui/core"
 import { useDispatch, useSelector } from "react-redux"
-import { getUserFullInfo, updateEmail, updatePassword, updateProfilePhoto } from './profileSlice'
+import { getUserFullInfo, testAction, updateEmail, updatePassword, updateProfilePhoto } from './profileSlice'
 // import { ProfileForm } from 'components/forms/profileForm/ProfileForm'
 import { CoverImg } from 'components/coverImg/CoverImg'
 import { Edit } from '@material-ui/icons'
@@ -9,10 +9,12 @@ import { makeStyles } from '@material-ui/styles'
 import { FileUploader } from '../fileUploader/FileUploader'
 import { userSelector } from 'selectors/user'
 import { filesSelector } from 'selectors/files'
+import { ModalContext } from 'features/modal/Modal'
 // import { filesSelector, userSelector } from 'selectors/user'
 import ProfileInfo from 'components/forms/profileInfo/ProfileInfo'
 import UpdateEmail from 'components/forms/updateEmail/UpdateEmail'
 import UpdatePassword from 'components/forms/updatePassword/UpdatePassword'
+import ReauthPassword from 'components/forms/reauthPassword/ReauthPassword'
 
 
 const useStyles = makeStyles({
@@ -38,6 +40,9 @@ const Profile = props => {
   const [editProfileImg, setEditProfileImg] = useState(false)
   const [profilePhoto, setProfilePhoto] = useState(photoURL)
   const styles = useStyles()
+
+
+  const modal = useContext(ModalContext)
 
   useEffect(() => {
     dispatch(getUserFullInfo())
@@ -84,12 +89,21 @@ const Profile = props => {
     },
     [],
   )
+
+  const modalRender = useCallback(
+    () => (<ReauthPassword />),
+    []
+  )
+
   const handleEmailUpdate = useCallback(
     (newEmail) => {
       console.log('update profile email')
-      dispatch(updateEmail(newEmail))
+      // dispatch(updateEmail(newEmail))
+      modal.setCloseCallback(() => dispatch(testAction('show this message')))
+      modal.setContentRender(modalRender)
+      modal.setIsOpen(true)
     },
-    [dispatch],
+    [modal, modalRender],
   )
   const handlePasswordUpdate = useCallback(
     ({password}) => {

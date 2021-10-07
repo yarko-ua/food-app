@@ -6,8 +6,19 @@ import PropTypes from 'prop-types'
 import { divideCamelString } from "helpers/strings"
 
 const useStyles = makeStyles({
+  form: {
+    marginBottom: 15
+  },
   input: {
     marginBottom: 15
+  },
+  submit: {
+    '&:not([disabled])': {
+      backgroundColor: 'rgba(100, 255, 100, 1)'
+    },
+  },
+  submitNotValid: {
+    backgroundColor: 'rgba(194, 194, 25, 1)',
   }
 })
 
@@ -31,7 +42,7 @@ const ProfileInfo = ({ initialValues, handleSubmit }) => {
   console.log(`formik`, formik)
 
   return (
-    <form onSubmit={formik.handleSubmit}>
+    <form onSubmit={formik.handleSubmit} className={formStyles.form}>
       <Grid container justifyContent="space-between">
         {
           Object.entries(formik.initialValues).map(field => (
@@ -106,7 +117,15 @@ const ProfileInfo = ({ initialValues, handleSubmit }) => {
         </Grid> */}
         <Grid item xs={12}>
           <Container>
-            <Button disabled={!formik.dirty} type="submit" variant="contained" color="primary" >Update info</Button>
+            <Button 
+              disabled={!formik.dirty} 
+              type="submit" 
+              variant="contained" 
+              color="primary"
+              className={`${formik.dirty && !formik.isValid ? formStyles.submitNotValid : formStyles.submit}`}
+            >
+              Update info
+            </Button>
           </Container>
         </Grid>
       </Grid>

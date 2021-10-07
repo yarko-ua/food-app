@@ -8,7 +8,7 @@ import productReducer from 'features/product/productSlice'
 import notification from 'features/notification/notificationSlice'
 import userReducer from 'features/app/profile/profileSlice' 
 import friendsReducer from 'features/app/friends/friendsSlice'
-import modalReducer from 'features/modal/modalSlice'
+// import modalReducer from 'features/modal/modalSlice'
 
 
 export const store = configureStore({
@@ -21,7 +21,7 @@ export const store = configureStore({
     auth: authReducer,
     user: userReducer,
     friends: friendsReducer,
-    modal: modalReducer,
+    // modal: modalReducer,
     [listApi.reducerPath]: listApi.reducer,
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(listApi.middleware)

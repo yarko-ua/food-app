@@ -5,6 +5,7 @@ import { PATH_TO_USERS_PUBLIC_STORAGE } from "constants/constants";
 import { signInUser, signOutUser, signUpUser, updateUser } from "features/auth/authSlice";
 import { uploadToStore } from "../fileUploader/fileUploaderSlice";
 import firebase from 'firebase'
+import { create } from "yup/lib/Reference";
 
 const initialState = {
   data: {
@@ -121,6 +122,13 @@ export const updatePassword = createAsyncThunk(
       return newPass
     }
   } 
+)
+
+export const testAction = createAsyncThunk(
+  'user/testFunc',
+  d => {
+    console.log(d)
+  }
 )
 
 export const updateEmail = createAsyncThunk(

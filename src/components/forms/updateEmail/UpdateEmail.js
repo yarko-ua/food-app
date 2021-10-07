@@ -6,8 +6,19 @@ import { divideCamelString } from "helpers/strings"
 import { emailValidationSchema } from "validation/email"
 
 const useStyles = makeStyles({
+  form: {
+    margin: '15px 0'
+  },
   input: {
     marginBottom: 15
+  },
+  submit: {
+    '&:not([disabled])': {
+      backgroundColor: 'rgba(100, 255, 100, 1)'
+    },
+  },
+  submitNotValid: {
+    backgroundColor: 'rgba(194, 194, 25, 1)',
   }
 })
 
@@ -28,7 +39,7 @@ const UpdateEmail = ({ email, handleSubmit }) => {
   const formStyles = useStyles()
 
   return (
-    <form onSubmit={formik.handleSubmit}>
+    <form onSubmit={formik.handleSubmit} className={formStyles.form}>
       <Grid container justifyContent="space-between">
 
         {
@@ -54,7 +65,15 @@ const UpdateEmail = ({ email, handleSubmit }) => {
 
         <Grid item xs={12}>
           <Container>
-            <Button disabled={!formik.dirty} type="submit" variant="contained" color="primary" >Update email</Button>
+            <Button 
+              disabled={!formik.dirty} 
+              type="submit" 
+              variant="contained" 
+              color="primary"
+              className={`${formik.dirty && !formik.isValid ? formStyles.submitNotValid : formStyles.submit}`}
+            >
+              Update email
+            </Button>
           </Container>
         </Grid>
       </Grid>

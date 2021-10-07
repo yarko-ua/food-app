@@ -8,8 +8,19 @@ import { updatePasswordValidationSchema } from "validation/updatePass"
 import { showToast } from "features/notification/notificationSlice"
 
 const useStyles = makeStyles({
+  form: {
+    margin: '15px 0'
+  },
   input: {
     marginBottom: 15
+  },
+  submit: {
+    '&:not([disabled])': {
+      backgroundColor: 'rgba(100, 255, 100, 1)'
+    },
+  },
+  submitNotValid: {
+    backgroundColor: 'rgba(194, 194, 25, 1)',
   }
 })
 
@@ -47,7 +58,7 @@ const UpdatePassword = ({ handleSubmit }) => {
   console.log(`formik`, formik)
 
   return (
-    <form onSubmit={formik.handleSubmit}>
+    <form onSubmit={formik.handleSubmit} className={formStyles.form}>
       <Grid container justifyContent="space-between">
 
         {
@@ -73,7 +84,15 @@ const UpdatePassword = ({ handleSubmit }) => {
 
         <Grid item xs={12}>
           <Container>
-            <Button disabled={!formik.dirty} type="submit" variant="contained" color="primary" >Update password</Button>
+            <Button 
+              disabled={!formik.dirty} 
+              type="submit" 
+              variant="contained" 
+              color="primary"
+              className={`${formik.dirty && !formik.isValid ? formStyles.submitNotValid : formStyles.submit}`}
+            >
+              Update password
+            </Button>
           </Container>
         </Grid>
       </Grid>
