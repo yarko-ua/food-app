@@ -1,6 +1,8 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+// import { updateEmail } from 'features/app/profile/profileSlice';
 import firebase from 'firebase/app';
 import 'firebase/auth'
+import { objectValueByStringKey } from 'helpers/objects';
 import { saveState } from '../../helpers/appState';
 import { fbApp } from '../app/fileUploader/fileUploaderAPI';
 import { signIn, signOut, signUp } from './authAPI';
@@ -8,7 +10,9 @@ import { signIn, signOut, signUp } from './authAPI';
 const initialState = {
   isAuth: null,
   loading: false,
-  data: null
+  data: null,
+  reauth: false,
+  reauthInProgress: false
 };
 
 
@@ -87,10 +91,45 @@ export const updateUser = createAsyncThunk(
     } catch (error) {
       console.log(`error`, error)
       throw new Error(error.message)
-    }
-    
+    } 
   }
+)
 
+export const reauthUser = createAsyncThunk(
+  'auth/reauth',
+  async ({ password, actionCreator, stateDataPath }, thunkAPI) => {
+
+    console.log(`actionCreator`, actionCreator)
+
+    try {
+      const user =  firebase.auth(fbApp).currentUser
+      const state = thunkAPI.getState()
+      const { email } = state.user.data
+
+      const credential = await firebase.auth.EmailAuthProvider.credential(email, password)
+
+      console.log(`credential`, credential)
+
+      // firebase recomment use it before specific actions like updatePassword
+      const reauthResponse = await user.reauthenticateWithCredential(credential)
+      
+      console.log(`reauthResponse`, reauthResponse)
+
+      const actionData = objectValueByStringKey(state, stateDataPath)
+
+      console.log(`actionData`, actionData)
+
+      const dispatch = await thunkAPI.dispatch(actionCreator(actionData))
+      
+      console.log(`dispatch`, dispatch)
+      // thunkAPI.dispatch(updateEmail())
+
+      return true  //???
+
+    } catch (error) {
+      console.log(`error`, error)
+    }
+  }
 )
 
 export const authReducer = createSlice({
@@ -101,7 +140,9 @@ export const authReducer = createSlice({
       console.log(`action`, action)
       state.data = action.payload
       state.isAuth = Boolean(action.payload)
-    }
+    },
+    requestReauth: state => {state.reauth = true},
+    withdrawReauth: state => {state.reauth = false}
   },
   extraReducers: builder => {
     builder
@@ -145,6 +186,6 @@ export const authReducer = createSlice({
   }
 })
 
-export const { setUser } = authReducer.actions;
+export const { setUser, requestReauth, withdrawReauth } = authReducer.actions;
 
 export default authReducer.reducer;

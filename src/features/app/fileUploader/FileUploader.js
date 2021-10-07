@@ -1,8 +1,9 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { uploadFiles, removeFile, clearFiles } from './fileUploaderSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { PhotoCamera } from '@material-ui/icons';
 import { CircularProgress, Grid, IconButton, makeStyles } from '@material-ui/core';
+import { Close } from '@material-ui/icons';
 
 const useFileUploaderStyles = makeStyles({
   root: {
@@ -69,6 +70,18 @@ const useFileUploaderStyles = makeStyles({
     color: '#fff',
     cursor: 'pointer',
     display: 'none',
+
+    '&:hover': {
+      backgroundColor: 'rgba(230, 10, 10, 0.9)'
+    },
+
+    '& .MuiIconButton-label': {
+      position: 'absolute',
+      left: '50%',
+      top: '50%',
+      transform: 'translate(-50%, -50%)',
+      maxWidth: '100%'
+    }
   }
 })
 
@@ -89,7 +102,7 @@ export const FileUploader = ({className, fullWidth}) => {
 
 
   const handleRemovePhoto = useCallback( (e) => {
-    dispatch(removeFile(e.target.nextElementSibling.alt));
+    dispatch(removeFile(e.currentTarget.nextElementSibling.alt));
   }, [dispatch]);
 
   useEffect(() => {
@@ -97,6 +110,16 @@ export const FileUploader = ({className, fullWidth}) => {
       dispatch(clearFiles())
     }
   }, [dispatch])
+
+  const columnSize = useMemo(()=>{
+    if (files?.length) {
+      if (files.length >= 5) return 3
+
+      return Math.round(Math.min( (12/files.length),  4)) 
+    }
+
+    return null
+  }, [files])
 
   return (
     <Grid className={`${className}${styles.root}`}>
@@ -120,9 +143,11 @@ export const FileUploader = ({className, fullWidth}) => {
           { 
             files.map((file, i) => {
               return (
-                <Grid item xs={2} key={file.name}>
+                <Grid item xs={columnSize} key={file.name}>
                   <div className={styles.imgContainer}  >
-                    <button type="button" className={styles.removeImgBtn} onClick={handleRemovePhoto}>X</button>
+                    <IconButton className={styles.removeImgBtn} onClick={handleRemovePhoto}>
+                      <Close />
+                    </IconButton>
                     <img src={file.url} alt={file.name} className={styles.img} />
                     <div className={styles.imgOverlay}>{i + 1}</div>
                   </div>

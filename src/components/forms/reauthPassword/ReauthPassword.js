@@ -56,9 +56,9 @@ const ReauthPassword = ({ handleSubmit }) => {
     onSubmit: async (values, formikBag) => {
       console.log(`values`, values)
 
-      modal.handleClose()
+      // modal.handleClose() close by reauth state change
 
-      // handleSubmit && handleSubmit(values)
+      handleSubmit && handleSubmit(values)
       // console.log(`formikBag`, formikBag)
       // formikBag.resetForm()
     }

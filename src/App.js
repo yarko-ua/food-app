@@ -69,8 +69,8 @@ function App() {
         <Box component="main" className={classes.root}>
           <h6 className={classes.version}>App v.{process.env.REACT_APP_VERSION} </h6>
           <Paper elevation={5} className={classes.paper}>
-            <ModalContainer>
-              <AuthWrapper>
+            <AuthWrapper>
+              <ModalContainer>
                 <Container maxWidth={false} disableGutters className={classes.container} >
                   <Suspense fallback={<>Loading ...</>}>
                     <Switch>
@@ -78,8 +78,8 @@ function App() {
                     </Switch>
                   </Suspense>
                 </Container>
-              </AuthWrapper>
-            </ModalContainer>
+              </ModalContainer>
+            </AuthWrapper>
           </Paper>
           <Notification />
         </Box>
