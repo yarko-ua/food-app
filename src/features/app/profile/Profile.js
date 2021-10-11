@@ -15,6 +15,7 @@ import ProfileInfo from 'components/forms/profileInfo/ProfileInfo'
 import UpdateEmail from 'components/forms/updateEmail/UpdateEmail'
 import UpdatePassword from 'components/forms/updatePassword/UpdatePassword'
 import ReauthPassword from 'components/forms/reauthPassword/ReauthPassword'
+import { reauthUser, withdrawReauth } from 'features/auth/authSlice'
 
 
 const useStyles = makeStyles({
@@ -39,18 +40,12 @@ const Profile = props => {
   const [changeProfileImg, setChangeProfileImg] = useState(false)
   const [editProfileImg, setEditProfileImg] = useState(false)
   const [profilePhoto, setProfilePhoto] = useState(photoURL)
+
+  const { reauth } = useSelector(state => state.auth)
+
   const styles = useStyles()
 
-
   const modal = useContext(ModalContext)
-
-  useEffect(() => {
-    dispatch(getUserFullInfo())
-  }, [dispatch])
-
-  useEffect(() => {
-    setProfilePhoto(photoURL)
-  }, [photoURL])
 
   const initialValues = useMemo(() => {
     const { firstName, lastName, address, city } = user
@@ -69,18 +64,28 @@ const Profile = props => {
     [],
   )
 
-  const handleEditImg = useCallback(
-    () => {
-      setEditProfileImg(true)
-    },
-    [],
-  ) 
-
   const handleProfilePhotoUpdate = useCallback(
     () => {
       dispatch(updateProfilePhoto())
     },
     [dispatch],
+  )
+
+  const handleEditImg = useCallback(
+    () => {
+      modal.setContentRender(() => (
+        <Grid container justifyContent="center">
+          <Grid item xs='auto'>
+            <FileUploader />
+          </Grid>
+          <Grid item container xs={12} justifyContent="center">
+            <Button disabled={files.filesCount < 1} onClick={handleProfilePhotoUpdate} variant="contained" color="primary">Update photo</Button>
+          </Grid>
+        </Grid>
+      ))
+      modal.setIsOpen(true)
+    },
+    [modal, files, handleProfilePhotoUpdate],
   ) 
 
   const handleInfoUpdate = useCallback(
@@ -90,27 +95,77 @@ const Profile = props => {
     [],
   )
 
-  const modalRender = useCallback(
-    () => (<ReauthPassword />),
+  const handleReauth = useCallback(
+    ({password}) => {
+
+      console.log(`password`, password)
+      console.log('reauthUser', reauthUser)
+      
+      dispatch(reauthUser(
+        {
+          password,
+          actionCreator: updateEmail,
+          stateDataPath: 'user.tempData'
+        }
+      ))
+    },
     []
+  )
+
+  // const modalRender = useCallback(
+  //   () => {
+  //     const onSubmit = () => {
+  //       dispatch( withdrawReauth() )
+  //     }
+
+  //     return <ReauthPassword handleSubmit={onSubmit} />
+  //   },
+  //   [dispatch]
+  // )
+
+  const modalRenderReauth = useCallback(
+    () => <ReauthPassword handleSubmit={handleReauth} />
+    ,
+    [handleReauth]
   )
 
   const handleEmailUpdate = useCallback(
     (newEmail) => {
       console.log('update profile email')
-      // dispatch(updateEmail(newEmail))
-      modal.setCloseCallback(() => dispatch(testAction('show this message')))
-      modal.setContentRender(modalRender)
-      modal.setIsOpen(true)
+      dispatch(updateEmail(newEmail))
     },
-    [modal, modalRender],
+    [dispatch],
   )
+
   const handlePasswordUpdate = useCallback(
     ({password}) => {
       dispatch(updatePassword(password))
     },
     [dispatch],
   )
+
+  useEffect(() => {
+    dispatch(getUserFullInfo())
+  }, [dispatch])
+
+  useEffect(() => {
+    setProfilePhoto(photoURL)
+  }, [photoURL])
+
+  useEffect(() => {
+    if (reauth) {
+      modal.setContentRender(modalRenderReauth)
+      modal.setIsOpen(true)
+    }
+    // if (!reauth) {
+    //   // const testFunc = () => {
+    //   //   dispatch(withdrawReauth()) 
+    //   // }
+
+    //   modal.handleClose()
+    //   dispatch(withdrawReauth())
+    // }
+  }, [reauth, modal, modalRenderReauth, dispatch])
 
   return (
     // <Container disableGutters={true}>

@@ -1,11 +1,10 @@
+import firebase from 'firebase'
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import fbApp, { fbdb } from "../../../app/firebase";
 import { PATH_TO_USERS_PUBLIC_STORAGE } from "constants/constants";
 // import firebase from 'firebase/app'
-import { signInUser, signOutUser, signUpUser, updateUser } from "features/auth/authSlice";
 import { uploadToStore } from "../fileUploader/fileUploaderSlice";
-import firebase from 'firebase'
-import { create } from "yup/lib/Reference";
+import { requestReauth, signInUser, signOutUser, signUpUser, updateUser } from "features/auth/authSlice";
 
 const initialState = {
   data: {
@@ -27,7 +26,8 @@ const initialState = {
     address: '',
     friends: null,
   },
-  loading: false
+  loading: false,
+  tempData: null,
 }
 
 export const getUserFullInfo = createAsyncThunk(
@@ -124,16 +124,9 @@ export const updatePassword = createAsyncThunk(
   } 
 )
 
-export const testAction = createAsyncThunk(
-  'user/testFunc',
-  d => {
-    console.log(d)
-  }
-)
-
 export const updateEmail = createAsyncThunk(
   'user/updateEmail',
-  async (newEmail) => {
+  async (newEmail, thunkAPI) => {
     const user = firebase.auth(fbApp).currentUser
 
     console.log(`user`, user)
@@ -142,26 +135,36 @@ export const updateEmail = createAsyncThunk(
 
       try {
         const updatingEmail = await user.updateEmail(newEmail)
-        console.log(`updatingEmail`, updatingEmail)
+        console.log(`updatingEmail`, updatingEmail) //underfined when success
 
         const userRef = fbdb.doc(`users/${user.uid}`)
 
         const updatingUser = await userRef.update({email: newEmail})
 
-        console.log(`updatingUser`, updatingUser)
+        console.log(`updatingUser`, updatingUser) //underfined when success
+
+        return {
+          reauth: false,
+          email: newEmail
+        }
         
+
       } catch (error) {
         console.log(`error.message`, error.message)
 
         if (error.code === 'auth/requires-recent-login') {
           console.log('show login modal');
+
+          const reauth = thunkAPI.dispatch(requestReauth())
+
+          return {
+            reauth: true,
+            email: newEmail
+          }
         }
+
+        throw new Error(error.message)
       }
-
-
-      
-
-      return newEmail
     }
   } 
 )
@@ -205,11 +208,11 @@ const profile = createSlice({
         address: '',
         friends: null
       }
-    }
+    },
   },
   extraReducers: builder => {
     builder
-      .addCase(signOutUser.fulfilled, state => ({...initialState}))
+      .addCase(signOutUser.fulfilled, () => ({...initialState}))
       .addCase(signInUser.fulfilled, (state, action) => {
         const { uid, photoURL, displayName, email } = action.payload
         state.data.id = uid
@@ -262,7 +265,12 @@ const profile = createSlice({
       }) 
       .addCase(updateEmail.fulfilled, (state, action)  => {
         state.loading = false
-        state.data.email = action.payload
+
+        if(!action.payload.reauth)
+          state.data.email = action.payload.email
+
+        if(action.payload.reauth)
+          state.tempData = action.payload.email
       }) 
   }
 })

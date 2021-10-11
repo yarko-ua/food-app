@@ -44,10 +44,12 @@ const notification = createSlice({
       state.message = action.error.message
     })
 
-    .addCase(updateEmail.fulfilled, (state) => {
-      state.show = true
-      state.type = 'success'
-      state.message = 'Email successfully updated'
+    .addCase(updateEmail.fulfilled, (state, action) => {
+      if (!action.payload?.reauth) {
+        state.show = true
+        state.type = 'success'
+        state.message = 'Email successfully updated'
+      }
     })
     .addCase(updatePassword.fulfilled, (state) => {
       state.show = true

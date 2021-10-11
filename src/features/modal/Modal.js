@@ -1,8 +1,6 @@
 import { createContext, useCallback, useMemo, useState } from 'react'
-import { Box, ClickAwayListener, Grid, makeStyles, Modal } from "@material-ui/core"
-import { useSelector } from 'react-redux'
-import { Switch } from 'react-router'
-import ReauthPassword from 'components/forms/reauthPassword/ReauthPassword'
+import { Box, ClickAwayListener, Grid, makeStyles, Modal, IconButton } from "@material-ui/core"
+import { Close } from '@material-ui/icons'
 
 const boxStyles = {
   backgroundColor: 'rgba(255, 255, 255, 0.333)',
@@ -17,7 +15,26 @@ const useStyles = makeStyles({
   contentContainer: {
     borderRadius: '4.5px',
     backgroundColor: '#FFFFFF',
-    padding: '15px 10px'
+    padding: '15px 10px',
+    position: 'relative'
+  },
+  closeModalBtn: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    borderRadius: '50%',
+    width: 30,
+    height: 30,
+    backgroundColor: 'rgba(200, 50, 50, 1)',
+    transform: 'translate(50%, -50%)',
+
+    '&:hover': {
+      backgroundColor: 'rgba(240, 70, 70, 1)',
+    },
+
+    '& svg': {
+      fill: '#FFFFFF'
+    }
   }
 })
 
@@ -35,9 +52,12 @@ const ModalContainer = ({children}) => {
       console.log('tra ta ta');
       setIsOpen(false)
       setContentRender(null)
-      closeCallback()
+      // closeCallback()
+      // console.log(`rest`, rest)
+      // console.log(`cb`, cb)
+      // cb && cb()
     },
-    [closeCallback],
+    [],
   )
   const handleClickAway = useCallback(
     () => {
@@ -52,7 +72,6 @@ const ModalContainer = ({children}) => {
     setContentRender,
     handleClose,
     setIsOpen,
-    setCloseCallback
   }), [handleClose, setContentRender])
 
   return (
@@ -60,7 +79,7 @@ const ModalContainer = ({children}) => {
       {children}
 
       {
-        contentRender && <Modal
+        <Modal
           open={isOpen}
           onClose={handleClose}
         >
@@ -70,6 +89,9 @@ const ModalContainer = ({children}) => {
                   onClickAway={handleClickAway} 
                 >
               <Grid item xs="auto" className={styles.contentContainer}>
+                  <IconButton onClick={handleClose} className={styles.closeModalBtn}>
+                    <Close />
+                  </IconButton>
                   <>
                     {/* <ReauthPassword /> */}
                     {contentRender}
