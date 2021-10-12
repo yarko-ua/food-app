@@ -1,20 +1,27 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { updateEmail, updatePassword } from 'features/app/profile/profileSlice';
 // import { updateEmail } from 'features/app/profile/profileSlice';
 import firebase from 'firebase/app';
 import 'firebase/auth'
+import fbApp from 'firebaseconfig/firebase'
 import { objectValueByStringKey } from 'helpers/objects';
-import { saveState } from '../../helpers/appState';
-import { fbApp } from '../app/fileUploader/fileUploaderAPI';
+import { saveState } from 'helpers/appState';
 import { signIn, signOut, signUp } from './authAPI';
+import { UPDATE_EMAIL, UPDATE_PASSWORD } from './constants';
 
 const initialState = {
   isAuth: null,
   loading: false,
   data: null,
   reauth: false,
-  reauthInProgress: false
+  reauthInProgress: false,
+  onReauthAction: null
 };
 
+const specificActions = {
+  [UPDATE_PASSWORD]: updatePassword,
+  [UPDATE_EMAIL]: updateEmail
+}
 
 export const signInUser = createAsyncThunk(
   'auth/signIn',
@@ -97,14 +104,15 @@ export const updateUser = createAsyncThunk(
 
 export const reauthUser = createAsyncThunk(
   'auth/reauth',
-  async ({ password, actionCreator, stateDataPath }, thunkAPI) => {
+  async ({ password, stateDataPath = null }, thunkAPI) => {
 
-    console.log(`actionCreator`, actionCreator)
+    // console.log(`actionCreator`, actionCreator)
 
     try {
       const user =  firebase.auth(fbApp).currentUser
       const state = thunkAPI.getState()
       const { email } = state.user.data
+      const { onReauthAction } = state
 
       const credential = await firebase.auth.EmailAuthProvider.credential(email, password)
 
@@ -115,19 +123,32 @@ export const reauthUser = createAsyncThunk(
       
       console.log(`reauthResponse`, reauthResponse)
 
-      const actionData = objectValueByStringKey(state, stateDataPath)
-
-      console.log(`actionData`, actionData)
-
-      const dispatch = await thunkAPI.dispatch(actionCreator(actionData))
       
-      console.log(`dispatch`, dispatch)
-      // thunkAPI.dispatch(updateEmail())
+
+      // if (actionCreator) {
+      //   const actionData = objectValueByStringKey(state, stateDataPath)
+      //   console.log(`actionData`, actionData)
+
+      //   const dispatch = await thunkAPI.dispatch(actionCreator(actionData))
+      
+      //   console.log(`dispatch`, dispatch)
+      //   // thunkAPI.dispatch(updateEmail())
+      // }
+
+      if (stateDataPath && onReauthAction) {
+        const actionData = objectValueByStringKey(state, stateDataPath)
+        console.log(`actionData`, actionData)
+
+        const dispatch = await thunkAPI.dispatch(specificActions[onReauthAction](actionData))
+      
+        console.log(`dispatch`, dispatch)
+      }
 
       return true  //???
 
     } catch (error) {
       console.log(`error`, error)
+      throw new Error(error.message)
     }
   }
 )
@@ -141,8 +162,16 @@ export const authReducer = createSlice({
       state.data = action.payload
       state.isAuth = Boolean(action.payload)
     },
-    requestReauth: state => {state.reauth = true},
-    withdrawReauth: state => {state.reauth = false}
+    requestReauth: (state, action) => {
+      state.reauth = true
+      state.reauthInProgress = true
+      state.onReauthAction = action.payload
+    },
+    withdrawReauth: state => {
+      state.reauth = false
+      state.reauthInProgress = false
+      state.onReauthAction = null
+    }
   },
   extraReducers: builder => {
     builder
@@ -182,6 +211,10 @@ export const authReducer = createSlice({
       })
       .addCase(signOutUser.rejected, (state, action) => {
         state.loading = false;
+      })
+
+      .addCase(reauthUser.fulfilled, state => {
+        state.reauth = false
       })
   }
 })

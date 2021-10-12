@@ -1,11 +1,18 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { addUserRecord } from "../app/listHandler/listHandlerSlice";
-import { getUserFullInfo, updateEmail, updatePassword } from "../app/profile/profileSlice";
-import { addProductToList } from "../app/userLists/userListsSlice";
-import { signInUser } from "../auth/authSlice";
+import { addUserRecord } from "features/app/listHandler/listHandlerSlice";
+import { reauthUser, signInUser } from "features/auth/authSlice";
+import { getUserFullInfo, updateEmail, updatePassword } from "features/app/profile/profileSlice";
+import { addProductToList } from "features/app/userLists/userListsSlice";
+
+const TYPE_SUCCESS = 'success',
+      TYPE_WARNING = 'warning',
+      TYPE_ERROR = 'error',
+      TYPE_DARK = 'dark',
+      TYPE_INFO = 'info',
+      TYPE_DEFAULT = 'default'
 
 const initialState = {
-  type: 'default', //success, warning, error, dark, info
+  type: TYPE_DEFAULT,
   message: '',
   show: false
 }
@@ -23,38 +30,46 @@ const notification = createSlice({
   },
   extraReducers: builder => {
     builder.addCase(signInUser.rejected, (state, action) => {
-      state.type = 'error'
+      state.type = TYPE_ERROR
       state.message = action.error.message
       state.show = true
     })
     .addCase(addUserRecord.rejected, (state, action) => {
       console.log(`action`, action)
       state.show = true
-      state.type = 'error'
+      state.type = TYPE_ERROR
       state.message = action.error.message
     })
     .addCase(addProductToList.fulfilled, (state) => {
       state.show = true
-      state.type = 'success'
+      state.type = TYPE_SUCCESS
       state.message = 'Product successfully added'
     })
     .addCase(getUserFullInfo.rejected, (state, action) => {
       state.show = true
-      state.type = 'error'
+      state.type = TYPE_ERROR
       state.message = action.error.message
     })
 
     .addCase(updateEmail.fulfilled, (state, action) => {
       if (!action.payload.reauth) {
         state.show = true
-        state.type = 'success'
+        state.type = TYPE_SUCCESS
         state.message = 'Email successfully updated'
       }
     })
-    .addCase(updatePassword.fulfilled, (state) => {
+    .addCase(updatePassword.fulfilled, (state, action) => {
+      if (!action.payload.reauth) {
+        state.show = true
+        state.type = TYPE_SUCCESS
+        state.message = 'Password successfully updated'
+      }
+    })
+
+    .addCase(reauthUser.rejected, (state, action) => {
       state.show = true
-      state.type = 'success'
-      state.message = 'Password successfully updated'
+      state.type = TYPE_ERROR
+      state.message = action.error.message
     })
   }
 })

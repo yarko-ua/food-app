@@ -1,5 +1,3 @@
-// import loadable from '@loadable/component'
-
 import { SignIn } from "features/auth/signIn/SignIn"
 import { SignUp } from "features/auth/signUp/SignUp"
 import { AppWrapper } from "features/app/AppWrapper"

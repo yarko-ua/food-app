@@ -6,7 +6,7 @@ import { getUserFullInfo, testAction, updateEmail, updatePassword, updateProfile
 import { CoverImg } from 'components/coverImg/CoverImg'
 import { Close, Edit } from '@material-ui/icons'
 import { makeStyles } from '@material-ui/styles'
-import { FileUploader } from '../fileUploader/FileUploader'
+import { FileUploader } from 'features/app/fileUploader/FileUploader'
 import { userSelector } from 'selectors/user'
 import { filesSelector } from 'selectors/files'
 import { ModalContext } from 'features/modal/Modal'
@@ -15,7 +15,7 @@ import ProfileInfo from 'components/forms/profileInfo/ProfileInfo'
 import UpdateEmail from 'components/forms/updateEmail/UpdateEmail'
 import UpdatePassword from 'components/forms/updatePassword/UpdatePassword'
 import ReauthPassword from 'components/forms/reauthPassword/ReauthPassword'
-import { reauthUser } from 'features/auth/authSlice'
+import { reauthUser, withdrawReauth } from 'features/auth/authSlice'
 
 
 const useStyles = makeStyles({
@@ -58,7 +58,7 @@ const Profile = props => {
   const [changeProfileImg, setChangeProfileImg] = useState(false)
   const [editProfileImg, setEditProfileImg] = useState(false)
   const [profilePhoto, setProfilePhoto] = useState(photoURL)
-  const { reauth } = useSelector(state => state.auth)
+  const { reauth, reauthInProgress, onReauthAction } = useSelector(state => state.auth)
   const styles = useStyles()
 
   const modal = useContext(ModalContext)
@@ -96,7 +96,14 @@ const Profile = props => {
             <FileUploader />
           </Grid>
           <Grid item container xs={12} justifyContent="center">
-            <Button disabled={files.filesCount < 1} onClick={handleProfilePhotoUpdate} variant="contained" color="primary">Update photo</Button>
+            <Button 
+              disabled={files.filesCount < 1}
+              onClick={handleProfilePhotoUpdate}
+              variant="contained"
+              color="primary"
+            >
+              Update photo
+            </Button>
           </Grid>
         </Grid>
       ))
@@ -113,31 +120,41 @@ const Profile = props => {
   )
 
   const handleEmailUpdate = useCallback(
-    (newEmail) => {
+    ({email}, form) => {
       console.log('update profile email')
-      dispatch(updateEmail(newEmail))
+      const response = dispatch(updateEmail({
+        email,
+        onSuccess: () => form.resetForm({email})
+      }))
+      console.log(`response`, response)
     },
     [dispatch],
   )
 
   const handlePasswordUpdate = useCallback(
     ({password}) => {
-      dispatch(updatePassword(password))
+      dispatch(updatePassword({password}))
     },
     [dispatch],
   )
 
   const handleReauth = useCallback(
-    ({password}) => {
+    ({password}, form) => {
       dispatch(reauthUser(
         {
           password,
-          actionCreator: updateEmail,
-          stateDataPath: 'user.tempData'
+          // actionCreator: onReauthAction,
+          stateDataPath: 'user.tempData',
+          // callback: () => {
+          //   form && form.
+          // }
+          // onError: () => {
+          //   form && form.resetForm()
+          // }
         }
       ))
     },
-    [dispatch]
+    []
   )
 
   const modalRenderReauth = useCallback(
@@ -150,7 +167,12 @@ const Profile = props => {
       modal.setContentRender(modalRenderReauth)
       modal.setIsOpen(true)
     }
-  }, [reauth, modal, modalRenderReauth])
+
+    if (reauthInProgress && !reauth) {
+      modal.handleClose()
+      dispatch(withdrawReauth())
+    }
+  }, [reauth, reauthInProgress, modal, modalRenderReauth, dispatch])
 
   useEffect(() => {
     dispatch(getUserFullInfo())
@@ -161,9 +183,7 @@ const Profile = props => {
   }, [photoURL])
 
   return (
-    // <Container disableGutters={true}>
-      <Grid container>
-        <Grid item container>
+      <Grid container alignItems="flex-start" >
           <Grid item container xs={4} justifyContent="center" alignItems="center">
             {/* <img src={userData.photoURL ||avatarDefault } alt="user profile" /> */}
             <div
@@ -200,8 +220,7 @@ const Profile = props => {
             </Container>
             
           </Grid>
-          <Grid item xs></Grid>
-          <Grid item xs={5}>
+          <Grid item xs={7}>
             {/* <ProfileForm formik={formik} /> */}
             <ProfileInfo initialValues={initialValues} handleSubmit={handleInfoUpdate} />
             <Divider light />
@@ -211,34 +230,6 @@ const Profile = props => {
           </Grid>
           <Grid item xs></Grid>
         </Grid>
-        {/* <Modal 
-          open={editProfileImg}
-          onClose={() => setEditProfileImg(false)}
-        >
-          <Box sx={{
-            position: 'fixed',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            bgcolor: '#FFFFFF',
-            padding: '15px 10px',
-            borderRadius: '4.5px'
-          }}>
-            <IconButton onClick={() => setEditProfileImg(false)} className={styles.closeModalBtn}>
-              <Close />
-            </IconButton>
-            <Grid container justifyContent="center">
-              <Grid item xs='auto'>
-                <FileUploader />
-              </Grid>
-              <Grid item container xs={12} justifyContent="center">
-                <Button disabled={files.filesCount < 1} onClick={handleProfilePhotoUpdate} variant="contained" color="primary">Update photo</Button>
-              </Grid>
-            </Grid>
-          </Box>
-        </Modal> */}
-      </Grid>
-    // </Container>
   )
 }
 

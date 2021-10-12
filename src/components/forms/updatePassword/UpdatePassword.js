@@ -1,11 +1,14 @@
+import { useCallback, useRef } from 'react'
 import { useDispatch } from "react-redux"
-import { Button, Container, Grid, TextField } from "@material-ui/core"
+import { Button, Container, Grid, TextField, IconButton } from "@material-ui/core"
+import { Visibility } from '@material-ui/icons'
 import { makeStyles } from "@material-ui/styles"
 import { useFormik } from "formik"
 import PropTypes from 'prop-types'
 import { divideCamelString } from "helpers/strings"
 import { updatePasswordValidationSchema } from "validation/updatePass"
 import { showToast } from "features/notification/notificationSlice"
+import PasswordInput from "components/forms/inputs/PasswordInput"
 
 const useStyles = makeStyles({
   form: {
@@ -57,6 +60,8 @@ const UpdatePassword = ({ handleSubmit }) => {
 
   console.log(`formik`, formik)
 
+ 
+
   return (
     <form onSubmit={formik.handleSubmit} className={formStyles.form}>
       <Grid container justifyContent="space-between">
@@ -64,18 +69,17 @@ const UpdatePassword = ({ handleSubmit }) => {
         {
           Object.entries(formik.initialValues).map(field => (
             <Grid key={field[0]} item xs={6} className={formStyles.input}>
-              <Container>
-                <TextField
-                  fullWidth
+              <Container maxWidth={false}>
+                <PasswordInput
+                  // fullWidth
                   value={formik.values[field[0]]}
                   onChange={formik.handleChange}
                   name={field[0]}
                   variant="outlined"
                   label={divideCamelString(field[0])}
                   id={field[0]}
-                  type="password"
                   error={formik.touched[field[0]] && Boolean(formik.errors[field[0]])} 
-                  helperText={formik.touched[field[0]] && formik.errors[field[0]]} 
+                  helperText={formik.touched[field[0]] && formik.errors[field[0]]}
                 />
               </Container>
             </Grid>

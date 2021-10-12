@@ -1,10 +1,11 @@
 import firebase from 'firebase'
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import fbApp, { fbdb } from "../../../app/firebase";
-import { PATH_TO_USERS_PUBLIC_STORAGE } from "constants/constants";
+import fbApp, { fbdb } from 'firebaseconfig/firebase';
+import { PATH_TO_USERS_PUBLIC_STORAGE } from "constans/constants";
 // import firebase from 'firebase/app'
-import { uploadToStore } from "../fileUploader/fileUploaderSlice";
+import { uploadToStore } from "features/app/fileUploader/fileUploaderSlice";
 import { requestReauth, signInUser, signOutUser, signUpUser, updateUser } from "features/auth/authSlice";
+import { UPDATE_EMAIL, UPDATE_PASSWORD } from 'features/auth/constants';
 
 const initialState = {
   data: {
@@ -112,41 +113,66 @@ export const updateProfilePhoto = createAsyncThunk(
 
 export const updatePassword = createAsyncThunk(
   'user/updatePassword',
-  async (newPass) => {
+  async ({password}, thunkAPI) => {
     const user = firebase.auth(fbApp).currentUser
 
-    if(newPass) {
-      const updatingPass = await user.updatePassword(newPass)
+    if(password) {
+      try {
+        const updatingPass = await user.updatePassword(password)
 
-      console.log(`updatingPass`, updatingPass)
+        console.log(`updatingPass`, updatingPass)
 
-      return newPass
+        return {
+          reauth: false,
+          password
+        }
+      } catch (error) {
+        console.log(`error`, error)
+
+        if (error.code === 'auth/requires-recent-login') {
+          console.log('show login modal');
+
+          const reauth = thunkAPI.dispatch(requestReauth(UPDATE_PASSWORD))
+
+          console.log(`reauth`, reauth)
+
+          return {
+            reauth: true,
+            password
+          }
+        }
+      }
+      
     }
   } 
 )
 
 export const updateEmail = createAsyncThunk(
   'user/updateEmail',
-  async (newEmail, thunkAPI) => {
+  async ({ email, onSuccess = null}, thunkAPI) => {
     const user = firebase.auth(fbApp).currentUser
 
     console.log(`user`, user)
 
-    if(newEmail) {
+    if(email) {
 
       try {
-        const updatingEmail = await user.updateEmail(newEmail)
+        const updatingEmail = await user.updateEmail(email)
         console.log(`updatingEmail`, updatingEmail) //undefined when success
 
         const userRef = fbdb.doc(`users/${user.uid}`)
 
-        const updatingUser = await userRef.update({email: newEmail})
+        const updatingUser = await userRef.update({email})
 
         console.log(`updatingUser`, updatingUser) //undefined when success
 
+        console.log(`onSuccess`, onSuccess)
+
+        onSuccess && onSuccess()
+
         return {
           reauth: false,
-          email: newEmail
+          email
         }
 
         
@@ -156,13 +182,13 @@ export const updateEmail = createAsyncThunk(
         if (error.code === 'auth/requires-recent-login') {
           console.log('show login modal');
 
-          const reauth = thunkAPI.dispatch(requestReauth())
+          const reauth = thunkAPI.dispatch(requestReauth(UPDATE_EMAIL))
 
           console.log(`reauth`, reauth)
 
           return {
             reauth: true,
-            email: newEmail
+            email
           }
         }
       }
@@ -255,8 +281,12 @@ const profile = createSlice({
       .addCase(updatePassword.rejected, state  => {
         state.loading = false
       }) 
-      .addCase(updatePassword.fulfilled, state  => {
+      .addCase(updatePassword.fulfilled, (state, action)  => {
         state.loading = false
+
+        if (action.payload.reauth)
+          state.tempData = { password: action.payload.password }
+
       }) 
 
       .addCase(updateEmail.pending, state  => {
@@ -269,10 +299,12 @@ const profile = createSlice({
         state.loading = false
 
         if (action.payload.reauth)
-          state.tempData = action.payload.email
+          state.tempData = { email: action.payload.email }
 
-        if (!action.payload.reauth)
+        if (!action.payload.reauth) {
           state.data.email = action.payload.email
+          state.tempData = null
+        }
       }) 
   }
 })

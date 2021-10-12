@@ -7,11 +7,11 @@ import MyList from "components/list/List";
 // import { uploadToStore } from "../fileUploader/fileUploaderSlice";
 // import { ListHandler } from "../listHandler/ListHandler";
 // import { addUserRecord, deleteUserRecord, removeRecord } from "../listHandler/listHandlerSlice";
-import { addProductToList, clearList, getUserList, removeProductFromList } from "../userLists/userListsSlice";
+import { addProductToList, clearList, getUserList, removeProductFromList } from "features/app/userLists/userListsSlice";
 import { AddProduct } from "components/forms/addProduct/AddProduct";
 import { retrieveFormData } from "helpers/retrieveFormData";
-import { PATH_TO_PRODUCT } from "constants/constants";
-import { clearFiles } from "../fileUploader/fileUploaderSlice";
+import { PATH_TO_PRODUCT } from "constans/constants";
+import { clearFiles } from "features/app/fileUploader/fileUploaderSlice";
 // import { addProduct } from "../../product/productSlice";
 import { makeStyles } from "@material-ui/styles";
 

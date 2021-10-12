@@ -1,7 +1,7 @@
 import { CircularProgress, Grid } from "@material-ui/core"
 import { useEffect, useMemo, useState } from "react"
 import firebase from 'firebase/app'
-import fbApp from "../../app/firebase"
+import fbApp from "firebaseconfig/firebase"
 import { loadState } from "helpers/appState"
 import { setUser } from "./authSlice"
 import { useDispatch, useSelector } from "react-redux"

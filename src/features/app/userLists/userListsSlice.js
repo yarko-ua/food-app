@@ -1,9 +1,9 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import firebase from 'firebase/app'
-import { fbdb } from "../../../app/firebase";
+import { fbdb } from "firebaseconfig/firebase";
 // import { retrieveFormData } from "../../../helpers/retrieveFormData";
-import { addProduct, deleteProduct } from "../../product/productSlice";
-import { uploadToStore } from "../fileUploader/fileUploaderSlice";
+import { addProduct, deleteProduct } from "features/product/productSlice";
+import { uploadToStore } from "features/fileUploader/fileUploaderSlice";
 // import { addUserRecord } from "../listHandler/listHandlerSlice";
 
 const initialState = {

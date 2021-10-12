@@ -1,7 +1,7 @@
 import { CircularProgress, Container } from '@material-ui/core'
 import { makeStyles } from '@material-ui/styles'
 import { useState, useEffect } from 'react'
-import notFound from '../../images/image-not-found.jpg'
+import notFound from 'images/image-not-found.jpg'
 
 
 const useStyles = makeStyles({

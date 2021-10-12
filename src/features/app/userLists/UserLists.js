@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AddList } from "components/forms/addList/AddList";
 // import { AddProduct } from "components/forms/addProduct/AddProduct";
 import MyList from "components/list/List";
-import { PATH_TO_LISTS } from "constants/constants";
+import { PATH_TO_LISTS } from "constans/constants";
 import { retrieveFormData } from "helpers/retrieveFormData";
 // import { ListHandler } from "../listHandler/ListHandler";
 import { addNewList, getUserLists, removeList} from "./userListsSlice";

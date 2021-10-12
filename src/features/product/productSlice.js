@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import firebase from 'firebase/app'
-import { fbdb } from "../../app/firebase";
+import { fbdb } from "firebaseconfig/firebase";
 
 const initialState = {
   current: null,

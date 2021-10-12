@@ -1,7 +1,7 @@
 import { useState, useCallback } from "react";
 import { Button, TextField } from "@material-ui/core";
 import PropTypes from 'prop-types'
-import { FileUploader } from "../../../features/app/fileUploader/FileUploader";
+import { FileUploader } from "features/app//fileUploader/FileUploader";
 import { Rating } from "@material-ui/lab";
 
 

@@ -2,17 +2,17 @@
   "compilerOptions": {
     "baseUrl": "./src",
     "paths": {
-      "components/*": ["components/*"],
-      "forms/*": ["components/forms/*"],
-      "constants/*": ["constants/*"],
-      "appFeatures/*": ["features/app/*"],
-      "features/*": ["features/*"],
-      "routes/*": ["routes/*"],
-      "selectors/*":  ["selectors/*"],
-      "validation/*": ["validation/*"],
-      "helpers/*": ["helpers/*"],
-      "images/*": ["images/*"]
+      "firebaseconfig/*": ["./firebase/*"],
+      "store/*":          ["./store/*"],
+      "components/*":     ["./components/*"],
+      "constans/*":       ["./constants/*"],
+      "features/*":       ["./features/*"],
+      "routes/*":         ["./routes/*"],
+      "selectors/*":      ["./selectors/*"],
+      "validation/*":     ["./validation/*"],
+      "helpers/*":        ["./helpers/*"],
+      "images/*":         ["./images/*"]
     }
   },
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "dist"]
 }

@@ -1,8 +1,5 @@
 import { createContext, useCallback, useMemo, useState } from 'react'
 import { Box, ClickAwayListener, Grid, IconButton, makeStyles, Modal } from "@material-ui/core"
-import { useSelector } from 'react-redux'
-import { Switch } from 'react-router'
-import ReauthPassword from 'components/forms/reauthPassword/ReauthPassword'
 import { Close } from '@material-ui/icons'
 
 const boxStyles = {

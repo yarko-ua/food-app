@@ -58,7 +58,7 @@ const ReauthPassword = ({ handleSubmit }) => {
 
       // modal.handleClose() close by reauth state change
 
-      handleSubmit && handleSubmit(values)
+      handleSubmit && handleSubmit(values, formikBag)
       // console.log(`formikBag`, formikBag)
       // formikBag.resetForm()
     }

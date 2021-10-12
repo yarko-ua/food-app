@@ -18,7 +18,11 @@ const useStyles = makeStyles({
     },
   },
   submitNotValid: {
-    backgroundColor: 'rgba(194, 194, 25, 1)',
+    backgroundColor: 'rgba(194, 194, 8, 1)',
+
+    '&:hover': {
+      backgroundColor: 'rgba(230, 230, 11, 1)',
+    }
   }
 })
 

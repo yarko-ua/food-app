@@ -1,7 +1,6 @@
 import { useCallback, useEffect } from 'react'
 import { ToastContainer, toast } from "react-toastify"
 import { useDispatch, useSelector } from 'react-redux'
-
 import 'react-toastify/dist/ReactToastify.css'
 import { resetToast } from './notificationSlice'
 
@@ -24,7 +23,7 @@ export const Notification = () => {
   return <ToastContainer
     position="bottom-right"
     newestOnTop={true}
-    pauseOnHover={true}
+    pauseOnHover={false}
     autoClose={5000}
     closeOnClick
     draggable

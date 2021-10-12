@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { fbdb } from "../../../app/firebase";
-import { getUserFullInfo } from "../profile/profileSlice";
+import { fbdb } from "firebaseconfig/firebase";
+import { getUserFullInfo } from "features/app/profile/profileSlice";
 
 const initialState = {
   data: [],

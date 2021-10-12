@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import firebase from 'firebase/app';
 import 'firebase/firestore';
-import { fbdb, imagesRef } from "../fileUploader/fileUploaderAPI";
+import { fbdb, imagesRef } from "features/app/fileUploader/fileUploaderAPI";
 
 const initialState = {
   myList: [
