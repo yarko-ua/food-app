@@ -1,11 +1,12 @@
 import firebase from 'firebase'
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import fbApp, { fbdb } from 'firebaseconfig/firebase';
-import { PATH_TO_USERS_PUBLIC_STORAGE } from "constans/constants";
+import { PATH_TO_USERS_PUBLIC_STORAGE } from "constants/constants";
 // import firebase from 'firebase/app'
 import { uploadToStore } from "features/app/fileUploader/fileUploaderSlice";
 import { requestReauth, signInUser, signOutUser, signUpUser, updateUser } from "features/auth/authSlice";
 import { UPDATE_EMAIL, UPDATE_PASSWORD } from 'features/auth/constants';
+
 
 const initialState = {
   data: {
@@ -33,7 +34,7 @@ const initialState = {
 }
 
 export const getUserFullInfo = createAsyncThunk(
-  'user/getFullInfo',
+  'profile/getFullInfo',
   async (userID = null, thunkAPI) => {
     const { uid } = thunkAPI.getState().auth.data
     console.log(`get uid`, uid)
@@ -67,7 +68,7 @@ export const getUserFullInfo = createAsyncThunk(
 )
 
 export const updateProfilePhoto = createAsyncThunk(
-  'user/updatePhoto',
+  'profile/updatePhoto',
   async (_, thunkAPI) => {
     const user = thunkAPI.getState().user.data
 
@@ -112,7 +113,7 @@ export const updateProfilePhoto = createAsyncThunk(
 )
 
 export const updatePassword = createAsyncThunk(
-  'user/updatePassword',
+  'profile/updatePassword',
   async ({password}, thunkAPI) => {
     const user = firebase.auth(fbApp).currentUser
 
@@ -148,7 +149,7 @@ export const updatePassword = createAsyncThunk(
 )
 
 export const updateEmail = createAsyncThunk(
-  'user/updateEmail',
+  'profile/updateEmail',
   async ({ email, onSuccess = null}, thunkAPI) => {
     const user = firebase.auth(fbApp).currentUser
 
@@ -198,7 +199,7 @@ export const updateEmail = createAsyncThunk(
 )
 
 export const getFriends = createAsyncThunk(
-  'user/getFriends',
+  'profile/getFriends',
   async (_, thunkAPI) => {
     const { friends } = thunkAPI.getState().user.data
 
@@ -223,7 +224,7 @@ export const getFriends = createAsyncThunk(
 )
 
 const profile = createSlice({
-  name: 'user',
+  name: 'profile',
   initialState,
   reducers: {
     clearCurrentUser: state => {

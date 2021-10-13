@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { updateEmail, updatePassword } from 'features/app/profile/profileSlice';
+// import { updateEmail, updatePassword } from 'features/app/profile/profileSlice';
 // import { updateEmail } from 'features/app/profile/profileSlice';
 import firebase from 'firebase/app';
 import 'firebase/auth'
@@ -19,8 +19,8 @@ const initialState = {
 };
 
 const specificActions = {
-  [UPDATE_PASSWORD]: updatePassword,
-  [UPDATE_EMAIL]: updateEmail
+  [UPDATE_PASSWORD]: 1,
+  [UPDATE_EMAIL]: 1
 }
 
 export const signInUser = createAsyncThunk(

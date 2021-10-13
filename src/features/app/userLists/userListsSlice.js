@@ -3,8 +3,10 @@ import firebase from 'firebase/app'
 import { fbdb } from "firebaseconfig/firebase";
 // import { retrieveFormData } from "../../../helpers/retrieveFormData";
 import { addProduct, deleteProduct } from "features/product/productSlice";
-import { uploadToStore } from "features/fileUploader/fileUploaderSlice";
+import { uploadToStore } from "features/app/fileUploader/fileUploaderSlice";
+// import { uploadToStore } from "features/fileUploader/fileUploaderSlice";
 // import { addUserRecord } from "../listHandler/listHandlerSlice";
+
 
 const initialState = {
   data: null,

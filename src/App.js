@@ -1,16 +1,15 @@
 import React, { Suspense } from 'react';
 import { BrowserRouter, Switch } from 'react-router-dom';
+import { Provider } from 'react-redux';
 import { Box, Container, Paper, useMediaQuery } from "@material-ui/core"
 import { makeStyles } from '@material-ui/core/styles';
-import { Provider } from 'react-redux';
 import { store } from 'store/store';
 import { Notification } from 'features/notification/Notification';
 import routes from 'routes/routes';
 import NestedRoute from 'routes/NestedRoute';
 import ModalContainer from 'features/modal/Modal';
 import { AuthWrapper } from 'features/auth/AuthWrapper';
-// import './App.css';
-
+import './App.css';
 
 const useStyles = makeStyles({
   root: {
@@ -78,4 +77,4 @@ function App() {
   );
 }
 
-export default App;
+export default App

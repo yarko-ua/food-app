@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useState, useMemo, useContext } from 'react'
-import { Box, Button, Container, Divider, Grid, IconButton, Modal } from "@material-ui/core"
+import { Button, Container, Divider, Grid, IconButton } from "@material-ui/core"
 import { useDispatch, useSelector } from "react-redux"
-import { getUserFullInfo, testAction, updateEmail, updatePassword, updateProfilePhoto } from './profileSlice'
+import { getUserFullInfo, updateEmail, updatePassword, updateProfilePhoto } from './profileSlice'
 // import { ProfileForm } from 'components/forms/profileForm/ProfileForm'
 import { CoverImg } from 'components/coverImg/CoverImg'
-import { Close, Edit } from '@material-ui/icons'
+import { Edit } from '@material-ui/icons'
 import { makeStyles } from '@material-ui/styles'
 import { FileUploader } from 'features/app/fileUploader/FileUploader'
 import { userSelector } from 'selectors/user'
@@ -56,9 +56,9 @@ const Profile = props => {
   const { photoURL } = user
   const files = useSelector(filesSelector)
   const [changeProfileImg, setChangeProfileImg] = useState(false)
-  const [editProfileImg, setEditProfileImg] = useState(false)
+  // const [editProfileImg, setEditProfileImg] = useState(false)
   const [profilePhoto, setProfilePhoto] = useState(photoURL)
-  const { reauth, reauthInProgress, onReauthAction } = useSelector(state => state.auth)
+  const { reauth, reauthInProgress } = useSelector(state => state.auth)
   const styles = useStyles()
 
   const modal = useContext(ModalContext)
@@ -154,7 +154,7 @@ const Profile = props => {
         }
       ))
     },
-    []
+    [dispatch]
   )
 
   const modalRenderReauth = useCallback(

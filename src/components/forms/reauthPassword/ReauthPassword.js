@@ -1,11 +1,10 @@
 import { useContext } from 'react'
-import { useDispatch } from "react-redux"
-import { Box, Button, Container, Grid, TextField } from "@material-ui/core"
+// import { useDispatch } from "react-redux"
+import { Box, Button, Grid, TextField } from "@material-ui/core"
 import { makeStyles } from "@material-ui/styles"
 import { useFormik } from "formik"
 import PropTypes from 'prop-types'
 import { divideCamelString } from "helpers/strings"
-import { showToast } from "features/notification/notificationSlice"
 import { ModalContext } from "features/modal/Modal"
 import { passwordValidationSchema } from 'validation/password'
 
@@ -44,7 +43,7 @@ const useStyles = makeStyles({
 
 const ReauthPassword = ({ handleSubmit }) => {
 
-  const dispatch = useDispatch()
+  // const dispatch = useDispatch()
 
   const modal = useContext(ModalContext)
 

@@ -22,8 +22,6 @@ export const fbdb = firebase.firestore();
 
 export const fbStorageRef = fbStorage.ref();
 
-console.log(`fbStorageRef`, fbStorageRef)
-
 export const imagesRef = fbStorageRef.child('images');
 
 export const productsStorage = fbStorage.ref('products')

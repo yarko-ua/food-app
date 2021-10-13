@@ -7,6 +7,7 @@ import productReducer from 'features/product/productSlice'
 import notification from 'features/notification/notificationSlice'
 import userReducer from 'features/app/profile/profileSlice' 
 import friendsReducer from 'features/app/friends/friendsSlice'
+import userSlice from 'features/user/userSlice'
 
 
 export const store = configureStore({
@@ -16,8 +17,10 @@ export const store = configureStore({
     fbList: listReducer,
     lists: listsReducer,
     product: productReducer,
+    userGeneral: userSlice,
     auth: authReducer,
     user: userReducer,
     friends: friendsReducer,
   },
+
 });
