@@ -1,6 +1,6 @@
 import PropTypes from "prop-types"
-import { CircularProgress } from "@material-ui/core";
-import { useSelector } from "react-redux";
+import { CircularProgress } from "@material-ui/core"
+import { useSelector } from "react-redux"
 
 // const useFormStyles = makeStyles({
 //   form: {
@@ -20,54 +20,53 @@ import { useSelector } from "react-redux";
 //   },
 // })
 
-export const ListHandler = ({label, onSubmit, form: Form }) => {
+const ListHandler = ({ label, onSubmit, form: Form }) => {
+	console.log(`Form`, Form)
 
-  console.log(`Form`, Form)
+	// const dispatch = useDispatch()
+	// const uid = useSelector(state => state.auth.data.uid)
+	const submitting = useSelector((state) => state.fbList.submitting)
+	// const formStyles = useFormStyles()
 
-  // const dispatch = useDispatch()
-  // const uid = useSelector(state => state.auth.data.uid)
-  const submitting = useSelector(state => state.fbList.submitting)
-  // const formStyles = useFormStyles()
+	const handleSubmit = (e) => {
+		e.preventDefault()
+		const form = new FormData(e.target)
+		// console.dir(form);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const form = new FormData(e.target);
-    // console.dir(form);
+		const data = {}
 
-    const data = {};
+		for (const key of form.keys()) {
+			if (form.getAll(key).length > 1) {
+				if (data[key]) continue
 
-    for (let key of form.keys() ) {
-      if (form.getAll(key).length > 1) {
-        if (data[key]) continue;
+				data[key] = form.getAll(key)
+			} else {
+				data[key] = form.get(key)
+			}
+		}
 
-        data[key] = form.getAll(key);
-      } else {
-        data[key] = form.get(key);
-      }
-    }
+		console.log(`send`, data)
 
-    console.log(`send`, data)
+		onSubmit(data)
+	}
 
-    onSubmit(data)
-  }
+	if (submitting) return <CircularProgress />
 
-  if (submitting) return <CircularProgress />
+	return (
+		<>
+			<h2>{label}</h2>
 
-  return (
-    <>
-      <h2>{label}</h2>
-
-      <Form onSubmit={handleSubmit}/>
-    </>
-  )
+			<Form onSubmit={handleSubmit} />
+		</>
+	)
 }
 
 ListHandler.propTypes = {
-  onSubmit: PropTypes.func.isRequired,
-  label: PropTypes.string.isRequired,
-  form: PropTypes.elementType.isRequired,
+	onSubmit: PropTypes.func.isRequired,
+	label: PropTypes.string.isRequired,
+	form: PropTypes.elementType.isRequired,
 }
 
 ListHandler.defaultProps = {
-  onSubmit: () => {}
+	onSubmit: () => {},
 }

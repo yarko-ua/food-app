@@ -1,84 +1,87 @@
 import { CircularProgress, Grid } from "@material-ui/core"
 import { useEffect, useMemo, useState } from "react"
-import firebase from 'firebase/app'
+import PropTypes from "prop-types"
+import firebase from "firebase/app"
 import fbApp from "firebaseconfig/firebase"
 import { loadState } from "helpers/appState"
-import { setUser } from "./authSlice"
 import { useDispatch, useSelector } from "react-redux"
 import { getUserFullInfo } from "features/app/profile/profileSlice"
 import { isAuthSelector } from "selectors/auth"
+import { setUser } from "./authSlice"
 
-export const AuthWrapper = ({children}) => {
-  const authState = useSelector(isAuthSelector)
+const AuthWrapper = ({ children }) => {
+	const authState = useSelector(isAuthSelector)
 
-  console.log(`auth in authWrapp`, authState)
+	console.log(`auth in authWrapp`, authState)
 
-  const [loading, setLoading] = useState(true)
-  const [isAuth, setIsAuth] = useState(authState)
-  const dispatch = useDispatch()
+	const [loading, setLoading] = useState(true)
+	const [isAuth, setIsAuth] = useState(authState)
+	const dispatch = useDispatch()
 
-  const user = useMemo( () => loadState('user'), [] )
+	const user = useMemo(() => loadState("user"), [])
 
-  console.log(`user`, user)
+	console.log(`user`, user)
 
-  useEffect(() => {
+	useEffect(() => {
+		if (user) {
+			const auth = firebase.auth(fbApp)
 
-    if (user) {
-      const auth = firebase.auth(fbApp)
+			auth.onAuthStateChanged((userCredential) => {
+				console.log(`userCredential`, userCredential)
 
-      auth.onAuthStateChanged(userCredential => {
-        console.log(`userCredential`, userCredential)
+				const data = userCredential
+					? {
+							uid: userCredential.uid,
+							displayName: userCredential.displayName,
+					  }
+					: null
 
-        const data = userCredential ? 
-          {
-            uid: userCredential.uid,
-            displayName: userCredential.displayName
-          }
-          : null
+				dispatch(setUser(data))
+				// wait for setting user !!!!
+				// dispatch(getUserFullInfo())
 
-        dispatch(setUser(data))
-        // wait for setting user !!!!
-        // dispatch(getUserFullInfo())
+				setIsAuth(true)
 
-        setIsAuth(true)
+				// setTimeout(() => {
+				//   setLoading(false)
+				// }, 1000)
+			})
+		} else {
+			// history.push('/signin')
+			setTimeout(() => {
+				setLoading(false)
+			}, 1000)
+		}
+	}, [dispatch, user])
 
+	useEffect(() => {
+		if (isAuth) {
+			dispatch(getUserFullInfo())
 
-        // setTimeout(() => {
-        //   setLoading(false)
-        // }, 1000)
+			setTimeout(() => {
+				setLoading(false)
+			}, 1000)
+		}
+	}, [dispatch, isAuth])
 
-      })
+	if (loading) {
+		return (
+			<Grid
+				container
+				justifyContent="center"
+				alignItems="center"
+				style={{ height: "100%", width: "100%" }}
+			>
+				<CircularProgress />
+			</Grid>
+		)
+	}
 
-    } else {
-      // history.push('/signin')
-      setTimeout(() => {
-        setLoading(false)
-      }, 1000)
-    }
-
-  }, [dispatch, user])
-
-  useEffect(() => {
-    if (isAuth) {
-      dispatch(getUserFullInfo())
-
-      setTimeout(() => {
-        setLoading(false)
-      }, 1000)
-    }
-  }, [dispatch, isAuth])
-
-  if (loading) {
-    return (
-      <Grid container justifyContent="center" alignItems="center" style={{height: '100%', width: '100%'}}>
-        <CircularProgress />
-      </Grid>
-    )
-  }
-
-  return (
-    <>
-      { children }
-    </>
-  )
+	return { children }
 }
+
+AuthWrapper.propTypes = {
+	children: PropTypes.node.isRequired,
+}
+
+export default AuthWrapper

@@ -1,251 +1,265 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import firebase from 'firebase/app';
-import 'firebase/firestore';
-import { fbdb, imagesRef } from "features/app/fileUploader/fileUploaderAPI";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"
+import firebase from "firebase/app"
+import "firebase/firestore"
+import { fbdb, imagesRef } from "features/app/fileUploader/fileUploaderAPI"
 
 const initialState = {
-  myList: [
-  ],
-  compareList: [],
-  loading: false,
-  submitting: false
+	myList: [],
+	compareList: [],
+	loading: false,
+	submitting: false,
 }
 
 export const addUserRecord = createAsyncThunk(
-  'list/addRecord',
-  async (payload, thunkAPI) => {
+	"list/addRecord",
+	async (payload, thunkAPI) => {
+		console.log(`payload`, payload)
 
-    console.log( `payload`, payload)
+		const state = thunkAPI.getState()
 
-    const state = thunkAPI.getState()
+		const files = state.files.filesList
+		const { currentList } = state.lists
+		const user = state.auth.data
 
-    const files = state.files.filesList;
-    const currentList = state.lists.currentList
-    const user = state.auth.data
+		console.log(`st`, files)
 
-    console.log(`st`, files);
+		const filesToUpload = []
 
-    const filesToUpload = [];
+		let photos = null
 
-    let photos = null;
+		try {
+			if (files.length) {
+				// for (let i = 0; i < files.length; i++) {
+				// 	filesToUpload.push(
+				// 		imagesRef
+				// 			.child(files[i].name)
+				// 			.putString(files[i].url, "data_url", {
+				// 				contentType: files[i].type,
+				// 			})
+				// 			.then((snap) => snap.ref.getDownloadURL())
+				// 	)
+				// }
 
-    try {
-      if (files.length) {
-        for (let i = 0; i < files.length; i++) {
-          filesToUpload.push(
-            imagesRef
-              .child(files[i].name)
-              .putString(files[i].url, 'data_url',  {contentType: files[i].type})
-              .then(snap => snap.ref.getDownloadURL())
-          )
-          
-        }
-  
-        photos = await Promise.allSettled(filesToUpload)
+				files.forEach((file) => {
+					filesToUpload.push(
+						imagesRef
+							.child(file.name)
+							.putString(file.url, "data_url", {
+								contentType: file.type,
+							})
+							.then((snap) => snap.ref.getDownloadURL())
+					)
+				})
 
-        photos = photos.filter(promise => promise.status === 'fulfilled').map(promise => promise.value)
-  
-      }
-    } catch (error) {
-      console.log(`error 1`, error)
-    }
+				photos = await Promise.allSettled(filesToUpload)
 
-    console.log(`photos`, photos); //nophotos ? not added to storage?
+				photos = photos
+					.filter((promise) => promise.status === "fulfilled")
+					.map((promise) => promise.value)
+			}
+		} catch (error) {
+			console.log(`error 1`, error)
+		}
 
-    // const { data } = payload
+		console.log(`photos`, photos) // nophotos ? not added to storage?
 
-    // console.log(`data`, data)
+		// const { data } = payload
 
-    // delete data.productPhotos
+		// console.log(`data`, data)
 
-    // console.log(`data`, data)
+		// delete data.productPhotos
 
-    // const { name, photos: productPhotos, rating = 0, description } = payload
-    const { name, rating = 0, description } = payload
+		// console.log(`data`, data)
 
+		// const { name, photos: productPhotos, rating = 0, description } = payload
+		const { name, rating = 0, description } = payload
 
-    // if no variable productRating what to do:
-    console.log(`productRating`, rating)
+		// if no variable productRating what to do:
+		console.log(`productRating`, rating)
 
-    const createdAt = firebase.firestore.FieldValue.serverTimestamp()
+		const createdAt = firebase.firestore.FieldValue.serverTimestamp()
 
-    console.log(`createdAt`, createdAt)
+		console.log(`createdAt`, createdAt)
 
-    const productData = {
-      ...payload, 
-      photos, 
-      reviewer: user.uid,
-      createdAt
-    }
+		const productData = {
+			...payload,
+			photos,
+			reviewer: user.uid,
+			createdAt,
+		}
 
-    delete productData.files
+		delete productData.files
 
-    console.log(`productData`, productData)
+		console.log(`productData`, productData)
 
-    try {
-      const productRef = await fbdb
-        .collection('products')
-        .add(productData)
+		try {
+			const productRef = await fbdb.collection("products").add(productData)
 
-      const productDoc = await productRef.get()
+			const productDoc = await productRef.get()
 
-        console.log(`productRef`, productRef)
-        console.log(`productDoc`, productDoc)
-        console.log(`productDoc.data()`, productDoc.data())
-      
-      const productDocData = productDoc.data()
+			console.log(`productRef`, productRef)
+			console.log(`productDoc`, productDoc)
+			console.log(`productDoc.data()`, productDoc.data())
 
-      const { id: productID } = productRef
+			const productDocData = productDoc.data()
 
+			const { id: productID } = productRef
 
-      const productShort = {
-        name,
-        thumb: photos && photos.length ? photos[0] : null,
-        id: productID,
-        rating,
-        description,
-        createdAt
-      }
+			const productShort = {
+				name,
+				thumb: photos && photos.length ? photos[0] : null,
+				id: productID,
+				rating,
+				description,
+				createdAt,
+			}
 
-      console.log(`productShort`, productShort)
-      
-      const listDoc = fbdb
-      .doc(`users/${user.uid}/lists/${currentList.id}/products/${productID}`)
-      const listDocAdd = await listDoc.set(productShort)
-      let test = await listDoc.get()
+			console.log(`productShort`, productShort)
 
-      console.log(`listDoc`, listDoc)
-      console.log(`listDoc.get()`, test)
-      console.log(`listDoc.get().data()`, test.data())
-      console.log(`listDocAdd`, listDocAdd)
+			const listDoc = fbdb.doc(
+				`users/${user.uid}/lists/${currentList.id}/products/${productID}`
+			)
+			const listDocAdd = await listDoc.set(productShort)
+			const test = await listDoc.get()
 
-      // console.log(`listDoc`, listDoc)
-      // console.log(`listDoc.get()`, await listDoc.get())
+			console.log(`listDoc`, listDoc)
+			console.log(`listDoc.get()`, test)
+			console.log(`listDoc.get().data()`, test.data())
+			console.log(`listDocAdd`, listDocAdd)
 
-      // const listUpdate = await listDoc.update({
-      //   products: firebase.firestore.FieldValue.arrayUnion(...productShort) //with string works ok
-      // })
+			// console.log(`listDoc`, listDoc)
+			// console.log(`listDoc.get()`, await listDoc.get())
 
-      // console.log(`listUpdate`, listUpdate)
+			// const listUpdate = await listDoc.update({
+			//   products: firebase.firestore.FieldValue.arrayUnion(...productShort) //with string works ok
+			// })
 
+			// console.log(`listUpdate`, listUpdate)
 
-      // console.log('listItemRef', listItemRef)
+			// console.log('listItemRef', listItemRef)
 
-      // const listDoc = await fbdb.collection('lists').doc(listItemRef.id).get()
+			// const listDoc = await fbdb.collection('lists').doc(listItemRef.id).get()
 
-      // if (listItemRef.exists) {
-        // const listData = listItemRef.data();
+			// if (listItemRef.exists) {
+			// const listData = listItemRef.data();
 
-      // }
+			// }
 
-      // const d = listData.data()
-      
-      // const { id, path } = listItemRef
+			// const d = listData.data()
 
-      // console.log(`id, path`, id, path)
-      productShort.createdAt = productDocData.createdAt.toMillis()
+			// const { id, path } = listItemRef
 
-      return productShort
+			// console.log(`id, path`, id, path)
+			productShort.createdAt = productDocData.createdAt.toMillis()
 
-    } catch (error) {
-      console.log(`error`, error)
-      throw new Error(error.message || error)
-    }
-
-  }
+			return productShort
+		} catch (error) {
+			console.log(`error`, error)
+			throw new Error(error.message || error)
+		}
+	}
 )
 
 export const deleteUserRecord = createAsyncThunk(
-  'list/deleteRecord',
-  async payload => {
-    try {
-      const doc = await fbdb.collection('lists').doc(payload).get()
-      const data = doc.data()
-      const { productID } = data
+	"list/deleteRecord",
+	async (payload) => {
+		try {
+			const doc = await fbdb.collection("lists").doc(payload).get()
+			const data = doc.data()
+			const { productID } = data
 
-      const deleteList = await fbdb.collection('lists').doc(payload).delete()
-      const deleteProduct = await fbdb.collection('products').doc(productID).delete()
+			const deleteList = await fbdb.collection("lists").doc(payload).delete()
+			const deleteProduct = await fbdb
+				.collection("products")
+				.doc(productID)
+				.delete()
 
-      console.log(`deleteList`, deleteList)
-      console.log(`deleteProduct`, deleteProduct)
-      console.log(`delete success`)
+			console.log(`deleteList`, deleteList)
+			console.log(`deleteProduct`, deleteProduct)
+			console.log(`delete success`)
 
-      return payload;
-    } catch (error) {
-      console.log(`delete fail`, error)
-      
-    }
-  }
+			return payload
+		} catch (error) {
+			console.log(`delete fail`, error)
+			throw new Error(error.message)
+		}
+	}
 )
 
 export const getUserRecords = createAsyncThunk(
-  'list/getAllRecords',
-  async payload => {
-      try {
-        const records = await fbdb.collection(`users/${payload}/lists`).get()
-        const { docs } = records;
-        console.log(`records`, records)
-        console.log(`records docs`, records.docs)
+	"list/getAllRecords",
+	async (payload) => {
+		try {
+			const records = await fbdb.collection(`users/${payload}/lists`).get()
+			const { docs } = records
+			console.log(`records`, records)
+			console.log(`records docs`, records.docs)
 
-        const response = [];
+			const response = []
 
-        docs.forEach(doc => {
+			docs.forEach((doc) => {
+				const { id, path } = doc.ref
+				const data = doc.data()
+				console.log(`data`, data)
+				const { createdAt } = data
+				response.push({ id, path, ...data, createdAt: createdAt.toMillis() })
+			})
 
-          const { id, path } = doc.ref
-          const data = doc.data()
-          console.log(`data`, data)
-          const { createdAt } = data
-          response.push({id, path, ...data, createdAt: createdAt.toMillis() })
-
-        })
-
-        return response.reverse();
-        // console.log(`records.data()`, records.data())
-      } catch (error) {
-        console.log(`error`, error)
-      }
-  }
+			return response.reverse()
+			// console.log(`records.data()`, records.data())
+		} catch (error) {
+			console.log(`error`, error)
+			throw new Error(error.message)
+		}
+	}
 )
 
 const list = createSlice({
-  name: 'list',
-  initialState,
-  reducers: {
-    addRecord : state => {
+	name: "list",
+	initialState,
+	reducers: {
+		addRecord: () => {},
+		removeRecord: (state, action) => {
+			state.myList = state.myList.filter((rec) => rec.id !== action.payload)
+		},
+	},
+	extraReducers: (builder) => {
+		builder
+			.addCase(addUserRecord.fulfilled, (state, action) => {
+				state.submitting = false
+				console.log(`action`, action)
 
-    },
-    removeRecord: (state, action) => {
-      state.myList = state.myList.filter(rec => rec.id !== action.payload)
-    }
-  },
-  extraReducers: builder => {
-    builder
-      .addCase(addUserRecord.fulfilled, (state, action) => {
-        state.submitting = false
-        console.log(`action`, action)
+				// if (action.payload.status === 'success') {
+				//   state.myList.push(action.payload.record)
+				// }
+			})
+			.addCase(addUserRecord.pending, (state) => {
+				state.submitting = true
+			})
+			.addCase(addUserRecord.rejected, (state) => {
+				state.submitting = false
+			})
+			.addCase(getUserRecords.pending, (state) => {
+				state.loading = true
+			})
+			.addCase(getUserRecords.fulfilled, (state, action) => {
+				state.loading = false
+				console.log(`action`, action)
 
-        // if (action.payload.status === 'success') {
-        //   state.myList.push(action.payload.record)
-        // }
-
-      })
-      .addCase(addUserRecord.pending, state => {state.submitting = true})
-      .addCase(addUserRecord.rejected, state => {state.submitting = false})
-      .addCase(getUserRecords.pending , state => {state.loading = true})
-      .addCase(getUserRecords.fulfilled, (state, action) => {
-        state.loading = false
-        console.log(`action`, action)
-
-        state.myList = action.payload ? action.payload : state.myList;
-
-      })
-      .addCase(deleteUserRecord.pending, state => {state.loading = true})
-      .addCase(deleteUserRecord.rejected, state => {state.loading = false})
-      .addCase(deleteUserRecord.fulfilled, (state, action) => {
-        state.loading = false
-        state.myList = (state.myList.filter(rec => rec.id !== action.payload) || [])
-      })
-  }
+				state.myList = action.payload ? action.payload : state.myList
+			})
+			.addCase(deleteUserRecord.pending, (state) => {
+				state.loading = true
+			})
+			.addCase(deleteUserRecord.rejected, (state) => {
+				state.loading = false
+			})
+			.addCase(deleteUserRecord.fulfilled, (state, action) => {
+				state.loading = false
+				state.myList =
+					state.myList.filter((rec) => rec.id !== action.payload) || []
+			})
+	},
 })
 
 export const { addRecord, removeRecord } = list.actions

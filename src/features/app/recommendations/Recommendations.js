@@ -1,5 +1,3 @@
-export const Recommendations = () => {
-  return <> recommendations </>
-}
+const Recommendations = () => <> recommendations </>
 
 export default Recommendations

@@ -1,1 +1,1 @@
-export const filesSelector = state => state.files
+export const filesSelector = (state) => state.files

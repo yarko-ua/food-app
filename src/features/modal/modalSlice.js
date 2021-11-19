@@ -1,6 +1,5 @@
 // const { createSlice } = require("@reduxjs/toolkit");
 
-
 // const initialState = {
 //   renderPath: null,
 //   show: false

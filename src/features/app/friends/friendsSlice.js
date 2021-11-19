@@ -1,97 +1,110 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { fbdb } from "firebaseconfig/firebase";
-import { getUserFullInfo } from "features/app/profile/profileSlice";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"
+import { fbdb } from "firebaseconfig/firebase"
+import { getUserFullInfo } from "features/app/profile/profileSlice"
 
 const initialState = {
-  data: [],
-  suggestion: null,
-  loading: false
+	data: [],
+	suggestion: null,
+	loading: false,
 }
 
-export const getFriends = createAsyncThunk(
-  'friends/get',
-  async (_, thunkAPI) => {
-    const { friends } = thunkAPI.getState().user.data
+export const getSuggestedPeople = createAsyncThunk(
+	"friends/suggested",
+	async (_, thunkAPI) => {
+		const user = thunkAPI.getState().user.data
 
-    const promises = []
+		try {
+			const listOfUsers = await fbdb
+				.collection("users")
+				.where("__name__", "!=", user.id)
+				.get()
+			// comment for above: __name__ represents document(-s) name(key/id)
 
-    if (friends && friends.length > 0) {
-      for (let i = 0; i < friends.length; i++) {
-        const friendID = friends[i];
+			const data = listOfUsers.empty
+				? null
+				: listOfUsers.docs.map((userRef) => ({
+						...userRef.data(),
+						id: userRef.id,
+				  }))
 
-        promises.push(
-          thunkAPI.dispatch(getUserFullInfo(friendID))
-        )
-      }
+			console.log(`data`, data)
 
-      const friendsList = (await Promise.allSettled(promises))
-        .filter(promise => promise.status === 'fulfilled')
-        .map(promise => promise.value)
-
-        console.log(`getFriends friendsList`, friendsList)
-
-      return {
-        data: friendsList,
-        type: 'data'
-      }
-    } else {
-      const sugested = await thunkAPI.dispatch(getSuggestedPeople())
-
-      console.log(`sugested`, sugested)
-
-      return {
-        data: sugested.payload,
-        type: 'suggestion'
-      }
-    }
-  }
+			return data
+		} catch (error) {
+			console.log(`getSuggested error`, error)
+			throw new Error(error.message)
+		}
+	}
 )
 
-export const getSuggestedPeople = createAsyncThunk(
-  'friends/suggested',
-  async (_, thunkAPI) => {
-    const user = thunkAPI.getState().user.data
+export const getFriends = createAsyncThunk(
+	"friends/get",
+	async (_, thunkAPI) => {
+		const { friends } = thunkAPI.getState().user.data
 
-    try {
-      const listOfUsers = await fbdb.collection('users').where('__name__', '!=', user.id ).get()
-      // comment for above: __name__ represents document(-s) name(key/id)
+		const promises = []
 
-      const data = listOfUsers.empty ? null : listOfUsers.docs.map(user => ({
-        ...user.data(),
-        id: user.id
-      }))
+		if (friends && friends.length > 0) {
+			// for (let i = 0; i < friends.length; i++) {
+			// 	const friendID = friends[i]
 
-      console.log(`data`, data)
+			// 	promises.push(thunkAPI.dispatch(getUserFullInfo(friendID)))
+			// }
 
-      return data
-    } catch (error) {
-      console.log(`getSuggested error`, error)
-      throw new Error(error.message)
-    }
-    
-  }
+			friends.forEach((friend) => {
+				promises.push(thunkAPI.dispatch(getUserFullInfo(friend)))
+			})
+
+			const friendsList = (await Promise.allSettled(promises))
+				.filter((promise) => promise.status === "fulfilled")
+				.map((promise) => promise.value)
+
+			console.log(`getFriends friendsList`, friendsList)
+
+			return {
+				data: friendsList,
+				type: "data",
+			}
+		}
+		const sugested = await thunkAPI.dispatch(getSuggestedPeople())
+
+		console.log(`sugested`, sugested)
+
+		return {
+			data: sugested.payload,
+			type: "suggestion",
+		}
+	}
 )
 
 const friends = createSlice({
-  name: 'friends',
-  initialState,
-  extraReducers: builder => {
-    builder
-      .addCase(getFriends.pending, state => {state.loading = true})
-      .addCase(getFriends.rejected, state => {state.loading = false})
-      .addCase(getFriends.fulfilled, (state, action) => {
-        state.loading = false
-        const { payload } = action
-        state[payload.type] = payload.data
-      })
+	name: "friends",
+	initialState,
+	extraReducers: (builder) => {
+		builder
+			.addCase(getFriends.pending, (state) => {
+				state.loading = true
+			})
+			.addCase(getFriends.rejected, (state) => {
+				state.loading = false
+			})
+			.addCase(getFriends.fulfilled, (state, action) => {
+				state.loading = false
+				const { payload } = action
+				state[payload.type] = payload.data
+			})
 
-      .addCase(getSuggestedPeople.pending, state => {state.loading = true})
-      .addCase(getSuggestedPeople.rejected, state => {state.loading = false})
-      .addCase(getSuggestedPeople.fulfilled, (state, action) => {
-        state.loading = false
-        state.suggestion = action.payload
-      })
-  }
+			.addCase(getSuggestedPeople.pending, (state) => {
+				state.loading = true
+			})
+			.addCase(getSuggestedPeople.rejected, (state) => {
+				state.loading = false
+			})
+			.addCase(getSuggestedPeople.fulfilled, (state, action) => {
+				state.loading = false
+				state.suggestion = action.payload
+			})
+	},
 })
 
 export default friends.reducer

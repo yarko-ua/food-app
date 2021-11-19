@@ -35,7 +35,6 @@
 // export const userPrivStorPath = (uid, path) => userPrivStorage(uid).child(path)
 // export const userPubStorPath = (uid, path) => userPrivStorage(uid).child(path)
 
-
 // export const fbStorageConfig = {
 //   fbStorageRef,
 //   imagesRef,
@@ -56,6 +55,4 @@
 // // console.log(`listsStorage`, listsStorage)
 // // console.log(`usersStorage`, usersStorage)
 
-
 // export default fbApp
-

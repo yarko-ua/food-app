@@ -1,27 +1,20 @@
 import firebase from "firebase/app"
 import "firebase/auth"
-import fbApp, { fbdb } from "firebaseconfig/firebase"
+import fbApp, { fbdb } from "./firebase"
 
 export const signIn = async (uemail, password) => {
-	try {
-		const userCredentials = await firebase
-			.auth(fbApp)
-			.signInWithEmailAndPassword(uemail, password)
+	const userCredentials = await firebase
+		.auth(fbApp)
+		.signInWithEmailAndPassword(uemail, password)
 
-		const { user } = userCredentials
+	const { user } = userCredentials
+	console.log("user", user)
 
-		console.log("user", user)
-		// console.log(`user.getToken()`, user.getToken())
-		const { uid, displayName, email, photoURL } = user
-
-		return { uid, displayName, email, photoURL }
-	} catch (error) {
-		// console.log(`SignIn error`, error)
-		throw new Error(error.message)
-	}
+	const { uid: id, displayName, email, photoURL } = user
+	return { id, displayName, email, photoURL }
 }
 
-export const signUp = async (email, password, displayName, photoURL = null) => {
+export const signUp = async (email, password, displayName) => {
 	const userCredential = await firebase
 		.auth(fbApp)
 		.createUserWithEmailAndPassword(email, password)
@@ -32,13 +25,7 @@ export const signUp = async (email, password, displayName, photoURL = null) => {
 
 	console.log("user", user)
 
-	const userOptions = {
-		displayName,
-	}
-
-	await user.updateProfile(userOptions)
-
-	// console.log(`user.getToken()`, user.getToken());
+	await user.updateProfile({ displayName })
 
 	const { uid } = user
 
@@ -47,7 +34,7 @@ export const signUp = async (email, password, displayName, photoURL = null) => {
 	await userRef.set({
 		firstName: displayName,
 		lastName: null,
-		photoURL,
+		photoURL: null,
 		email,
 		address: null,
 		friends: [],
@@ -72,7 +59,7 @@ export const signUp = async (email, password, displayName, photoURL = null) => {
 
 	console.log(`firstProductInList`, firstProductInList)
 
-	return { uid, displayName, photoURL, email }
+	return { uid, displayName, email }
 }
 
 export const signOut = () => firebase.auth(fbApp).signOut()

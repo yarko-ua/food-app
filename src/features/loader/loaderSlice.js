@@ -1,14 +1,13 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit"
 
 const initialState = {
-  loading: false
+	loading: false,
 }
 
 const loaderReducer = createSlice({
-  name: 'loader',
-  initialState,
-  extraReducers: builder => {
-    builder
-      .addCase()
-  }
+	name: "loader",
+	initialState,
+	extraReducers: (builder) => {
+		builder.addCase()
+	},
 })

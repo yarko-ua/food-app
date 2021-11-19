@@ -1,5 +1,3 @@
-export const Settings = () => {
-  return <> settings </>
-}
+const Settings = () => <> settings </>
 
 export default Settings
