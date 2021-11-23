@@ -12,7 +12,7 @@ const useAppStyles = makeStyles({
 	},
 })
 
-const AppWrapper = ({ routes, ...props }) => {
+const AppWrapper = ({ routes }) => {
 	const isMobile = useMediaQuery("(max-width: 960px)")
 	const appStyles = useAppStyles()
 	const menuWrapper = useRef()
@@ -21,15 +21,15 @@ const AppWrapper = ({ routes, ...props }) => {
 	const [offsetLeft, setOffsetLeft] = useState(0)
 
 	useEffect(() => {
-		console.log(`11`, 11)
 		if (menuWrapper.current) {
 			setWidthCover(menuWrapper.current.clientWidth)
 			setOffsetLeft(menuWrapper.current.offsetLeft)
 		}
-	}, [isMobile])
 
-	console.log(`props`, props)
-	console.log(`routes`, routes)
+		return () => {
+			console.log("unmount app")
+		}
+	}, [isMobile])
 
 	return (
 		<Grid

@@ -18,7 +18,7 @@ const MyList = ({ list, ...props }) => {
 	if (loading) return <CircularProgress />
 
 	if (!list || list.length < 1) {
-		return <span />
+		return null
 	}
 
 	return (

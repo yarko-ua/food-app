@@ -1,5 +1,4 @@
 import { useCallback, useEffect } from "react"
-import PropTypes from "prop-types"
 import { CircularProgress, Grid } from "@material-ui/core"
 import { useDispatch, useSelector } from "react-redux"
 // import { withRouter } from "react-router-dom";
@@ -20,6 +19,7 @@ import { PATH_TO_PRODUCT } from "constants/constants"
 import { clearFiles } from "features/app/fileUploader/fileUploaderSlice"
 // import { addProduct } from "../../product/productSlice";
 import { makeStyles } from "@material-ui/styles"
+import { useParams } from "react-router-dom"
 
 const useStyles = makeStyles({
 	root: {
@@ -27,28 +27,35 @@ const useStyles = makeStyles({
 	},
 })
 
-const UserList = ({
-	match: {
-		params: { listID },
-	},
-	location,
-}) => {
+const UserList = () => {
 	const currentList = useSelector((state) => state.lists.currentList)
 	console.log(`currentList`, currentList)
+
+	const { listID } = useParams()
 
 	const styles = useStyles()
 
 	const dispatch = useDispatch()
 
 	useEffect(() => {
+		console.log(`getUsers`)
 		if (!currentList) {
 			dispatch(getUserList(listID))
 		}
-		return () => {
+
+		// return () => {
+		// 	console.log(`unmount`)
+		// 	dispatch(clearList())
+		// }
+	}, [dispatch, listID, currentList])
+
+	useEffect(
+		() => () => {
 			console.log(`unmount`)
 			dispatch(clearList())
-		}
-	}, [dispatch, listID, currentList])
+		},
+		[dispatch]
+	)
 
 	const list = currentList ? currentList.data : []
 
@@ -96,7 +103,6 @@ const UserList = ({
 						<MyList
 							list={list}
 							linked
-							location={location}
 							path={PATH_TO_PRODUCT}
 							type="product"
 							onRemove={onRemove}
@@ -106,15 +112,6 @@ const UserList = ({
 			</Grid>
 		</Grid>
 	)
-}
-
-UserList.propTypes = {
-	match: PropTypes.shape({
-		params: PropTypes.shape({
-			listID: PropTypes.string.isRequired,
-		}),
-	}).isRequired,
-	location: PropTypes.string.isRequired,
 }
 
 export default UserList

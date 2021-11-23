@@ -12,7 +12,7 @@ import {
 } from "@material-ui/core"
 import InfoIcon from "@material-ui/icons/Info"
 import DeleteIcon from "@material-ui/icons/Delete"
-import { Link } from "react-router-dom"
+import { Link, useLocation } from "react-router-dom"
 import { Rating } from "@material-ui/lab"
 
 const useStyles = makeStyles({
@@ -33,8 +33,10 @@ const useStyles = makeStyles({
 	},
 })
 
-const ListItemCustom = ({ data, location, type, linked, onRemove, path }) => {
+const ListItemCustom = ({ data, type, linked, onRemove, path }) => {
 	const styles = useStyles()
+
+	const location = useLocation()
 
 	const handleClick = useCallback(() => {
 		onRemove(data.id)
@@ -53,7 +55,7 @@ const ListItemCustom = ({ data, location, type, linked, onRemove, path }) => {
 						>
 							{
 								data.thumb ? (
-									<img src={data.thumb} className={styles.img} alt="" />
+									<img src={data.thumb || ""} className={styles.img} alt="" />
 								) : (
 									data.name[0].toUpperCase()
 								)
@@ -101,15 +103,14 @@ const ListItemCustom = ({ data, location, type, linked, onRemove, path }) => {
 ListItemCustom.propTypes = {
 	data: PropTypes.shape({
 		id: PropTypes.string.isRequired,
-		thumb: PropTypes.string.isRequired,
+		thumb: PropTypes.string,
 		name: PropTypes.string.isRequired,
-		rating: PropTypes.number,
-		description: PropTypes.string.isRequired,
+		rating: PropTypes.string, // TODO: change to number
+		description: PropTypes.string,
 		createdAt: PropTypes.number.isRequired,
 	}).isRequired,
 	linked: PropTypes.bool,
 	path: PropTypes.string.isRequired,
-	location: PropTypes.shape({ pathname: PropTypes.string }).isRequired,
 	onRemove: PropTypes.func,
 	type: PropTypes.string,
 }

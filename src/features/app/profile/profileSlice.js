@@ -1,17 +1,17 @@
-import firebase from "firebase"
+// import firebase from "firebase"
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"
-import fbApp, { fbdb } from "firebaseconfig/firebase"
+import { fbdb } from "firebaseconfig/firebase"
 import { PATH_TO_USERS_PUBLIC_STORAGE } from "constants/constants"
 // import firebase from 'firebase/app'
 import { uploadToStore } from "features/app/fileUploader/fileUploaderSlice"
 import {
-	requestReauth,
+	// requestReauth,
 	signInUser,
 	signOutUser,
 	signUpUser,
 	updateUser,
 } from "features/auth/authSlice"
-import { UPDATE_EMAIL, UPDATE_PASSWORD } from "features/auth/constants"
+// import { UPDATE_EMAIL, UPDATE_PASSWORD } from "features/auth/constants"
 
 const initialState = {
 	data: {
@@ -119,90 +119,90 @@ export const updateProfilePhoto = createAsyncThunk(
 	}
 )
 
-export const updatePassword = createAsyncThunk(
-	"profile/updatePassword",
-	async ({ password }, thunkAPI) => {
-		const user = firebase.auth(fbApp).currentUser
+// export const updatePassword = createAsyncThunk(
+// 	"profile/updatePassword",
+// 	async ({ password }, thunkAPI) => {
+// 		const user = firebase.auth(fbApp).currentUser
 
-		if (password) {
-			try {
-				const updatingPass = await user.updatePassword(password)
+// 		if (password) {
+// 			try {
+// 				const updatingPass = await user.updatePassword(password)
 
-				console.log(`updatingPass`, updatingPass)
+// 				console.log(`updatingPass`, updatingPass)
 
-				return {
-					reauth: false,
-					password,
-				}
-			} catch (error) {
-				console.log(`error`, error)
+// 				return {
+// 					reauth: false,
+// 					password,
+// 				}
+// 			} catch (error) {
+// 				console.log(`error`, error)
 
-				if (error.code === "auth/requires-recent-login") {
-					console.log("show login modal")
+// 				if (error.code === "auth/requires-recent-login") {
+// 					console.log("show login modal")
 
-					const reauth = thunkAPI.dispatch(requestReauth(UPDATE_PASSWORD))
+// 					const reauth = thunkAPI.dispatch(requestReauth(UPDATE_PASSWORD))
 
-					console.log(`reauth`, reauth)
+// 					console.log(`reauth`, reauth)
 
-					return {
-						reauth: true,
-						password,
-					}
-				}
-			}
-		}
+// 					return {
+// 						reauth: true,
+// 						password,
+// 					}
+// 				}
+// 			}
+// 		}
 
-		return false
-	}
-)
+// 		return false
+// 	}
+// )
 
-export const updateEmail = createAsyncThunk(
-	"profile/updateEmail",
-	async ({ email, onSuccess = null }, thunkAPI) => {
-		const user = firebase.auth(fbApp).currentUser
+// export const updateEmail = createAsyncThunk(
+// 	"profile/updateEmail",
+// 	async ({ email, onSuccess = null }, thunkAPI) => {
+// 		const user = firebase.auth(fbApp).currentUser
 
-		console.log(`user`, user)
+// 		console.log(`user`, user)
 
-		if (email) {
-			try {
-				const updatingEmail = await user.updateEmail(email)
-				console.log(`updatingEmail`, updatingEmail) // undefined when success
+// 		if (email) {
+// 			try {
+// 				const updatingEmail = await user.updateEmail(email)
+// 				console.log(`updatingEmail`, updatingEmail) // undefined when success
 
-				const userRef = fbdb.doc(`users/${user.uid}`)
+// 				const userRef = fbdb.doc(`users/${user.uid}`)
 
-				const updatingUser = await userRef.update({ email })
+// 				const updatingUser = await userRef.update({ email })
 
-				console.log(`updatingUser`, updatingUser) // undefined when success
+// 				console.log(`updatingUser`, updatingUser) // undefined when success
 
-				console.log(`onSuccess`, onSuccess)
+// 				console.log(`onSuccess`, onSuccess)
 
-				if (onSuccess) onSuccess()
+// 				if (onSuccess) onSuccess()
 
-				return {
-					reauth: false,
-					email,
-				}
-			} catch (error) {
-				console.log(`error`, error)
+// 				return {
+// 					reauth: false,
+// 					email,
+// 				}
+// 			} catch (error) {
+// 				console.log(`error`, error)
 
-				if (error.code === "auth/requires-recent-login") {
-					console.log("show login modal")
+// 				if (error.code === "auth/requires-recent-login") {
+// 					console.log("show login modal")
 
-					const reauth = thunkAPI.dispatch(requestReauth(UPDATE_EMAIL))
+// 					const reauth = thunkAPI.dispatch(requestReauth(UPDATE_EMAIL))
 
-					console.log(`reauth`, reauth)
+// 					console.log(`reauth`, reauth)
 
-					return {
-						reauth: true,
-						email,
-					}
-				}
-			}
-		}
+// 					return {
+// 						reauth: true,
+// 						email,
+// 					}
+// 				}
+// 			}
+// 		}
 
-		return false
-	}
-)
+// 		return false
+// 	}
+// )
 
 export const getFriends = createAsyncThunk(
 	"profile/getFriends",
@@ -276,36 +276,36 @@ const profile = createSlice({
 				state.data.photoURL = action.payload
 			})
 
-			.addCase(updatePassword.pending, (state) => {
-				state.loading = true
-			})
-			.addCase(updatePassword.rejected, (state) => {
-				state.loading = false
-			})
-			.addCase(updatePassword.fulfilled, (state, action) => {
-				state.loading = false
+		// .addCase(updatePassword.pending, (state) => {
+		// 	state.loading = true
+		// })
+		// .addCase(updatePassword.rejected, (state) => {
+		// 	state.loading = false
+		// })
+		// .addCase(updatePassword.fulfilled, (state, action) => {
+		// 	state.loading = false
 
-				if (action.payload.reauth)
-					state.tempData = { password: action.payload.password }
-			})
+		// 	if (action.payload.reauth)
+		// 		state.tempData = { password: action.payload.password }
+		// })
 
-			.addCase(updateEmail.pending, (state) => {
-				state.loading = true
-			})
-			.addCase(updateEmail.rejected, (state) => {
-				state.loading = false
-			})
-			.addCase(updateEmail.fulfilled, (state, action) => {
-				state.loading = false
+		// .addCase(updateEmail.pending, (state) => {
+		// 	state.loading = true
+		// })
+		// .addCase(updateEmail.rejected, (state) => {
+		// 	state.loading = false
+		// })
+		// .addCase(updateEmail.fulfilled, (state, action) => {
+		// 	state.loading = false
 
-				if (action.payload.reauth)
-					state.tempData = { email: action.payload.email }
+		// 	if (action.payload.reauth)
+		// 		state.tempData = { email: action.payload.email }
 
-				if (!action.payload.reauth) {
-					state.data.email = action.payload.email
-					state.tempData = null
-				}
-			})
+		// 	if (!action.payload.reauth) {
+		// 		state.data.email = action.payload.email
+		// 		state.tempData = null
+		// 	}
+		// })
 	},
 })
 

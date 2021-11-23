@@ -13,14 +13,10 @@ import { ModalContext } from "features/modal/Modal"
 import ProfileInfo from "components/forms/profileInfo/ProfileInfo"
 import UpdateEmail from "components/forms/updateEmail/UpdateEmail"
 import UpdatePassword from "components/forms/updatePassword/UpdatePassword"
-import ReauthPassword from "components/forms/reauthPassword/ReauthPassword"
-import { reauthUser, withdrawReauth } from "features/auth/authSlice"
-import {
-	getUserFullInfo,
-	updateEmail,
-	updatePassword,
-	updateProfilePhoto,
-} from "./profileSlice"
+// import ReauthPassword from "components/forms/reauthPassword/ReauthPassword"
+// import { reauthUser, withdrawReauth } from "features/auth/authSlice"
+import { updateEmail, updatePassword } from "features/auth/authSlice"
+import { getUserFullInfo, updateProfilePhoto } from "./profileSlice"
 
 const useStyles = makeStyles({
 	editImgContainer: {
@@ -60,7 +56,7 @@ const Profile = () => {
 	const [changeProfileImg, setChangeProfileImg] = useState(false)
 	// const [editProfileImg, setEditProfileImg] = useState(false)
 	const [profilePhoto, setProfilePhoto] = useState(photoURL)
-	const { reauth, reauthInProgress } = useSelector((state) => state.auth)
+	// const { reauth, reauthInProgress } = useSelector((state) => state.auth)
 	const styles = useStyles()
 
 	const modal = useContext(ModalContext)
@@ -112,8 +108,8 @@ const Profile = () => {
 	}, [])
 
 	const handleEmailUpdate = useCallback(
-		({ email }, form) => {
-			console.log("update profile email")
+		(email, form) => {
+			console.log("update profile email with: ", email)
 			const response = dispatch(
 				updateEmail({
 					email,
@@ -132,41 +128,41 @@ const Profile = () => {
 		[dispatch]
 	)
 
-	const handleReauth = useCallback(
-		({ password }) => {
-			dispatch(
-				reauthUser({
-					password,
-					// actionCreator: onReauthAction,
-					stateDataPath: "user.tempData",
-					// callback: () => {
-					//   form && form.
-					// }
-					// onError: () => {
-					//   form && form.resetForm()
-					// }
-				})
-			)
-		},
-		[dispatch]
-	)
+	// const handleReauth = useCallback(
+	// 	({ password }) => {
+	// 		dispatch(
+	// 			reauthUser({
+	// 				password,
+	// 				// actionCreator: onReauthAction,
+	// 				stateDataPath: "user.tempData",
+	// 				// callback: () => {
+	// 				//   form && form.
+	// 				// }
+	// 				// onError: () => {
+	// 				//   form && form.resetForm()
+	// 				// }
+	// 			})
+	// 		)
+	// 	},
+	// 	[dispatch]
+	// )
 
-	const modalRenderReauth = useCallback(
-		() => <ReauthPassword handleSubmit={handleReauth} />,
-		[handleReauth]
-	)
+	// const modalRenderReauth = useCallback(
+	// 	() => <ReauthPassword handleSubmit={handleReauth} />,
+	// 	[handleReauth]
+	// )
 
-	useEffect(() => {
-		if (reauth) {
-			modal.setContentRender(modalRenderReauth)
-			modal.setIsOpen(true)
-		}
+	// useEffect(() => {
+	// 	if (reauth) {
+	// 		modal.setContentRender(modalRenderReauth)
+	// 		modal.setIsOpen(true)
+	// 	}
 
-		if (reauthInProgress && !reauth) {
-			modal.handleClose()
-			dispatch(withdrawReauth())
-		}
-	}, [reauth, reauthInProgress, modal, modalRenderReauth, dispatch])
+	// 	if (reauthInProgress && !reauth) {
+	// 		modal.handleClose()
+	// 		dispatch(withdrawReauth())
+	// 	}
+	// }, [reauth, reauthInProgress, modal, modalRenderReauth, dispatch])
 
 	useEffect(() => {
 		dispatch(getUserFullInfo())

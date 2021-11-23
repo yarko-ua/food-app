@@ -10,7 +10,7 @@ import friendsReducer from "features/app/friends/friendsSlice"
 import { listApi } from "./api"
 // import modalReducer from 'features/modal/modalSlice'
 
-export const store = configureStore({
+const store = configureStore({
 	reducer: {
 		notification,
 		files: uploaderReducer,
@@ -26,5 +26,7 @@ export const store = configureStore({
 	middleware: (getDefaultMiddleware) =>
 		getDefaultMiddleware().concat(listApi.middleware),
 })
+
+export default store
 
 // store.subscribe(store.dispatch);

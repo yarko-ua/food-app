@@ -21,6 +21,7 @@ const UserLists = ({ location }) => {
 	const list = useSelector((state) => state.lists.data)
 	console.log(`list`, list)
 	const { uid } = useSelector((state) => state.auth.data)
+	console.log(`uid`, uid)
 	const dispatch = useDispatch()
 
 	const styles = useStyles()

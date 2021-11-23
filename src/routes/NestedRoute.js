@@ -4,24 +4,22 @@ import PrivateRoute from "./PrivateRoute"
 
 const NestedRoute = ({ isPrivate, component: Component, routes, ...props }) => {
 	if (isPrivate) {
-		if (routes)
-			return (
-				<PrivateRoute {...props}>
-					<Component routes={routes} />
-				</PrivateRoute>
-			)
-
-		return <PrivateRoute {...props} component={Component} />
+		return routes ? (
+			<PrivateRoute {...props}>
+				<Component routes={routes} />
+			</PrivateRoute>
+		) : (
+			<PrivateRoute {...props} component={Component} />
+		)
 	}
 
-	if (routes)
-		return (
-			<Route {...props}>
-				<Component routes={routes} />
-			</Route>
-		)
-
-	return <Route {...props} component={Component} />
+	return routes ? (
+		<Route {...props}>
+			<Component routes={routes} />
+		</Route>
+	) : (
+		<Route {...props} component={Component} />
+	)
 }
 
 NestedRoute.propTypes = {

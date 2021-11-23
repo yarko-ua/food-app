@@ -1,11 +1,10 @@
-import { Link, useHistory } from "react-router-dom"
+import { Link, useLocation } from "react-router-dom"
 import ArrowBackIcon from "@material-ui/icons/ArrowBack"
 
 const BackToPrevious = () => {
-	const history = useHistory()
-	console.log(`btp history`, history)
+	const { state } = useLocation()
 	return (
-		<Link to={history.location.state.from || "/"}>
+		<Link to={state?.from || "/"}>
 			<ArrowBackIcon />
 		</Link>
 	)

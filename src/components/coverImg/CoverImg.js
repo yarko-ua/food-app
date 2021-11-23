@@ -72,16 +72,16 @@ CoverImg.propTypes = {
 	alt: PropTypes.string.isRequired,
 	width: PropTypes.number,
 	height: PropTypes.number,
-	rounded: PropTypes.bool,
-	innerGap: PropTypes.number,
-	outerGap: PropTypes.number,
+	rounded: PropTypes.number,
+	innerGap: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+	outerGap: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
 	cover: PropTypes.bool,
 }
 
 CoverImg.defaultProps = {
 	width: null,
 	height: null,
-	rounded: false,
+	rounded: 0,
 	innerGap: 0,
 	outerGap: 0,
 	cover: false,

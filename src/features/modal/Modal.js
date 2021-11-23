@@ -51,7 +51,7 @@ export const ModalContext = createContext()
 const ModalContainer = ({ children }) => {
 	const [isOpen, setIsOpen] = useState(false)
 	const [contentRender, setContentRender] = useState(null)
-	// const [closeCallback, setCloseCallback] = useState(() => {})
+	const [closeCallback, setCloseCallback] = useState(() => {})
 
 	const styles = useStyles()
 
@@ -59,8 +59,10 @@ const ModalContainer = ({ children }) => {
 		console.log("tra ta ta")
 		setIsOpen(false)
 		setContentRender(null)
-		// closeCallback()
-	}, [])
+		if (closeCallback) closeCallback()
+		setCloseCallback(null)
+	}, [closeCallback])
+
 	const handleClickAway = useCallback(() => {
 		console.log(`click away`)
 		setIsOpen(false)
@@ -72,7 +74,7 @@ const ModalContainer = ({ children }) => {
 			setContentRender,
 			handleClose,
 			setIsOpen,
-			// setCloseCallback,
+			setCloseCallback,
 		}),
 		[handleClose, setContentRender]
 	)

@@ -31,13 +31,11 @@ const PrivateRoute = ({ component: Component, children, ...props }) => {
 PrivateRoute.propTypes = {
 	component: PropTypes.elementType,
 	children: PropTypes.node,
-	props: PropTypes.arrayOf(PropTypes.object),
 }
 
 PrivateRoute.defaultProps = {
 	component: null,
 	children: null,
-	props: {},
 }
 
 export default PrivateRoute

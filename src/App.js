@@ -7,9 +7,9 @@ import store from "store/store"
 import Notification from "features/notification/Notification"
 import ROUTER from "routes/router"
 import NestedRoute from "routes/NestedRoute"
-import ModalContainer from "features/modal/Modal"
 import AuthWrapper from "features/auth/AuthWrapper"
 import "./App.css"
+import ModalContainer from "features/modal/Modal"
 
 const useStyles = makeStyles({
 	root: {
@@ -58,8 +58,8 @@ const App = () => {
 						App v.{process.env.REACT_APP_VERSION}{" "}
 					</h6>
 					<Paper elevation={5} className={classes.paper}>
-						<AuthWrapper>
-							<ModalContainer>
+						<ModalContainer>
+							<AuthWrapper>
 								<Container
 									maxWidth={false}
 									disableGutters
@@ -73,8 +73,8 @@ const App = () => {
 										</Switch>
 									</Suspense>
 								</Container>
-							</ModalContainer>
-						</AuthWrapper>
+							</AuthWrapper>
+						</ModalContainer>
 					</Paper>
 					<Notification />
 				</Box>

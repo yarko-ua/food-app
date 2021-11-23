@@ -1,15 +1,16 @@
 import { createSlice } from "@reduxjs/toolkit"
 import { addUserRecord } from "features/app/listHandler/listHandlerSlice"
-import { reauthUser, signInUser } from "features/auth/authSlice"
 import {
-	getUserFullInfo,
+	reauthUser,
+	signInUser,
 	updateEmail,
 	updatePassword,
-} from "features/app/profile/profileSlice"
+} from "features/auth/authSlice"
+import { getUserFullInfo } from "features/app/profile/profileSlice"
 import { addProductToList } from "features/app/userLists/userListsSlice"
 
 const TYPE_SUCCESS = "success"
-// const TYPE_WARNING = "warning"
+const TYPE_WARNING = "warning"
 const TYPE_ERROR = "error"
 // const TYPE_DARK = "dark"
 // const TYPE_INFO = "info"
@@ -56,12 +57,22 @@ const notification = createSlice({
 				state.message = action.error.message
 			})
 
+			.addCase(updateEmail.rejected, (state, action) => {
+				state.show = true
+				state.type = TYPE_WARNING
+				state.message = action.error.message
+			})
 			.addCase(updateEmail.fulfilled, (state, action) => {
 				if (!action.payload.reauth) {
 					state.show = true
 					state.type = TYPE_SUCCESS
 					state.message = "Email successfully updated"
 				}
+			})
+			.addCase(updatePassword.rejected, (state, action) => {
+				state.show = true
+				state.type = TYPE_WARNING
+				state.message = action.error.message
 			})
 			.addCase(updatePassword.fulfilled, (state, action) => {
 				if (!action.payload.reauth) {

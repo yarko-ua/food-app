@@ -98,8 +98,8 @@ export const getUserList = createAsyncThunk(
 		console.log(`data`, data)
 
 		const currentList = {
-			name: listData.name,
-			createdAt: listData.createdAt?.toMillis() || 0,
+			name: listData?.name,
+			createdAt: listData?.createdAt?.toMillis() || 0,
 			id: listDoc.id,
 			data,
 		}

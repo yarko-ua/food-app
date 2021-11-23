@@ -3,7 +3,7 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"
 // import { updateEmail } from 'features/app/profile/profileSlice';
 import firebase from "firebase/app"
 import "firebase/auth"
-import fbApp from "firebaseconfig/firebase"
+import fbApp, { fbdb } from "firebaseconfig/firebase"
 import { objectValueByStringKey } from "helpers/objects"
 import { saveState } from "helpers/appState"
 import { signIn, signOut, signUp } from "./authAPI"
@@ -16,11 +16,7 @@ const initialState = {
 	reauth: false,
 	reauthInProgress: false,
 	onReauthAction: null,
-}
-
-const specificActions = {
-	[UPDATE_PASSWORD]: 1,
-	[UPDATE_EMAIL]: 1,
+	tempData: null,
 }
 
 export const signInUser = createAsyncThunk(
@@ -94,6 +90,99 @@ export const updateUser = createAsyncThunk("auth/updateUser", async (data) => {
 	}
 })
 
+export const updatePassword = createAsyncThunk(
+	"auth/updatePassword",
+	async ({ password }, thunkAPI) => {
+		if (password) {
+			const user = firebase.auth(fbApp).currentUser
+
+			try {
+				const updatingPass = await user.updatePassword(password)
+
+				console.log(`updatingPass`, updatingPass)
+
+				return {
+					reauth: false,
+					password,
+				}
+			} catch (error) {
+				console.log(`error`, error)
+
+				if (error.code === "auth/requires-recent-login") {
+					console.log("show login modal")
+
+					const reauth = thunkAPI.dispatch({
+						type: "auth/requestReauth",
+						payload: UPDATE_PASSWORD,
+					})
+
+					console.log(`reauth`, reauth)
+
+					return {
+						reauth: true,
+						password,
+					}
+				}
+			}
+		}
+
+		throw new Error("Fill the password field, please")
+	}
+)
+
+export const updateEmail = createAsyncThunk(
+	"auth/updateEmail",
+	async ({ email, onSuccess = null }, thunkAPI) => {
+		if (email) {
+			const user = firebase.auth(fbApp).currentUser
+
+			console.log(`user`, user)
+
+			try {
+				const updatingEmail = await user.updateEmail(email)
+				console.log(`updatingEmail`, updatingEmail) // undefined when success
+
+				const userRef = fbdb.doc(`users/${user.uid}`)
+
+				const updatingUser = await userRef.update({ email })
+
+				console.log(`updatingUser`, updatingUser) // undefined when success
+
+				console.log(`onSuccess`, onSuccess)
+
+				if (onSuccess) onSuccess()
+
+				return {
+					reauth: false,
+					email,
+				}
+			} catch (error) {
+				console.log(`error`, error)
+
+				if (error.code === "auth/requires-recent-login") {
+					console.log("show login modal")
+
+					const reauth = thunkAPI.dispatch({
+						type: "auth/requestReauth",
+						payload: UPDATE_EMAIL,
+					})
+
+					console.log(`reauth`, reauth)
+
+					return {
+						reauth: true,
+						email,
+					}
+				}
+
+				throw new Error(error.message)
+			}
+		}
+
+		throw new Error("Fill the email field, please")
+	}
+)
+
 export const reauthUser = createAsyncThunk(
 	"auth/reauth",
 	async ({ password, stateDataPath = null }, thunkAPI) => {
@@ -131,11 +220,22 @@ export const reauthUser = createAsyncThunk(
 				const actionData = objectValueByStringKey(state, stateDataPath)
 				console.log(`actionData`, actionData)
 
-				const dispatch = await thunkAPI.dispatch(
-					specificActions[onReauthAction](actionData)
-				)
+				const retryOperation =
+					(onReauthAction === UPDATE_EMAIL && updateEmail) ||
+					(onReauthAction === UPDATE_PASSWORD && updatePassword) ||
+					null
 
-				console.log(`dispatch`, dispatch)
+				// const dispatch = await thunkAPI.dispatch(
+				// 	specificActions[onReauthAction](actionData)
+				// )
+
+				console.log(`retryOperation`, retryOperation)
+
+				if (retryOperation) {
+					const dispatch = await thunkAPI.dispatch(retryOperation(actionData))
+
+					console.log(`dispatch`, dispatch)
+				}
 			}
 
 			/** reuturn ??? */
@@ -210,9 +310,27 @@ const authReducer = createSlice({
 			.addCase(reauthUser.fulfilled, (state) => {
 				state.reauth = false
 			})
+
+			.addCase(updatePassword.fulfilled, (state, action) => {
+				if (action.payload.reauth)
+					state.tempData = { password: action.payload.password }
+			})
+
+			.addCase(updateEmail.fulfilled, (state, action) => {
+				if (action.payload.reauth)
+					state.tempData = { email: action.payload.email }
+
+				if (!action.payload.reauth) {
+					state.data.email = action.payload.email
+					state.tempData = null
+				}
+			})
 	},
 })
 
-export const { setUser, requestReauth, withdrawReauth } = authReducer.actions
+export const {
+	actions: { setUser, requestReauth, withdrawReauth },
+	reducer,
+} = authReducer
 
-export default authReducer.reducer
+export default reducer

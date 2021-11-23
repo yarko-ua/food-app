@@ -1,9 +1,12 @@
 import { combineReducers } from "redux"
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
-import authReducer from "features/user/auth/authSlice"
+import authReducer, { requestReauth } from "features/user/auth/authSlice"
 import profileReducer from "features/user/profile/profileSlice"
 import { signIn, signUp, signOut } from "firebaseconfig/authActions"
 import { saveState } from "helpers/appState"
+import firebase from "firebase/app"
+import fbApp, { fbdb } from "firebaseconfig/firebase"
+import { UPDATE_EMAIL, UPDATE_PASSWORD } from "features/auth/constants"
 
 const initialState = {
 	id: null,
@@ -57,9 +60,9 @@ export const signOutUser = createAsyncThunk("user/signOut", async () => {
 export const updatePassword = createAsyncThunk(
 	"profile/updatePassword",
 	async ({ password }, thunkAPI) => {
-		const user = firebase.auth(fbApp).currentUser
-
 		if (password) {
+			const user = firebase.auth(fbApp).currentUser
+
 			try {
 				const updatingPass = await user.updatePassword(password)
 
@@ -86,6 +89,8 @@ export const updatePassword = createAsyncThunk(
 				}
 			}
 		}
+
+		return undefined
 	}
 )
 
@@ -120,6 +125,8 @@ export const updateEmail = createAsyncThunk(
 
 				if (error.code === "auth/requires-recent-login") {
 					console.log("show login modal")
+
+					// TODO: remade reauth system?
 
 					const reauth = thunkAPI.dispatch(requestReauth(UPDATE_EMAIL))
 

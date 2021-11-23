@@ -6,7 +6,6 @@ import PropTypes from "prop-types"
 import {
 	CircularProgress,
 	Grid,
-	IconButton,
 	makeStyles,
 	TextField,
 } from "@material-ui/core"
@@ -19,7 +18,7 @@ import "swiper/components/pagination/pagination.scss"
 import Image from "components/image/Image"
 import { Rating } from "@material-ui/lab"
 import BackToPrevious from "components/backTo/BackTo"
-import { Edit } from "@material-ui/icons"
+import UrlSearchParamToggler from "components/urlSearchParamToggler/UrlSearchParamToggler"
 import { getProduct } from "./productSlice"
 
 SwiperCore.use([Navigation, Pagination])
@@ -41,7 +40,6 @@ const Product = ({
 		params: { productID },
 	},
 	location: { search },
-	history,
 	...props
 }) => {
 	const styles = useStyles()
@@ -51,21 +49,12 @@ const Product = ({
 	const dispatch = useDispatch()
 	const [description, setDescription] = useState("")
 
-	// const history = useHistory()
-
-	// console.log(`history`, history)
-
 	console.log(`props`, props)
-	console.log(`history`, props)
 
 	console.log(`search`, search)
 	console.log(`search.match(/edit/)`, search.match(/edit/))
 
 	const isEdit = search.match(/edit/)
-
-	const handleEditBtn = useCallback(() => {
-		history.replace("?edit")
-	}, [history])
 
 	const handleDescription = useCallback((e) => {
 		setDescription(e.target.value)
@@ -112,16 +101,16 @@ const Product = ({
 					<Grid item xs={7}>
 						<div>
 							<h1 style={{ display: "inline-block" }}>{product.name}</h1>
-							{/* <span> */}
-							<IconButton onClick={handleEditBtn}>
-								<Edit />
-							</IconButton>
-							{/* Edit */}
-							{/* </span> */}
+							<UrlSearchParamToggler param="edit" />
 						</div>
 						<div>Reviewer: {product.reviewer}</div>
 						<div>
-							<Rating value={+product.rating} readOnly={!isEdit} size="large" />
+							<Rating
+								value={+product.rating}
+								name="rating"
+								readOnly={!isEdit}
+								size="large"
+							/>
 						</div>
 						<TextField
 							disabled={!isEdit}
@@ -146,9 +135,6 @@ Product.propTypes = {
 	}).isRequired,
 	location: PropTypes.shape({
 		search: PropTypes.string,
-	}).isRequired,
-	history: PropTypes.shape({
-		replace: PropTypes.func.isRequired,
 	}).isRequired,
 }
 
